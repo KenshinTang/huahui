@@ -1,0 +1,267 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../../css/g.css'>
+    <link rel='stylesheet' href='../../css/comm.css'>
+    <style>
+        /* search */
+        .navTitle {
+            font-weight: normal;
+        }
+
+        .more {
+            width: 4px;
+            height: 16px;
+            right: 15px;
+        }
+
+        .sousuoText {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            display: inline-block;
+        }
+
+        .searchBar {
+            margin: 0 auto;
+        }
+
+        .searchBar input {
+            width: 95%;
+            padding-left: 30px;
+            line-height: 30px;
+            height: 30px;
+            font-size: 14px;
+            color: #8891A7;
+            background-color: white;
+            border-radius: 3px;
+            background-image: url('../img/search.png');
+            background-repeat: no-repeat;
+            background-size: 14px;
+            background-position: 10px center;
+            margin: 0 auto;
+            margin-left: 2.5%;
+        }
+
+        [name='navlist'] span {
+            font-size: 15px;
+            color: #212121;
+        }
+
+        /* 侧边导航 */
+        #rheight {
+            /* margin-left: 100px; */
+        }
+
+        .active {
+            border-left: 3px solid #DD1474;
+            background-color: #fff;
+        }
+        
+        /* 列表 */
+
+        .listinfo {
+            height: 75px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .listinfo>p {
+            /* width: 100% */
+        }
+
+        .dfleximg {
+            width: 6px;
+            height: 11px;
+        }
+        .goodimg {
+            width: 75px;
+            height: 75px;
+            border-radius: 5px;
+        }
+        .isk{
+           border:1px solid #E02219;
+           border-radius: 2px;
+           font-size: 12px;
+           color:#DA251C;
+           vertical-align: bottom;
+           transform: scale(.8);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>选择商品</div>
+        </div>
+        <div class="paddr5 paddl15 bg_hui ">
+            <div class="nav-title block searchBar inblock" style="width: calc(100% - 50px);">
+                <form action="javascript:return true;" onsubmit="model.inSearch()">
+                    <input id="id_searchInput" type="search" placeholder="请输入商品名字">
+                </form>
+            </div>
+            <div class="sousuoText f14  colordd" onclick="model.inSearch()">搜索</div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <div class="clearfix">
+            <div class="bgF5F7FA fl" style="width: 100px;height: 100%;" id="one">
+                <div class="lh50 center f14 active {{k==0?'active':''}} bold" onclick="modle.qk(this)">
+                    大型植物
+                </div>
+                <div class="lh50 center f14 active {{k==0?'active':''}} color666" onclick="modle.qk(this)">
+                    大型植物
+                </div>
+            </div>
+            <div id="rheight" class="fl paddt15" style="width: calc(100% - 100px);">
+                <span class="f14 c21 paddl15">大型植物</span>
+                <div id="children">
+                    <div class="clearfix paddl15 paddr15 paddb10 paddt10 marb5 bg_white" name="listinfo"
+                        data="{{v.goodsId}}" style="padding-right:0px">
+                        <div style="height:75px " class="verticalP">
+                            <!-- <div class='quan decir inblock left' style="margin-top:55px" onclick="model.checked(this)"></div> -->
+                            <div class="fl center marr10  clearFloat" style="height:75px;position:relative">
+                                <img src="http://huahuiapp.oss-cn-shenzhen.aliyuncs.com/img/2019-06/1561525329094.jpg/250" class="goodimg" onerror="app.errorimg(this)">
+                            </div>
+                            <div class="listinfo clearFloat">
+                                <p class="wordW f16" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')"
+                                    style='min-height:21px'>
+                                    <span class="f16 bold color333">红掌（0.3米）</span><span class="isk">可出售</span>
+                                </p>
+                                <p class=" wordW" _style="min-height: 40px;"
+                                    _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                                   
+                                    <span class="color999 f12 inblock">适用各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间 美观</span>
+                                </p>
+                                <div class="{{v.isadd=='1'?'hide':''}}" name='isadd'>
+                                    <span class="c21 f18 colordd">&yen;228</span> <span class="f12 color999  ">元/月</span>
+                                </div>
+                            </div>
+                            <img src="../img/tiajia.png" name='isadd' alt=""
+                                style="width:18px;top:calc(100% - 10px);right:10px;"
+                                class="vertical {{v.isadd=='1'?'hide':''}}"
+                                onclick="model.addCartGoods({'type':1,'elm':this,'goodsId':'{{v.goodsId}}'})">
+                            <span class="color999 vertical f12 {{v.isadd!='1'?'hide':''}}"  style="top:calc(100% - 10px);right:10px;">已添加</span>
+                        </div>
+                    </div>
+                    <div class="clearfix paddl15 paddr15 paddb10 paddt10 marb5 bg_white" name="listinfo"
+                        data="{{v.goodsId}}" style="padding-right:0px">
+                        <div style="height:75px " class="verticalP">
+                            <!-- <div class='quan decir inblock left' style="margin-top:55px" onclick="model.checked(this)"></div> -->
+                            <div class="fl center marr10  clearFloat" style="height:75px;position:relative">
+                                <img src="http://huahuiapp.oss-cn-shenzhen.aliyuncs.com/img/2019-06/1561525329094.jpg/250" class="goodimg" onerror="app.errorimg(this)">
+                            </div>
+                            <div class="listinfo clearFloat">
+                                <p class="wordW f16" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')"
+                                    style='min-height:21px'>
+                                    <span class="f16 bold color333">红掌（0.3米）</span>
+                                </p>
+                                <p class=" wordW" _style="min-height: 40px;"
+                                    _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                                   
+                                    <span class="color999 f12 inblock">适用各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间 美观</span>
+                                </p>
+                                <div class="{{v.isadd=='1'?'hide':''}}" name='isadd'>
+                                    <span class="c21 f18 colordd">&yen;228</span> <span class="f12 color999  ">元/月</span>
+                                </div>
+                            </div>
+                            <img src="../img/tiajia.png" name='isadd' alt=""
+                                style="width:18px;top:calc(100% - 10px);right:10px;"
+                                class="vertical {{v.isadd=='1'?'hide':''}}"
+                                onclick="model.addCartGoods({'type':1,'elm':this,'goodsId':'{{v.goodsId}}'})">
+                            <span class="color999 vertical f12 {{v.isadd!='1'?'hide':''}}"  style="top:calc(100% - 10px);right:10px;">已添加</span>
+                        </div>
+                    </div>
+                    <div class="clearfix paddl15 paddr15 paddb10 paddt10 marb5 bg_white" name="listinfo"
+                        data="{{v.goodsId}}" style="padding-right:0px">
+                        <div style="height:75px " class="verticalP">
+                            <!-- <div class='quan decir inblock left' style="margin-top:55px" onclick="model.checked(this)"></div> -->
+                            <div class="fl center marr10  clearFloat" style="height:75px;position:relative">
+                                <img src="http://huahuiapp.oss-cn-shenzhen.aliyuncs.com/img/2019-06/1561525329094.jpg/250" class="goodimg" onerror="app.errorimg(this)">
+                            </div>
+                            <div class="listinfo clearFloat">
+                                <p class="wordW f16" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')"
+                                    style='min-height:21px'>
+                                    <span class="f16 bold color333">红掌（0.3米）</span>
+                                </p>
+                                <p class=" wordW" _style="min-height: 40px;"
+                                    _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                                   
+                                    <span class="color999 f12 inblock">适用各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间各种空间 美观</span>
+                                </p>
+                                <div class="{{v.isadd=='1'?'hide':''}}" name='isadd'>
+                                    <span class="c21 f18 colordd">&yen;228</span> <span class="f12 color999  ">元/月</span>
+                                </div>
+                            </div>
+                            <img src="../img/tiajia.png" name='isadd' alt=""
+                                style="width:18px;top:calc(100% - 10px);right:10px;"
+                                class="vertical {{v.isadd=='1'?'hide':''}}"
+                                onclick="model.addCartGoods({'type':1,'elm':this,'goodsId':'{{v.goodsId}}'})">
+                            <span class="color999 vertical f12 {{v.isadd!='1'?'hide':''}}"  style="top:calc(100% - 10px);right:10px;">已添加</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../../inc/z.js'></script>
+<script src='../../inc/g.js'></script>
+<script src='../../inc/comm.js'></script>
+<script src='../../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+        // $("#one").html(template('oneTpl', {}));
+    }
+    function pageresume() {
+
+    }
+    var model = {
+
+    }
+</script>
+<script id="oneTpl" type="text/html">
+    {{each $data v k }}
+    <div class="lh50 center f16 {{k==0?'active':''}}" onclick="modle.qk(this,{{k}})">
+        {{v.categoryName}}
+    </div>
+    {{/each}}
+</script>
+<script id="childrenTpl" type="text/html">
+    {{each $data v k }}
+        <div class="marb10 pad10">
+            
+            <p class="wordW" onclick="modle.back('{{v.categoryId}}','{{v.categoryName}}')">
+                <span>{{v.categoryName}}</span>
+                <span class="bgdd-ef colorfff f12 serviceArea {{v.type=='1'?'hide':''}} {{v.type=='3'?'hide':''}} {{v.type=='4'?'hide':''}}" onclick="event.stopPropagation();Comm.go('selcity.html?categoryId='+{{v.categoryId}})" >服务区域</span>
+                <img src="../img/arrowRight.png" height="14" class="fr" />
+            </p>
+            <div class="mart10 clearfix" >
+                {{each v.children c i }}
+                    <dl onclick="modle.back('{{c.categoryId}}','{{v.categoryName}}','{{c.categoryName}}','{{c.ifFlower}}')" style="width:33%;" class="fl center">
+                        <dt>
+                                <img src="{{OSS(c.picAddress)}}" height="45" width="45"  onerror="app.errorimg(this)"/>
+                        </dt>
+                        <dd class="color999 wordW">{{c.categoryName}}</dd>
+                    </dl>
+                {{/each}}
+            </div>
+        </div>
+        <div class="lhgb"></div>
+    {{/each}}
+</script>
+
+</html>

@@ -1,0 +1,100 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../../css/g.css'>
+    <link rel='stylesheet' href='../../css/comm.css'>
+    <style>
+        /*  */
+        div[name='up'] span,
+        div[name='down'] span {
+            display: block;
+        }
+
+        div[name='up'] {
+            height: 110px;
+            border-radius: 5px;
+        }
+
+        /* color */
+        .c21 {
+            color: #1A1A1A;
+        }
+        /*  */
+        img{
+            width: 35px;
+        }
+        .textbox{
+            width: calc(100% - 35px - 15px - 20px )
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>数据统计</div>
+        </div>
+    </header>
+
+    <section class='bg_hui paddl15 paddr15 paddt15 paddb15' id=''>
+        <div class="bg_white   paddl15 paddr15 paddb20">
+            <div name='down' class=" flex-between paddl15 paddr15">
+                <div class="t-a-c">
+                    <span class="color999 f12 mart15">本月线上订单（元）</span>
+                    <span class='mart10 f18'>89999.92</span>
+                </div>
+                <div class="t-a-c">
+                    <span class='color999 f12 mart15'>本月线下订单（元）</span>
+                    <span class='mart10 f18 c1a'>16995.82</span>
+                </div>
+            </div>
+        </div>
+        <div class="paddt15 paddb15 bg_white paddl15 mart10">
+            <img src="../img/dpxl.png" alt="" class="inline-block">
+            <div class="  textbox inline-block v-a-t marl10" >
+                <span class='bold f16 c21 block marb5'>单品销量</span>
+                <span class='color999 f12 block'>商品数：20</span>
+            </div>
+        </div>
+        <div class="paddt15 paddb15 bg_white paddl15 mart10">
+            <img src="../img/hdsp.png" alt="" class="inline-block">
+            <div class="  textbox inline-block v-a-t marl10" >
+                <span class='bold f16 c21 block marb5'>活动商品</span>
+                <span class='color999 f12 block'>活动4，活动中商品23</span>
+            </div>
+        </div>
+        <div class="paddt15 paddb15 bg_white paddl15 mart10">
+            <img src="../img/bstj.png" alt="" class="inline-block">
+            <div class="  textbox inline-block v-a-t marl10" >
+                <span class='bold f16 c21 block marb5'>报损统计</span>
+                <span class='color999 f12 block'>本月报损商品2，共计34件</span>
+            </div>
+        </div>
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../../inc/z.js'></script>
+<script src='../../inc/g.js'></script>
+<script src='../../inc/comm.js'></script>
+<script src='../../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+
+    }
+    function pageresume() {
+
+    }
+    var model = {
+    }
+</script>
+
+</html>

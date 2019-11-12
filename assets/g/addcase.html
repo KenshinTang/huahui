@@ -1,0 +1,154 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        .cellContent {
+            /* height: 50px; */
+            /* justify-content: normal; */
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        /*  */
+        #descript {
+            width: 100%;
+            height: 70px;
+            border: 0px;
+        }
+
+        /* footer */
+        footer button {
+            display: inline-block;
+            width: 45%;
+        }
+
+        #newGoods {
+            background: white;
+            color: black;
+            border: 1px solid #e2e2e2;
+        }
+        .upDoorPhoto img {
+            width: 40px;
+            height: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>上传案列</div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <div class="paddl15 bg_white ">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">案例标题</div>
+                <input type="text" name="title" placeholder="请填写案例标题(7个字符)" data="" value="" data-reg='empty'
+                    class="f16 c333" maxlength="7"/>
+            </div>
+        </div>
+        <!-- 图片 -->
+        <div class="paddl15 bg_white">
+            <div class="cellContent  indicator bottomBorder upDoorPhoto" id="pic" style='height: 50px;'>
+                <div class="label f14 icon_pre  ">案例图片</div>
+                <img src="" alt="" class="hide">
+                <input type="text" disabled readonly class="hide" name="pic" placeholder="请上传案例图片" data=""
+                    value="" data-reg='empty' />
+            </div>
+        </div>
+        <div class="paddl15 bg_white paddt15 paddb15">
+            <div class="label f16 icon_pre c333 ">详情描述</div>
+            <textarea name="descript" id="descript" class="descript f14 mart10 " placeholder="请输入详情(最多输入32个字符)..."
+                data-reg='empty' maxlength="32"></textarea>
+
+        </div>
+    </section>
+    <footer class="paddt5 paddb5 center">
+        <button onclick="Comm.close()" id="newGoods" class="marauto" style="border-radius: 5px;">取消</button>
+        <button onclick="model.save()" id="choiceGoods" class="marauto" style="border-radius: 5px;">保存</button>
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script src="../inc/upimg/upload.js"></script>
+<script>
+
+    function pageload() {
+        model.upImg()
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        upImg: function () {//
+            var uploader = new imgUploader("pic");
+            uploader.success = function () {
+                var cimgUrl =
+                    this.imgList.length > 0 ? this.imgList[0] : "img/error.png";
+                var ossUrl = Comm.OSS.getImgUrl(cimgUrl);
+                $(this.dom).removeClass("paddt10");
+                $(this.dom)
+                    .find("input")
+                    .addClass("hide");
+                $(this.dom)
+                    .find("img")
+                    .removeClass("hide");
+                $(this.dom)
+                    .find("input")
+                    .attr("data", cimgUrl)
+                    .val(cimgUrl);
+            }
+        },
+        save: function () {//
+            Comm.loading(true);
+            var opt = Check.submit("POST");
+            if (!opt) {
+                Comm.loading(false)
+                return
+            }
+            var url = '/common/case/add';
+            opt.userType='1';
+            opt.type='1';
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("案列上传成功~")
+                    setTimeout(function(){//
+                        Comm.close()
+                    },600)
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+    }
+</script>
+
+</html>

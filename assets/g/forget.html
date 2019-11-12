@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>忘记密码</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        section>div {
+            margin-left: 25px;
+            margin-right: 25px;
+        }
+
+        .ph input {
+            background-image: url('../img/login/phone.png');
+        }
+
+        .code input {
+            background-image: url('../img/login/code.png');
+        }
+
+        .pw input {
+            background-image: url('../img/login/pass.png');
+        }
+
+        .ph,
+        .pw,
+        .code {
+            background-color: #fff;
+            border-bottom: 1px solid #ededf5;
+            position: relative;
+            box-sizing: border-box;
+            height: 48px;
+            line-height: 48px;
+        }
+
+        .ph input,
+        .pw input,
+        .code input {
+            width: 90%;
+            height: 30px;
+            color: #111;
+            padding-left: 30px;
+            background-repeat: no-repeat;
+            background-size: auto 20px;
+            background-position: left center;
+        }
+
+        .pw i,
+        .ph i {
+            position: absolute;
+            right: 10px;
+            top: 0px;
+            padding: 0 5px;
+            width: 30px;
+        }
+
+        .code-btn {
+            color: #fff;
+            width: 25%;
+            height: 30px;
+            line-height: 30px;
+            font-size: 14px;
+            margin-top: 5px;
+            float: right;
+        }
+
+        button[disabled] {
+            color: #fff !important;
+        }
+        .sign-btn {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+        </div>
+    </header>
+    <section id=''>
+        <div style="margin-top: 45px; margin-bottom: 45px;">
+            <span class="f24" id="titl">忘记密码</span>
+        </div>
+        <div>
+            <div class="one">
+                <div class="ph">
+                    <input number class="f16" style="width: 100%;" id="phone" name="phone" type="tel" data-reg='m' placeholder="请输入11位手机号" maxlength="11"
+                        autocomplete="off" />
+                </div>
+                <div class="code mart15" id="code">
+                    <input number type="tel" class="f16" style="width: 60%;" name="code" id="code" data-reg='c' placeholder="请输入验证码" maxlength="4"
+                        autocomplete="off" />
+                    <button type="button" onclick="getCode(this,1)" class="code-btn" style="background: #DD1474">验证码</button>
+                </div>
+            </div>
+            <div class="next hide password">
+                <div class="pw" id="pw">
+                    <input value="" class="f16" type="password" name="password" id="password" data-reg='' placeholder="请输入密码" maxlength="20"
+                    />
+                    <i>
+                        <img onclick="app.checkimg(this)" class="imgContain" src="../img/login/close.png">
+                    </i>
+                </div>
+                <div class="pw mart15" id="againpw">
+                    <input value="" class="f16" type="password" name="againpassword" id="againpassword" data-reg='' placeholder="请再次输入密码" maxlength="20"
+                    />
+                    <i>
+                        <img onclick="app.checkimg(this)" class="imgContain" src="../img/login/close.png">
+                    </i>
+                </div>
+            </div>
+        </div>
+        <div class="mart30 tcenter">
+            <button type="button" onclick="next()" class="sign-btn one">下一步</button>
+            <button type="button" onclick="save()" class="sign-btn hide password">确定重置密码</button>
+        </div>
+    </section>
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script>
+    function pageload() {
+
+    }
+    //获取验证码
+    function getCode(t) {
+        var type = 3; //1 注册 2 忘记 3修改手机 5手机验证
+        app.timeCountDown(t, $('#phone').val(), type);
+    }
+
+    function next() {
+
+        var data = Check.submit('POST');
+        if (!data) {
+            return false;
+        }
+        Comm.loading(true)
+        AJAX.GET("/common/sms/checkMsg?phone=" + data.phone + '&type=' + 3 + '&code=' + data.code, function (res) {
+            Comm.loading(false)
+            if (res.code == 1) {
+                $("input[type='password']").attr("data-reg", 'p')
+                $(".one").addClass('hide');
+                $(".password").removeClass('hide');
+                $("#titl").html('设置密码')
+            } else {
+                Comm.message(res.msg);
+            }
+        })
+
+
+    }
+    function save() {
+
+        var data = Check.submit('POST');
+        if (!data) {
+            return false;
+        }
+        if (data.password != data.againpassword) {
+            Comm.message('两次密码必须相同');
+            return;
+        }
+        var params = {
+            phone: data.phone,
+            password: data.password,
+            code: data.code
+        }
+        // 
+        AJAX.POST('/common/customer/forgetPassword', params, function (d) {
+            if (d.code == 1) {
+                Comm.message("修改成功");
+                setTimeout(function () {
+                    Comm.gotop("./login.html")
+                }, 1000)
+            } else {
+                Comm.message("修改失败");
+            }
+        })
+    }
+</script>
+
+</html>

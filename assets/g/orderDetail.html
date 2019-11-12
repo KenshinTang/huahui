@@ -1,0 +1,1049 @@
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css">
+    <title>订单详情</title>
+    <style>
+        section header {
+            background-image: url('img/order/ddxqbj.png');
+            background-size: 100% 100%;
+        }
+        
+        section .navBackIcon {
+            background-image: url('../img/back_w.png');
+        }
+        
+        .navTitle {
+            color: #fff;
+        }
+        
+        button {
+            background: inherit;
+            border: 1px solid #ebebeb;
+            border-radius: 3px;
+            color: #222;
+            width: auto;
+            min-width: 80px;
+            max-width: 110px;
+            ;
+            height: auto;
+            line-height: 20px;
+            font-size: 14px;
+            padding: 5px 8px;
+            margin-bottom: 10px;
+        }
+        
+        button.red {
+            border: 1px solid #DD1474;
+            color: #DD1474;
+        }
+        
+        button.w110 {
+            width: 110px;
+        }
+        
+        button.return {
+            margin-bottom: 0px;
+            border-radius: 20px;
+        }
+        
+        .mymsbtn {
+            font-size: 12px;
+            border-radius: 2px;
+            padding: 0px 2px;
+            line-height: 20px;
+            height: 20px;
+        }
+        
+        .cancelCommodity {
+            position: absolute;
+            right: 0px;
+            bottom: 5px;
+            border-radius: 5px;
+            border: 1px solid #d2caca;
+            padding: 3px 5px;
+        }
+        
+        .bordert {
+            /* display: flex;
+            flex-wrap:wrap;
+            justify-content: flex-start; */
+        }
+        
+        .border {
+            border: 1px solid #EBEBEB;
+            border-radius: 20px;
+            min-width: 90px;
+        }
+        
+        #WTDBOX button {
+            background: -webkit-linear-gradient(right, #EE900E, #DD1474);
+            color: #fff;
+            line-height: 30px;
+            border-radius: 20px;
+            width: calc(100% - 30px);
+            font-size: 16px;
+        }
+        /* 小票 */
+        
+        .print_container {
+            padding: 20px;
+            /* width: 80mm; */
+        }
+        
+        .section2 label {
+            display: block;
+        }
+        
+        .section3 label {
+            display: block;
+        }
+        
+        .section4 {}
+        
+        .section4 .total label {
+            display: block;
+        }
+        
+        .section4 .other_fee {
+            border-bottom: 1px solid black;
+        }
+        
+        .section5 label {
+            display: block;
+        }
+        
+        td {
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="textareaView" style="background:#fff;padding:2px 2px;width:100%;height: auto;z-index: -11;position: absolute">
+    </div>
+    <header>
+    </header>
+
+    <!-- <div id="ssss"></div> -->
+    <section class="mescroll" id="scrollid" style="z-index: 1">
+
+    </section>
+    <footer></footer>
+    <div id="sinbox" wtd="WinTemp">
+        <div>
+            <div class="center lh30 f18" id="tkTitle">快递号</div>
+            <input type="text" class="lh40 border mart10 marb20 center f18" id="num" style="width: auto;" number />
+            <div>
+                <button style="border: 0px;width: 150px;" onclick="model.fh(this)">确定</button>
+            </div>
+        </div>
+    </div>
+    <div id="sinbox" wtd="ZiTemp">
+        <div>
+            <div class="center lh30 f18" id="tkTitle">提货码</div>
+            <input type="text" class="lh40 border mart10 marb20 center f18" id="num" style="width: auto;" number />
+            <div>
+                <button style="border: 0px;width: 150px;" onclick="model.regCode(this)">确定</button>
+            </div>
+        </div>
+    </div>
+    <div id="sinbox" wtd="bgTemp">
+        <div>
+            <div class="center lh30 f18" id="tkTitle">包裹数量</div>
+            <input type="text" class="lh40 border mart10 marb20 center f18" id="num" style="width: auto;" number />
+            <div>
+                <button style="border: 0px;width: 150px;" onclick="model.bgNum(this)">确定</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/art-template.js"></script>
+<script type="text/javascript" src="../inc/area.js"></script>
+<script type="text/javascript" src="foot.js"></script>
+<script src="../inc/dict.js"></script>
+<script type="text/javascript" src="countDown.js"></script>
+<script src="./js/jquery-3.3.1.min.js"></script>
+<script src="./js/jquery-barcode.min.js"></script>
+<script src="../inc/html2canvas.min.js"></script>
+
+<script>
+    var ss = Comm.query('s'),
+        code = Comm.query("code"),
+        ishare = Comm.query("ishare");
+    GDict.init()
+
+    function pageload() {
+        Comm.loading(true)
+        Area.init(function() {
+            model.getAccpet()
+        });
+
+
+        $("a").mousedown(function(event) {
+            event.stopPropagation();
+        });
+
+    }
+
+    function pageresume() {
+        model.init();
+    }
+
+    //换算分钟
+    template.defaults.imports.timeMinutes = function(date) {
+            var d = app.conunm(model.time(date), 2) * 1;
+            if (d > model.cancel_order) {
+                return '已超时'
+            }
+            return "剩余" + d + "分钟";
+        }
+        //换算分钟
+    template.defaults.imports.timeing = function(date) {
+        var d = model.time(date);
+        return d;
+    }
+
+    template.defaults.imports.stringify = function(d) {
+        return JSON.stringify(d);
+    }
+
+    var model = {
+        oid: Comm.query('oid'),
+        ifFlower: Comm.query('ifFlower'),
+        init: function() {
+            AJAX.GET('/purchase/orders/detail?id=' + model.oid + "&ifFlower=" + model.ifFlower, function(d) {
+                if (d.code == 1) {
+                    d.data.order.id = model.oid;
+                    d.data.order.ifFlower = model.ifFlower;
+                    d.data.accpetTime = model.accpetTime
+                    if (!d.data.order.qualityfee) {
+                        d.data.order.qualityfee = 0
+                    };
+                    model.getTel(d.data)
+                }
+            })
+        },
+        //获取联系电话
+        getTel: function(d, refresh) {
+            AJAX.POST("/bussiness/bussiness/contact", {
+                normalorderIds: model.oid
+            }, function(res) {
+                if (res.code == 1) {
+                    if (res.data.length != "0") {
+                        d.order.uphone = res.data[0].uphone
+                        d.order.cphone = res.data[0].cphone
+                    }
+                    console.info(d)
+                    d.order.selfmention = code;
+                    d.ishare = ishare;
+                    $('section').html(template('mainTpl', d))
+                    Comm.loading(false)
+                }
+                //处理时间
+                var ind = setInterval(function() {
+                    var num = 0;
+                    $(".ttime").each(function(i, e) {
+                        if (!$(e).hasClass("hide")) {
+                            var id = $(e).attr('data');
+                            var result = $(e).attr('ttime');
+                            if (result > 0) {
+                                result = result - 1;
+                                var second = Math.floor(result % 60);
+                                var minite = Math.floor((result / 60) % 60);
+                                if (second < 10) second = "0" + second;
+                                if (minite < 10) minite = "0" + minite;
+                                $('#ttime' + id).html("倒计时 " + minite + ":" + second).attr('ttime', result);
+                            } else {
+                                $("[name=receipt]").removeClass("colorA8");
+                                $('#ttime' + id).addClass("hide")
+                            }
+                        } else {
+                            $("[name=receipt]").removeClass("colorA8");
+                            num++
+                        }
+                    })
+                    console.info(num)
+                    if (num == $(".ttime").length) {
+
+                        clearInterval(ind)
+                    }
+                }, 1000)
+            })
+        },
+        time: function(date) {
+            var date = new Date(app.formatDate(date, 'Y-m-d H:i:s'));
+            var now = new Date();
+            var t = now.getTime() - date.getTime();
+            return t / 1000 / 60;
+        },
+        //-------------------------------------
+        getAccpet: function() { //自动接单时间
+            AJAX.POST('/api/config/bykeys', {
+                keys: "accpet_time"
+            }, function(res) {
+                if (res.code == 1) {
+                    model.accpetTime = res.data[0].value;
+                    model.init();
+                }
+            })
+        },
+        cancelCommodity: function(norderOrderDetailId, refundNum) {
+            Comm.loading(true)
+            var opt = {
+                normalOrders: [{
+                    normalOrderDetailId: norderOrderDetailId,
+                    refundNum: refundNum
+                }]
+            }
+            opt.normalOrders = JSON.stringify(opt.normalOrders)
+            AJAX.POST("/bussiness/norOrder/refuse", opt, function(res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("商品取消成功")
+                    setTimeout(function() {
+                        model.init();
+                    }, 500)
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        cancel: function(normalOrderId) { //拒单
+            event.stopPropagation();
+            Comm.loading(true)
+            AJAX.POST("/bussiness/norOrder/brefuse", {
+                normalOrderId: model.oid
+            }, function(res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("取消成功")
+                    setTimeout(function() {
+                        model.init();
+                    }, 500)
+                }
+            })
+        },
+        complete: function(normalOrderId) { //完成配货
+            event.stopPropagation();
+            Comm.loading(true)
+            AJAX.POST("/bussiness/norOrder/completePei", {
+                normalOrderId: model.oid
+            }, function(res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("完成配货")
+                    setTimeout(function() {
+                        model.init();
+                    }, 500)
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        receipt: function(normalOrderId, ele) { //接单
+            event.stopPropagation();
+            var flag = $("[name=receipt]").hasClass("colorA8");
+            if (flag) {
+                Comm.message("接单时间未到~")
+                return
+            } else {
+                Comm.loading(true)
+                AJAX.POST("/bussiness/norOrder/accpetOrder", {
+                    normalOrderId: model.oid
+                }, function(res) {
+                    Comm.loading(false)
+                    if (res.code == 1) {
+                        Comm.message("以成功接单,请尽快配货~")
+                        setTimeout(function() {
+                            model.init();
+                        }, 500)
+                    }
+                })
+            }
+
+        },
+        // deliverGoods: function (normalOrderId, logistType) { //发货
+        //     event.stopPropagation();
+        //     var logistType = Comm.query("logistType");
+        //     Comm.go('logisticsInfo.html?normalOrderId=' + model.oid + "&logistType=" + logistType)
+        // },
+        deliverGoods: function(yuTime) { //发货
+            event.stopPropagation();
+            var logistType = Comm.query("logistType");
+            var starts = 0;
+            if (yuTime) {
+                var now = new Date();
+                starts = (hhmmss.todate(yuTime).getTime() - now.getTime()) / 1000;
+                if (starts > 0) {
+                    Comm.Mess.confirm("预定发货时间为" + yuTime + ",确定提前发货？", Comm.setcb(function(a) {
+                        if (a == '1') {
+                            Comm.go('logisticsInfo.html?normalOrderId=' + model.oid + "&logistType=" + logistType)
+                        }
+                    }))
+                }
+            } else {
+                Comm.go('logisticsInfo.html?normalOrderId=' + model.oid + "&logistType=" + logistType)
+            }
+        },
+        bgNum: function(el) {
+            var num = $("#WTDBOXTD").find("#num").val();
+            Comm.showWindow()
+            if (!num) {
+                Comm.message("请输入包裹数量~")
+                return
+            }
+            Comm.loading(true)
+            AJAX.POST("/bussiness/norOrder/deliverGoods", {
+                normalOrderId: model.tempnormalOrderId,
+                logistNum: num
+            }, function(res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("完成发货")
+                    model.init()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+
+        },
+        fh: function(el) {
+            var num = $("#WTDBOXTD").find("#num").val();
+            Comm.showWindow()
+            if (!num) {
+                Comm.message("请输入运单号~")
+                return
+            }
+            Comm.loading(true)
+            AJAX.POST("/bussiness/norOrder/deliverGoods", {
+                normalOrderId: model.oid,
+                logistNum: num
+            }, function(res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("完成发货")
+                    model.init()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        print: function(normalOrderId) { //打印
+            event.stopPropagation();
+            AJAX.POST("/bussiness/norOrder/print", {
+                normalOrderId: model.oid
+            }, function(res) {
+
+                if (res.code == 1) {
+                    Comm.message("订单已打印")
+                    setTimeout(function() {
+                        model.init();
+                    }, 500)
+                }
+            })
+        },
+        nophone: function(type) {
+            event.stopPropagation();
+            if (type == "1") {
+                Comm.message("暂未分配质检员~")
+            } else if (type == "2") {
+                Comm.message("平台暂未添加联系电话~")
+            }
+        },
+        ziti: function(id) {
+            model.tempZitiId = id
+            Comm.showWindow('ZiTemp', true)
+        },
+        regCode: function() {
+            var code = $("#WTDBOXTD").find("#num").val();
+            Comm.showWindow()
+            if (!code) {
+                Comm.message("请输入提货码~")
+                return
+            }
+            Comm.loading(true)
+            AJAX.POST("/bussiness/norOrder/ti", {
+                normalOrderId: model.oid,
+                receiptCode: code
+            }, function(res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("完成收货~")
+                    model.init()
+                } else {
+                    Comm.message("提货码错误~")
+                }
+            })
+        },
+        //jsonObj:{type:1,data:d}; 1 wifi打印机 2 蓝牙打印机 3 wifi打印（小票） 4 蓝牙打印（面单）
+        printMd: function(type, index, flowerMarketId) {
+            Comm.loading("打印中...")
+            if (type == "4" || type == '3') {
+                var opt = {
+                    userType: 1, //1 供应商 2 采购 4 质检
+                    orderId: model.oid,
+                };
+                AJAX.POST('/ident/flowerMarket/printMianDan', opt, function(res) {
+                    if (res.code == 1) {
+                        if (type == "4") {
+                            $("#textareaView").html(template("mdTpl", res.data))
+                                // $("#ssss").html(template("mdTpl", res.data))
+                            $("#textareaView").find("[name=code]").barcode(res.data.faphone, "code128")
+                        } else {
+                            res.data.spje = (res.data.nowCash - res.data.packingfee - res.data.qualityfee - res.data.zaiFee + res.data.jifenMoney + res.data.jianNum).toFixed(2);
+                            $("#textareaView").html(template("xpTpl", res.data));
+                            //$("#ssss").html(template("xpTpl", res.data));
+                        }
+
+                        var shareContent = document.getElementById("textareaView");
+                        var width = shareContent.offsetWidth;
+                        var height = shareContent.offsetHeight;
+                        var canvas = document.createElement("canvas");
+                        var scale = 2;
+
+                        canvas.width = width * scale;
+                        canvas.height = height * scale;
+                        canvas.getContext("2d").scale(scale, scale);
+
+                        var opts = {
+                            scale: scale,
+                            canvas: canvas,
+                            logging: true,
+                            width: width,
+                            height: height
+                        };
+                        html2canvas(shareContent, opts).then(function(canvas) {
+                            dataURL = canvas.toDataURL("image/png");
+                            console.log(dataURL);
+                            dataURL = dataURL.split(",")
+                            Comm.bluetoothPrint({
+                                type: type,
+                                data: dataURL[1]
+                            }, function(res) {
+                                if (res == '1') {
+                                    Comm.loading(false)
+                                    Comm.message("打印完成~")
+                                } else {
+                                    Comm.loading(false)
+                                    Comm.bluetoothPrint({
+                                        type: 1
+                                    })
+                                }
+                            })
+                        });
+                    } else {
+                        Comm.loading(false);
+                        Comm.message(res.msg)
+                    }
+                })
+            }
+        },
+        ishare: function() { //分享
+            var opt = {
+                title: '订单详情' /*分享标题*/ ,
+                pic: config.webroot + 'img/login/logo.png' /*分享图标*/ ,
+                url: config.webroot + '/g/orderDetail.html?oid=' + model.oid + "&ifFlower=" + model.ifFlower + "&code=0" + "&logistType=" + Comm.query("logistType") /*分享链接 OR app的线上fir下载地址*/ ,
+                desc: '订单详情' /*分享描述*/
+            };
+            Comm.shareUrl(opt, function(d) {
+                if (d == 1) {
+                    Comm.message("分享成功");
+                }
+            });
+        },
+    }
+
+    function back() {
+        if (ss == "1") {
+            Comm.gotop('index.html');
+        } else {
+            Comm.close()
+        }
+    }
+
+    function androidback() {
+        back()
+    }
+    //换算分钟
+    template.defaults.imports.timeMinutes = function(addtime) {
+        addtime = addtime.replace(/-/g, "/").replace(/\.0/g, "")
+        var now = new Date();
+        var end = new Date(addtime).getTime() + (model.accpetTime * 1000 * 60);
+        var result = Math.floor((end - now) / 1000);
+        console.info("result", result)
+        return result
+    }
+    template.defaults.imports.resname = function(v) {
+        var str = "";
+        if (v.length == 0) {
+            str = ""
+        }
+        if (v.length > 9) {
+            str = v.slice(0, 9);
+            str = str + "...";
+        } else {
+            str = v;
+        }
+        return str
+    }
+</script>
+
+<script id="mainTpl" type="text/html">
+    <header>
+        <div class="navBar verticalP">
+            <div class="navBackIcon" onclick="back()"></div>
+            <div class="navTitle colorfff">订单详情</div>
+            {{if ishare=="1"}}
+            <span class="f16 colorfff vertical" style="right:15px" onclick="model.ishare()">分享</span> {{/if}}
+        </div>
+        <div class="pad10 mart10 marb10">
+            {{if(order.state==1)}}
+            <p class="f24 colorfff state">待付款</p>
+            {{else if(order.state==2)}}
+            <p class="f24 colorfff state">待接单</p>
+            {{else if(order.state==3)}}
+            <p class="f24 colorfff state">待配货</p>
+            {{else if(order.state==4)}}
+            <p class="f24 colorfff state">待质检</p>
+            {{else if(order.state==5)}}
+            <p class="f24 colorfff state">待发货</p>
+            {{else if(order.state==6)}}
+            <p class="f24 colorfff state">待收货</p>
+            {{else if(order.state==7)}}
+            <p class="f24 colorfff state">已收货</p>
+            {{else if(order.state==8)}}
+            <p class="f24 colorfff state">已取消</p>
+            {{else if(order.state==9)}}
+            <p class="f24 colorfff state">已完成</p>
+            {{else if(order.state==10)}}
+            <p class="f24 colorfff state">待包装</p>
+            {{else if(order.state==11)}}
+            <p class="f24 colorfff state">待支付尾款</p>
+            {{else if(order.state==15)}}
+            <p class="f24 colorfff state">平台介入</p>
+            {{/if}}
+        </div>
+        <div class="radius5 bottomShadow bg_white marl10 marr10 pad10" style="padding-bottom:0px">
+            {{if(order.state=="2")}}
+            <div>
+                <span class="bold f16">请尽快接单</span> {{set ttime=timeMinutes(order.addTime)}} {{if ttime>0}}
+                <span class="block colordd mart10 ttime" id="ttime{{order.normalorderId}}" data='{{order.normalorderId}}' ttime="{{ttime}}" name="count_down"></span> {{else}}
+                <span class="block colordd mart10 ttime hide" id="ttime{{order.normalorderId}}" data='{{order.normalorderId}}' ttime="{{ttime}}" name="count_down"></span> {{/if}}
+            </div>
+            {{else if(order.state=="3")}}
+            <div>
+                <span class="bold f16">请尽快配货</span>
+            </div>
+            {{else if(order.state=="4")}}
+            <div>
+                <span class="bold f16">等待质检中</span>
+            </div>
+            {{else if(order.state=="5")}}
+            <div>
+                <span class="bold f16">待发货</span>
+            </div>
+            {{else if(order.state=="6")}}
+            <div>
+                <span class="bold f16">等待用户收货</span>
+            </div>
+            {{else if(order.state=="7")}}
+            <div>
+                <span class="bold f16">用户已收货</span>
+            </div>
+            {{else if(order.state=="8")}}
+            <div>
+                <span class="bold f16">订单已取消</span>
+            </div>
+            {{else if(order.state=="9")}}
+            <div>
+                <span class="bold f16">已完成</span>
+            </div>
+            {{else if(order.state=="10")}}
+            <div>
+                <span class="bold f16">订单待包装</span>
+            </div>
+            {{else if(order.state=="11")}}
+            <div>
+                <span class="bold f16">等待用户支付尾款</span>
+            </div>
+            {{else if(order.state=="10")}}
+            <div>
+                <span class="bold f16">平台介入处理中</span>
+            </div>
+            {{/if}}
+
+            <div class="bordert paddt10 mart10 _flex-center">
+                {{if (!(order.state=="1"||order.state=="2"||order.state=="3"||order.state=="7"||order.state=="8"||order.state=="9")||(order.selfmention=="1"&&order.flowerMarketId=='0'))}}
+                <button onclick="model.printMd('3')" class="">打印小票</button> {{/if}} {{if (order.state=="2")}}
+                <button onclick="model.receipt('0',this)" class="colorA8" name="receipt">接单</button>
+                <button onclick="model.cancel()">取消订单</button> {{/if}} {{ if(order.state=="3")}} {{if order.uphone}}
+                <a style="block" href="tel:{{order.uphone||''}}">
+                    <button onclick="">
+                        联系分拣员
+                        </button>
+                </a>
+                {{else}}
+                <button onclick="model.nophone(1)">
+                    联系分拣员
+                    </button> {{/if}} {{if order.cphone}}
+                <a style="block" href="tel:{{order.cphone||''}}">
+                    <button onclick="">
+                            联系分拣中心
+                        </button>
+                </a>
+                {{else}}
+                <button onclick="model.nophone(2)">
+                    联系分拣中心
+                    </button> {{/if}}
+                <button onclick="model.complete()">完成配货</button> {{/if}} {{ if(order.state=="5")}}
+                <!-- flowerMarketId == 0  表示该单为普通订单 -->
+                {{if order.flowerMarketId=='0'&&order.logistType1!='174'}}
+
+                <button onclick="model.deliverGoods('{{order.yuTime}}')" class="">发货</button> {{/if}} {{/if}} {{if order.state=="4"}} {{if order.uphone}}
+                <a style="block" href="tel:{{order.uphone||''}}">
+                    <button onclick="">
+                        联系分拣员
+                        </button>
+                </a>
+                {{else}}
+                <button onclick="model.nophone(1)">
+                    联系分拣员
+                    </button> {{/if}} {{if order.cphone}}
+                <a style="block" href="tel:{{order.cphone||''}}">
+                    <button onclick="">
+                            联系分拣中心
+                        </button>
+                </a>
+                {{else}}
+                <button onclick="model.nophone(2)">
+                    联系分拣中心
+                    </button> {{/if}} {{/if}} 
+                    {{if order.logistType1=="174"||order.logistType1=="170"||order.logistType1=="231"}}
+                <a style="block" href="tel:{{order.phone||''}}">
+                    <button onclick="">
+                                    联系用户
+                                    </button>
+                </a>
+                {{/if}} {{if order.selfmention=="1"&&order.flowerMarketId=='0'&&order.state!='9'}}
+                <button onclick="model.ziti()">
+                        提货码
+                </button> {{/if}}
+            </div>
+        </div>
+    </header>
+    <div class="main">
+        <div class="borderb mart20 paddl10 paddb15" _onclick="model.goshop({{order.ifFlower}},{{order.id}},{{order.itemId}})">
+            {{if(order.ifFlower=="1")}}
+            <span class="f16">鲜花超市</span> {{else}}
+            <span class="f16">{{order.name}}</span> {{/if}}
+            <img src="../img/rr.png" height="12" class="hide" />
+        </div>
+        <div class="pad10">
+            {{each orderDtails g j}}
+            <div class="list_ clearfix {{j+1==orderDtails.length?'':'borderb marb10'}} paddb10 " style="position:relative">
+                <div class="fl marr10">
+                    <img src="{{OSS(g.img)}}" class="goodimg" width="60" height="60">
+                </div>
+                <div>
+                    <p class="wordW">
+                        <!--1 预定 2 竞拍  4 搭配销售 8 团购 16 店铺买赠 32 满减 64 预售 128 秒杀 256 积分-->
+                        {{if((g.activityState&1)==1)}}
+                        <span class="colorrr btn mymsbtn">预定</span>{{/if}} {{if((g.activityState&2)==2)}}
+                        <span class="colorrr btn mymsbtn">竞拍</span>{{/if}}{{if((g.activityState&4)==4)}}
+                        <span class="colorrr btn mymsbtn">搭配销售</span>{{/if}}{{if((g.activityState&8)==8)}}
+                        <span class="colorrr btn mymsbtn">团购</span>{{/if}}{{if((g.activityState&16)==16)}}
+                        <span class="colorrr btn mymsbtn">买赠</span>{{/if}}{{if((g.activityState&32)==32)}}
+                        <span class="colorrr btn mymsbtn">满减</span>{{/if}}{{if((g.activityState&64)==64)}}
+                        <span class="colorrr btn mymsbtn">预售</span>{{/if}}{{if((g.activityState&128)==128)}}
+                        <span class="colorrr btn mymsbtn">秒杀</span>{{/if}}{{if((g.activityState&256)==256)}}
+                        <span class="colorrr btn mymsbtn">积分</span>{{/if}}
+                        <span>{{g.goodsName}}&nbsp;{{g.versionNumber}}</span>
+                    </p>
+                    <p class="lh20 wordW " style="height: 20px;">
+                        {{if(g.num)}}
+                        <span class="color999 f12 marr5">数量：{{g.num}} </span> {{/if}} {{if(g.color)}}
+                        <span class="color999 f12 marr5">颜色：{{g.color}} </span> {{/if}} {{if(g.grade)}}
+                        <span class="color999 f12 marr5">等级：{{g.grade}} </span> {{/if}} {{if(g.maturity)}}
+                        <span class="color999 f12 marr5">成熟度:{{g.maturity}} </span> {{/if}} {{if(g.keyValue)}}
+                        <span class="color999 f12">规格：{{g.keyValue}}</span> {{/if}}
+                    </p>
+                    <div class="mart5">
+                        <span class="f12">单价：&yen;{{g.singlePrice}}</span>
+                        <span class="f12 color666">总价：&yen;{{g.allPrice}}</span>
+                         {{if(order.state=="2"&&timeing(order.addTime)
+                        <=accpet_time&&g.nowNum>0)}}
+                            <button data='{{stringify(v)}}' class="fr return" onclick="model.orderReturn(this)">申请退款</button> {{/if}} {{if(g.refundNum>0)}}
+                            <span class="colorred f12 fr">已退 X{{g.refundNum}}</span> {{/if}} {{if((g.nowNum*1 - g.readyuNum *1)>0 && g.readyuNum*1>0)}}
+                            <span class="colorred f12 fr">不合格 X{{g.nowNum*1 - g.readyuNum *1}}</span> {{/if}}
+                    </div>
+                </div>
+                {{if(g.nowNum!="0"&&order.state=="2")}}
+                <div onclick="model.cancelCommodity('{{g.norderOrderDetailId}}','{{g.num}}')" class="cancelCommodity">
+                    取消商品
+                </div>
+                {{/if}}
+            </div>
+            {{/each}} {{if maizeng}}
+            <div class="list_ clearfix  paddb10  " style="position:relative">
+                <div class="fl marr10">
+                    <img src="{{OSS(maizeng.zengPic)}}" class="goodimg" width="60" height="60">
+                </div>
+                <div>
+                    <p class="wordW">
+                        <span class="colorrr btn mymsbtn ">赠品</span>
+                        <span>{{maizeng.zeng}}</span>
+                    </p>
+                    <p class="lh20 wordW " style="height: 20px;">
+                        <span class="color999 f12 marr5">描述：{{maizeng.descript}} </span>
+                    </p>
+                    <div class="mart5">
+
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+        {{if order.reasonId&&order.reasonId!="0"}}
+        <div class="linebod"></div>
+        <div class="pad10">
+            {{if order.reasonId&&order.reasonId!="0"}}
+            <div class="lh25">
+                质检未通过原因：{{order.reasonId|getItemName}}
+            </div>
+            {{/if}} {{if order.remark1}}
+            <div class="lh25">
+                质检未通过说明：{{order.remark1}}
+            </div>
+            {{/if}}
+        </div>
+        {{/if}}
+        <div class="linebod"></div>
+        <div class="pad10">
+            <div class="lh25">
+                订单编号：{{order.orderNum}}
+            </div>
+            <div class="lh25">
+                下单时间：{{formatDate(order.addTime,'Y-m-d H:i')}}
+            </div>
+            {{if(order.deliveryTime)}}
+            <div class="lh25">
+                发货时间：{{formatDate(order.deliveryTime,'Y-m-d H:i')}}
+            </div>
+            {{/if}} {{if(order.yufu&&order.yufu*1 > 0 )}}
+            <div class="lh25">
+                预付定金：&yen;{{order.yufu}}
+            </div>
+            {{/if}} {{if(order.yuTime )}}
+            <div class="lh25">
+                发货时间：{{formatDate(order.yuTime,'Y-m-d')}}
+            </div>
+            {{/if}}
+
+        </div>
+        <div class="linebod"></div>
+        <div class="pad10">
+            {{if(order.onlineType=="1")}}
+            <div class="lh25">
+                支付方式：支付宝支付&nbsp;{{order.billNum*1>0?'余额支付':''}}
+            </div>
+            {{/if}} {{if(order.onlineType=="2")}}
+            <div class="lh25">
+                支付方式：微信支付&nbsp;{{order.billNum*1>0?'余额支付':''}}
+            </div>
+            {{/if}} {{if(order.onlineType=="3")}}
+            <div class="lh25">
+                支付方式：余额支付
+            </div>
+            {{/if}} {{if(order.logistType)}}
+            <div class="lh25">
+                配送方式：{{order.logistType}}
+            </div>
+            {{/if}} {{if order.logistCompany}}
+            <div class="lh25">
+                物流公司：{{order.logistCompany}}
+            </div>
+            {{/if}} {{if order.logistNum}}
+
+            <div class="lh25">
+                物流单号：{{order.logistNum}}
+            </div>
+            {{/if}} {{if order.baoNum&&order.baoNum!='0'}}
+
+            <div class="lh25">
+                包裹数量：{{order.baoNum}}
+            </div>
+            {{/if}} {{if(order.remark)}}
+            <div class="lh25" style="width: 100%;height: auto;word-wrap:break-word;word-break:break-all;overflow: hidden;">
+                备注信息：{{order.remark}}
+            </div>
+            {{/if}}
+        </div>
+        {{if(order.userName)}}
+        <div class="linebod"></div>
+        <div class="pad10">
+            <p>
+                <img src="img/order/kfdz.png" height="12" class="marr5">
+                <span class="f12">{{order.userName}}&nbsp;&nbsp;&nbsp;&nbsp;{{order.phone}}</span>
+            </p>
+            <p class="f12 paddl20 mart10">
+                地址：{{getFullName(order.region)}}&nbsp;{{order.address}}
+            </p>
+        </div>
+        {{/if}}
+        <div class="linebod"></div>
+        <div class="pad10">
+            <div class="lh30">
+                <span>店铺小计</span>
+                <span class="fr">￥{{priceTp(order.allCash*1000-order.yuanqualityfee*1000-order.yuanpackingfee*1000-order.zaiFee*1000+order.jifenMoney*1000+order.jianNum*1000)/1000}}</span>
+            </div>
+            {{if(order.jifenMoney*1>0)}}
+            <div class="lh30">
+                <span>积分抵扣</span>
+                <span class="fr">-￥{{priceTp(order.jifenMoney)}}</span>
+            </div>
+            {{/if}} {{if(order.jianNum*1>0)}}
+            <div class="lh30">
+                <span>订单满减</span>
+                <span class="fr">-￥{{priceTp(order.jianNum)}}</span>
+            </div>
+            {{/if}} {{if(order.ifFlower=="1"&&order.yuanqualityfee*1>0)}}
+            <div class="lh30">
+                <span>质检费</span>
+                <span class="fr">￥{{priceTp(order.yuanqualityfee)}}</span>
+            </div>
+            {{/if}} {{if(order.packingfee*1>0)}}
+            <div class="lh30 ">
+                <span>包装费</span>
+                <span class="fr">￥{{priceTp(order.yuanpackingfee)}}</span>
+            </div>
+            {{/if}} {{if(order.zaiFee*1>0)}}
+            <div class="lh30 borderb paddb10">
+                <span>运费</span>
+                <span class="fr">￥{{priceTp(order.zaiFee)}}</span>
+            </div>
+            {{/if}}
+            <div class="lh50 paddb10">
+                <span class="fr colorred f18">￥{{priceTp(order.allCash)}}</span>
+                <span class="fr">实付款：</span>
+                <span class="left">共{{orderDtails.length}}件商品</span>
+            </div>
+        </div>
+        <div class="linebod"></div>
+        {{set refCach=(order.allCash*1000-order.nowCash*1000)}} {{if(refCach/1000>0)}}
+        <div class="pad10">
+            <div class="lh30">
+                <span>商品退费</span> {{if(order.state=="8")}}
+                <span class="fr">￥{{priceTp(refCach-(order.yuanqualityfee*1000-order.qualityfee*1000)-(order.yuanpackingfee*1000-order.packingfee*1000)-order.zaiFee*1000)/1000}}</span> {{else}}
+                <span class="fr">￥{{priceTp(refCach-(order.yuanqualityfee*1000-order.qualityfee*1000)-(order.yuanpackingfee*1000-order.packingfee*1000))/1000}}</span> {{/if}}
+            </div>
+            {{if((order.yuanqualityfee*1000-order.qualityfee*1000)/1000>0)}}
+            <div class="lh30">
+                <span>退质检费</span>
+                <span class="fr">￥{{priceTp((order.yuanqualityfee*1000-order.qualityfee*1000))/1000}}</span>
+            </div>
+            {{/if}} {{if((order.yuanpackingfee*1000-order.packingfee*1000)/1000>0)}}
+            <div class="lh30 borderb paddb10">
+                <span>退包装费</span>
+                <span class="fr">￥{{priceTp((order.yuanpackingfee*1000-order.packingfee*1000))/1000}}</span>
+            </div>
+            {{/if}} {{if(order.state=="8"&&order.zaiFee*1>0)}}
+            <div class="lh30 borderb paddb10">
+                <span>退运费</span>
+                <span class="fr">￥{{priceTp(order.zaiFee)}}</span>
+            </div>
+            {{/if}}
+            <div class="lh50 clearfix">
+                <span class="fr colorred f18">￥{{priceTp(refCach)/1000}}</span>
+                <span class="fr">退费总计：</span>
+            </div>
+        </div>
+        <div class="linebod"></div>
+        {{/if}} {{if (refCach/1000)
+        < 0}} <div class="pad10">
+            <div class="lh30">
+                <span>商品补款</span>
+                <span class="fr">￥{{refCach/1000*-1}}</span>
+            </div>
+            <div class="lh50 clearfix">
+                <span class="fr colorred f18">￥{{refCach/1000*-1}}</span>
+                <span class="fr">补款总计：</span>
+            </div>
+    </div>
+    {{/if}}
+    </div>
+</script>
+<script type="text/html" id="xpTpl">
+    <div class="print_container ">
+        <div class="section3 paddb5" style="border-bottom: 1px solid black;padding-bottom:5px">
+            <label>订单编号：{{orderNum}}</label>
+
+        </div>
+        <div class="section3 paddb5" style="border-bottom: 1px solid black;padding-top:5px ">
+
+            <label>姓名：{{shouname}}</label>
+            <label>地址：{{shouaddress}}</label>
+            <label>电话：{{shouphone}}</label>
+            <label>下单时间：{{addTime}}</label>
+        </div>
+        <div class="section4 paddt5 paddb5 ">
+            <div style="border-bottom: 1px solid black;padding-bottom: 10px;">
+
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <td width="35%">名称</td>
+                            <td class="t-a-c" width="15%">数量</td>
+                            <td class="t-a-c" width="25%">单价</td>
+                            <td class="t-a-c" width="25%">金额</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{each orders as v i}}
+                        <tr>
+                            <td class="wordW" width="35%">{{v.goodsName|resname}}</td>
+                            <td class="t-a-c" width="15%">{{v.nowNum}}</td>
+                            <td class="t-a-c" width="25%">{{v.singlePrice}}</td>
+                            <td class="t-a-c" width="25%">{{v.allPrice}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="total paddt5 paddb5" style="border-bottom: 1px solid black;padding-right: 15px">
+                <span style="display: block;text-align: right">商品金额：{{spje}}</span> {{if jifenMoney*1>0}}
+                <span style="display: block;text-align: right">积分抵扣：{{jifenMoney}}</span> {{/if}} {{if jianNum*1>0}}
+                <span style="display: block;text-align: right">订单满减：{{jianNum}}</span> {{/if}} {{if packingfee}}
+                <span style="display: block;text-align: right">包装费：{{packingfee}}</span> {{/if}} {{if qualityfee}}
+                <span style="display: block;text-align: right">质检费：{{qualityfee}}</span> {{/if}} {{if zaiFee}}
+                <span style="display: block;text-align: right">运费：{{zaiFee}}</span> {{/if}} {{if nowCash}}
+                <span style="display: block;text-align: right">实付款：{{nowCash}}</span> {{/if}}
+            </div>
+        </div>
+        {{if logistCompany&&logistNum}}
+        <div class="section5 paddt5 paddb5" style="border-bottom: 1px solid black; ">
+            <label>物流公司：{{logistCompany}}</label>
+            <label>物流单号：{{logistNum}}</label>
+        </div>
+        {{/if}} {{if remark}}
+        <div class="section5 paddt5 paddb5">
+            <label style="width: 100%;height: auto;word-wrap:break-word;word-break:break-all;overflow: hidden;">备注：{{remark}}</label>
+        </div>
+        {{/if}}
+
+    </div>
+</script>
+
+</html>

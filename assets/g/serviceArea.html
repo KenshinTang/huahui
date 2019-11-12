@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>服务区域</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        .navTitle{
+            font-weight: normal;
+        }
+        
+        
+        .navActive{
+            border-bottom: 1px solid red;
+        }
+        #province,#city,#area{
+            
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap:wrap;
+            
+        }
+        #province >span,#city >span,#area >span{
+            min-width: 60px;
+            text-align: center;
+            margin: 5px 5px;
+            padding: 5px 10px;;
+            border: 1px solid #eeeeee;
+            border-radius: 5px;
+        }
+        
+
+        .hide{
+            display: none;
+        }
+        .content{
+            border:1px solid #eeeeee;
+        }
+        .active{
+           border:1px solid red!important;
+        }
+        .save {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        section ul li:first-child {
+            border-top: none;
+        }
+
+        section ul li {
+            float: left;
+            height: 40px;
+            line-height: 40px;
+            border-top: 1px solid #EBEBEB;
+        }
+
+        section ul li span {
+            float: left;
+            width: 60px;
+        }
+
+        section ul li span img {
+            display: block;
+            width: 20px;
+            height: 20px;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+
+        section ul li p {
+            margin-left: 30px;
+            background: url(img/identi.png) no-repeat 95% center;
+            background-size: 6px auto;
+        }
+        .noimg > p {
+            background: url("") no-repeat 95% center;
+        }
+        .isimg > p{
+            
+            background: url("./img/gou.png") no-repeat 95% center;
+            background-size:20px 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">服务区域</div>
+            <div class="save" onclick="model.save()">保存</div>
+        </div>
+    </header>
+    <section id='' class="bg_white ">
+        <div class="paddt5 paddb5 paddl10 paddr10 bg_white flex-between marb10" id="nav">
+            <span name="province" class="menu-item flex-1 paddt5 paddb5 navActive" _onclick="model.nav(this,'1')">省</span>
+            <span name="city" class="menu-item flex-1 paddt5 paddb5" _onclick="model.nav(this,'2')">市</span>
+            <span name="area" class="menu-item flex-1 paddt5 paddb5" _onclick="model.nav(this,'3')">区</span>
+        </div>
+        <div class="content">
+            <div id="province" class="">
+            </div>
+            <div id="city" class="hide">
+            </div>
+            <div id="area" class="hide">
+            </div>
+        </div>
+    </section>
+    <footer class="shared ">
+
+    </footer>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/area.js"></script>
+<script src="../inc/picker.min.js"></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo");
+
+    function pageresume() {
+    }
+
+    function pageload() {
+        Area.init(function () {
+            model.area = window.Area._d;
+            $("#province").html(template("provinceTpl", model.area))
+            $("#city").html(template("provinceTpl", model.area[0].children))
+            $("#area").html(template("provinceTpl", model.area[0].children[0].children))
+        });
+    }
+    $('.menu-item').click(function () { 
+        var v = $(this).index();
+        model.hideel(v)
+    });
+    var model = {
+        area: [],
+        serviceAddress: [],
+        tempIndex: "",
+        qh: function (index, l, el) {
+            var a = $(el)
+            
+            if (l == "1") {
+                model.tempIndex = index;
+                $("#city").html(template("provinceTpl", model.area[index].children))
+                model.hideel(1)
+            } else if (l == "2") {
+                $("#area").html(template("provinceTpl", model.area[model.tempIndex].children[index].children))
+                model.hideel(2)
+            }else if(l==3){
+                $(el).toggleClass("isimg")
+            }
+        },
+        hideel: function (v) {
+            $(".content").find("div").addClass("hide")
+            $("#nav").find("span").removeClass("navActive")
+            if(v=="0"){
+                $("#province").removeClass("hide");
+                $("[name=province]").addClass("navActive")
+            }
+            if(v=="1"){
+                $("#city").removeClass("hide");
+                $("[name=city]").addClass("navActive")
+            }
+            if(v=="2"){
+                $("#area").removeClass("hide");
+                $("[name=area]").addClass("navActive")
+            }
+        },
+        save: function () {
+            model.serviceAddress=[];
+            $.each($("#area").find("li.isimg"), function (i, v) {
+                model.serviceAddress.push($(v).attr("data"))
+            })
+            if (model.serviceAddress.length > "0") {
+                var opt = {
+                    bussinessId: userinfo.bussinessId,
+                    serviceAddress: model.serviceAddress.join(",")
+                }
+                AJAX.POST("/bussiness/bussiness/serviceAddress", opt, function (res) {
+                    if (res.code == "1") {
+                        Comm.message("服务区域设置成功!")
+                        setTimeout(function(){
+                            Comm.close()
+                        },600)
+                    }
+                })
+            } else {
+                Comm.message("请至少选择一个服务区域~")
+            }
+        }
+    }
+</script>
+<script type="text/html" id="shengTpl">
+    
+    {{each $data as v i}}
+    <span data="{{v.value}}" onclick="model.qh('{{i}}','{{v.l}}',this)">{{v.text}}</span>
+    {{/each}}
+</script>
+<script type="text/html" id="provinceTpl">
+    <ul class="">
+        {{each $data as v i}}
+        <li onclick="model.qh('{{i}}','{{v.l}}',this)" data="{{v.value}}" class="{{v.l=='3'?'noimg':''}}">
+            <p >{{v.text}}</p>
+        </li>
+        {{/each}}
+    </ul>
+</script>
+
+</html>

@@ -1,0 +1,565 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        /* header */
+        .navTitle {
+            font-weight: normal;
+        }
+
+        .nav {
+            /* height: 55px;
+            line-height: 55px;
+            display: flex;
+            justify-content: space-around; */
+        }
+
+        .active {
+            color: #dd1669;
+            position: relative;
+        }
+
+        .active:after {
+            content: "";
+            position: absolute;
+            left: 25%;
+            bottom: 0px;
+            width: 50%;
+            height: 3px;
+            background-color: #dd1669;
+            text-align: center;
+        }
+
+        .activebg {
+            background: #dd1669;
+        }
+
+        .activeUnderline {
+            /* display: block; */
+            width: 50%;
+            position: relative;
+            top: -10px;
+            border-bottom: 3px solid #dd1669;
+        }
+
+        /* 导航滑动 */
+        #leaseNav {
+            width: 100%;
+            overflow-x: scroll;
+        }
+
+        #leaseNav .container div {
+            float: left;
+            margin: 0 5px;
+            text-align: center;
+        }
+
+        #leaseNav span {
+            min-width: 50px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+        }
+
+        #leaseNav::-webkit-scrollbar {
+            display: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* list */
+        .list {
+            border-radius: 5px;
+        }
+
+        .colorda {
+            color: #DA251C;
+        }
+
+        .btn-list {
+            display: flex;
+            /* flex-direction: row-reverse; */
+            justify-content: flex-end;
+        }
+
+        .receipt,
+        .deliverGoods,
+        .complete {
+            border: #dd1669 solid 1px !important;
+        }
+
+        .packBtn {
+            min-width: 70px;
+            text-align: center;
+            padding: 4px 7px;
+            border: 1px solid #EEEEEE;
+            margin-left: 5px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .info p {
+            margin-top: 13px;
+        }
+
+        .address::before {
+            content: '';
+            background: url('./img/order/kfdz.png') no-repeat;
+            background-size: contain;
+            /*兼容没测*/
+            position: absolute;
+            left: 0px;
+            z-index: 2;
+            width: 32px;
+            height: 16px
+        }
+
+        /* color */
+        .c666 {
+            color: #666666;
+        }
+
+        /* 导航数量 */
+        .nabvNum {
+            width: 18px !important;
+            height: 18px !important;
+            line-height: 18px;
+            border-radius: 50% 50%;
+            background: #DD1474;
+            color: white;
+            right: -17px;
+            top: 5px;
+            font-size: 10px;
+            transform: scale(.8)
+        }
+
+        /*  WTDBOXTD */
+        #WTDBOXTD {
+            width: 70%;
+        }
+
+        #sinbox input {
+            width: 65%;
+            border: 1px solid #e2e2e2;
+        }
+
+        .picker {
+            z-index: 10001 !important;
+        }
+        .hhmmss span{
+            color:#DA251C;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>养护计划</div>
+        </div>
+        <div class="nav  paddl5 paddr5 paddb10" id="leaseNav">
+            <div class="container flex-around">
+                <div class="nav-list " onclick="model.qh(this,1)">
+                    <span class=" bold f14 inline-block c333 active">日常养护</span>
+                </div>
+                <div class="nav-list verticalP" onclick="model.qh(this,2)">
+                    <span class=" bold f14 inline-block c333 ">申请养护</span>
+                    <p class="vertical nabvNum hide" style="" name="num_c"></p>
+                </div>
+                <div class="nav-list verticalP" onclick="model.qh(this,3)">
+                    <span class=" bold f14 inline-block c333">申请更换</span>
+                    <p class="vertical nabvNum hide" style="" name="num_r"></p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class='bg_hui paddt10 paddb10 paddl15 paddr15' id='box'>
+        <div id="list">
+
+        </div>
+
+    </section>
+    <footer>
+
+    </footer>
+
+</body>
+<div id="sinbox" wtd="handelwtd" class="bottomShadow">
+    <div class="center lh30 f18 bottomBorder" id="tkTitle">养护申请处理</div>
+    <div>
+        <div class="paddt10 paddb10 t-a-r">
+            <label for="price" class='lh25'>价格：</label><input type="number" class="lh25" id=" " name="price"
+                placeholder="请填写价格" data=" " value="" data-reg='' onchange="model.ifNum(this)" />
+        </div>
+        <div class="paddt10 paddb10 t-a-r">
+            <label for="fuTime" class='lh25'>服务日期：</label><input type="text" class="lh25" id=" " name="fuTime"
+                placeholder="请填写服务日期" data=" " value="" data-reg='' readonly onclick="model.choiceTime(this)" />
+        </div>
+        <div>
+            <button style="border: 0px;width: 150px;" onclick="model.save(this)">确定</button>
+        </div>
+    </div>
+</div>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script src="../inc/picker.min.js"></script>
+<script>
+
+    function pageload() {
+        model.faTimePicker = new Datepicker("发货时间", function (a, b, c) {
+            $(model.elm).val(b);
+        });
+        model.getPayTime();
+        // model.init();
+        $("a").on("click", function (event) {
+            event.stopPropagation();
+        });
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        getPayTime: function () {
+            Comm.loading(true);
+            var url = '/api/config/bykeys',
+                opt = {
+                    keys: "cancel_order"
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    model.cancel_order = res.data[0].value;
+                    // model.cancel_order =50;
+                } else {
+                    Comm.message(res.msg)
+                }
+                model.getStaff()
+            })
+        },
+        qh: function (el, v) {//导航切换
+            model.el = $(el).find('span');
+            event.stopPropagation();
+            // Comm.loading(true)
+
+            $.each($(".nav-list").find(".bold"), function (index, value) {
+                $(value).removeClass("active")
+            })
+
+            $(el).find(".bold").addClass("active");
+            model.opt.type = v;
+            if (v == '1') {
+                model.opt.ifqi = '1';
+                model.opt.ifWan = '1';
+            } else {
+                model.opt.ifqi = '';
+                model.opt.ifWan = '';
+            }
+            model.init()
+            // model.search()
+        },
+        opt: {
+            type: '1',
+            ifqi: '1',
+            ifWan: '1'
+        },
+        init: function () {//
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/bussiness/lease/order/yangList',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.opt;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    console.info(d.data)
+                    var now = new Date();
+                    $.each(d.data, function (i, v) {
+
+                        v.starts = (hhmmss.todate(v.chuTime).getTime() - now.getTime()) / 1000;
+                        v.ends = (hhmmss.todate(v.chuTime).getTime() + (model.cancel_order * 60 * 1000) - now.getTime()) / 1000;
+                    })
+                    var h = template('boxTpl', d.data);
+                    refresh.appendHtml(h);
+                    model.getGroupNum();//获取统计数量
+                };
+                hhmmss.init('list','支付超时');
+            } else {
+                // model.opt.keyword = keyword;
+                model.mere.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+            $("#list").html(template("boxTpl"))
+        },
+        getGroupNum: function () {//获取统计数字
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/groupZhi',
+                opt = {
+
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    if (res.data) {
+                        res.data.huan * 1 > 99 ? $('[name=num_r]').removeClass('hide').html('99') : res.data.huan * 1 > 0 ? $('[name=num_r]').removeClass('hide').html(res.data.huan) : $('[name=num_r]').addClass('hide');
+                        res.data.yang * 1 > 99 ? $('[name=num_c]').removeClass('hide').html('99') : res.data.yang * 1 > 0 ? $('[name=num_c]').removeClass('hide').html(res.data.yang) : $('[name=num_c]').addClass('hide');
+                    }
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        getStaff: function () {//获取养护人
+            Comm.loading(true);
+            var opt = {
+                type: '1',
+                userType: '1',
+            }
+            var url = '/common/staff/getStaff';
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    model.staff = [];
+                    $.each(res.data, function (i, v) {
+                        model.staff.push({
+                            "i": v.staffId,
+                            'text': v.userName
+                        })
+                    })
+                    model.choiceStaff = new Commpicker("请选服务者", [model.staff], function (obj, name, sid) {
+                        Comm.loading(true);
+                        var url = '/bussiness/lease/order/yanghu'
+                        opt = {
+                            maintenPlanId: model._maintenPlanId,
+                            yangId: sid
+                        };
+                        if (opt.yangId<0) {
+                            Comm.message("请选择服务人员~");
+                            Comm.loading(false);
+                            return
+                        }
+                        AJAX.POST(url, opt, function (res) {
+                            Comm.loading(false);
+                            if (res.code == 1) {
+                                Comm.message("已指派服务人员成功~");
+                                model.getPayTime();
+
+                            } else {
+                                Comm.message(res.msg)
+                            }
+                        })
+                    });
+                } else {
+                    Comm.message(res.msg)
+                }
+                model.init();
+            })
+        },
+        yanghu: function (maintenPlanId) {//养护
+            event.stopPropagation();
+            model._maintenPlanId = maintenPlanId;
+            model.choiceStaff.show();
+
+        },
+        handle: function (elm, maintenPlanId, t) {//立即处理
+            event.stopPropagation();
+            model._maintenPlanId = maintenPlanId;
+            model._t = t;
+            Comm.showWindow("handelwtd", true);
+            if (t == '2') $("#WTDBOXTD  #tkTitle").html("养护申请处理");
+            if (t == '3') $("#WTDBOXTD  #tkTitle").html("更换申请处理");
+        },
+        choiceTime: function (elm) {//选择服务时间
+            model.elm = elm;
+            model.faTimePicker.show()
+        },
+        ifNum: function (a) {//判断数字
+            var num = $(a).val();
+            if (num * 1 <= 0) {
+                Comm.message("请输入大于0的数~");
+                $(a).val("");
+                return;
+            }
+            if (num.indexOf(".") != "-1") {
+                var arr = num.split(".")
+                if (arr[1].length > "2") {
+                    Comm.message("请输入不超过两位小数~")
+                    $(a).val("")
+                    return
+                }
+            }
+        },
+        save: function () {//保存养护  更换申请 
+            var data = Check.submit("POST");
+            if (!data) {
+                Comm.loading(false)
+                return
+            }
+            if (data.price == '') {
+                Comm.message("请输入价格~");
+                return;
+            }
+            if (!data.fuTime) {
+                Comm.message("请选择服务日期~");
+                return;
+            }
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/yangListChu',
+                opt = {
+                    maintenPlanId: model._maintenPlanId,
+                    needPrice: data.price,
+                    fuTime: data.fuTime
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                Comm.showWindow();
+                if (res.code == 1) {
+                    if (model._t == '2') Comm.message("养护申请处理成功~");
+                    else Comm.message("更换申请处理成功~");
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+
+    }
+    template.defaults.imports.getDay = function (v) {
+        var weekArray = new Array("周日", "周一", "周二", "周三", "周四", "周五", "周六");
+        var day = new Date(v).getDay();
+        return weekArray[day];
+    };
+    template.defaults.imports.resState = function (v) {
+        v = String(v);
+        var str = '';
+        switch (v) {
+            case '1': str = '待处理'; break;
+            case '2': str = '支付完成'; break;
+            case '3': str = '支付失败'; break;
+            case '4': str = '已完成'; break;
+            case '5': str = '待支付'; break;
+
+            default:
+                break;
+        }
+        return str;
+    };
+</script>
+<!-- 租赁 导航 -->
+<script type="text/html" id="leaseNavTpl">
+    <div class="container">
+            <div class="nav-list " onclick="model.qh(this,1)">
+                <span class=" bold f16 inline-block color77 active">待接单</span>
+            </div>
+            <div class="nav-list"  onclick="model.qh(this,2)">
+                <span class=" bold f16 inline-block color77 ">待配送</span>
+            </div>
+            <div class="nav-list" onclick="model.qh(this,3)">
+                <span class=" bold f16 inline-block color77">服务中</span>
+            </div>
+            <div class="nav-list" onclick="model.qh(this,4)">
+                <span class=" bold f16 inline-block color77">已完成</span>
+            </div>
+    </div>
+</script>
+
+<!-- 租赁数据列表-->
+<script type="text/html" id="boxTpl">
+    {{each $data as v k}}
+    <div class="list white paddt15 paddb15 paddl15 paddr15 marb10" >
+        <!-- 订单时间信息 -->
+        <div class="list-h flex-between" onclick="Comm.go('leaseorderDetail.html?t=2&maintenPlanId='+{{v.maintenPlanId}})">
+            <div class="text inline-block" style="width:100%">
+                <div class="block verticalP" >
+                    {{if v.type=='1'}}
+                    <span class="block f14 wordW c21 bold">服务时间：{{v.fuTime}} ({{v.fuTime|getDay}})</span>
+                    <span class="vertical f14 colordd {{v.type=='1'?'hide':''}}" style='right:0px'>{{resState(v.state)}}</span>
+                   
+                    {{else}}
+                    {{if v.state=='5'||v.state=='3'||v.state=='1'||v.state=='2'}}
+                    <span class="block f14 wordW c21 bold">申请时间：{{v.addTime}}</span>
+                    <span class="vertical f14 colordd {{v.type=='1'?'hide':''}}" style='right:0px'>{{resState(v.state)}}</span>
+                    {{else}}
+                    <span class="block f14 wordW c21 bold">服务时间：{{v.fuTime}} ({{v.fuTime|getDay}})</span>
+                    <span class="vertical f14 colordd {{v.type=='1'?'hide':''}}" style='right:0px'>{{resState(v.state)}}</span>
+                    {{/if}}
+                    {{/if}}
+                </div>
+            </div>
+            <div class="inline-block paddt11 hide">
+                <!-- //1, "待支付" 2, "待接单"  3, "待配货" 4, "待质检" 5, "待发货" 
+                        //6, "待收货" 7, "已收货" 8, "已取消" 9, "已完成" 10 "待包装" -->
+                <p class="colorda t-a-r f14" id="">{{待接单}}</p>
+
+            </div>
+        </div>
+        <!-- 补款信息 -->
+        {{if v.state=='5'}}
+        <div class="flex-between mart15 item" onclick="Comm.go('leaseorderDetail.html?t=2&maintenPlanId='+{{v.maintenPlanId}})">
+            <span class="f12" style="color:#DA251C">需补款{{v.needPrice}}元，等待客户支付</span>
+            <!-- <span class="f12" style="color:#DA251C">倒计时：05：30</span> -->
+                    {{if(v.ends>0&&v.starts<=0)}} 
+                    <span  class="lh20  hhmmss" data="{{v.ends}}">
+                        <span class="f12  ">倒计时</span>
+                        <span class="f12 hh" id="hh">00</span>
+                        <span class="f12 ">:</span>
+                        <span class="f12 mm" id="mm">00</span>
+                        <span class="f12 ">:</span>
+                        <span class="f12 ss" id="ss">00</span>
+                    </span>
+                    {{/if}}
+                    {{if v.ends*1 < 0 &&v.starts*1 < 0}}
+                    <span class="f12 hhmmss" data='{{v.ends}}' style="color:#DA251C">支付超时</span>
+                    {{/if}}
+        </div>
+        {{/if}}
+        <!-- 花店推单 -->
+        {{if v.type=='2'}}
+        <div class="mart15  hide">
+            <span class="f12 colordd marr5"
+                style="border-radius: 3px;padding:2px 3px;border:1px solid #DD1474;">花店推单</span>
+            <span class="f14 bold">未来久花店</span>
+        </div>
+        {{/if}}
+        <!-- 租赁信息 -->
+        <div class="info" style="" onclick="Comm.go('leaseorderDetail.html?t=2&maintenPlanId='+{{v.maintenPlanId}})">
+            <p class="f12 c666 address paddl20 verticalP">{{v.carAddress}}</p>
+            <p class="f12 c666 ">{{v.carName}} {{v.carPhone}}</p>
+            <p class="f12 c666 ">{{v.descript}}</p>
+        </div>
+        <div>
+            <div class="_inblock _all  btn-list mart10 ">
+                    {{if v.state=='2'}}
+                        <div class="packBtn printOrder f14" onclick='model.yanghu({{v.maintenPlanId}})'>{{v.type=='3'?'更换':'养护'}}</div>
+                    {{/if}}
+                    {{if v.state=='1'&&v.type=='2'}}
+                        <div class="packBtn printOrder f14" onclick='model.handle(this,{{v.maintenPlanId}},2)'>立即处理</div>
+                    {{/if}}
+                    {{if v.state=='1'&&v.type=='3'}}
+                        <div class="packBtn printOrder f14" onclick='model.handle(this,{{v.maintenPlanId}},3)'>立即处理</div>
+                    {{/if}}
+                    <a href="tel:{{v.carPhone||''}}" data="{{v.carPhone}}" style="display:block"> <div class="packBtn printOrder f14" >联系客户</div></a>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</script>
+
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>店铺设置</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        .navTitle {
+            font-weight: normal;
+        }
+
+        /* header */
+        /* section */
+        .cellContent {
+            height: 50px;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        .head,
+        .head>img {
+            height: 40px;
+            width: 40px;
+        }
+
+        .head {
+            overflow: hidden;
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+            color: #999;
+        }
+
+        .cellContent input,
+        #wx_id,
+        #sex,
+        #sj_id {
+            color: black;
+        }
+
+        .isInvoice {
+            width: 40px;
+            float: right;
+        }
+
+        .ro180 {
+            transform: rotate(180deg)
+        }
+
+        /* footer */
+        .quit {
+            height: 45px;
+            line-height: 45px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">店铺设置</div>
+        </div>
+    </header>
+    <section id='' class="bg_hui ">
+        <div class="paddl15 bg_white hide" onclick="Comm.go('class.html?type=2')">
+            <div class="cellContent indicator bottomBorder ">
+                <div class="label f16  indicator icon_pre icon_name">服务区域</div>
+                <input type="text" maxlength="11" readonly name="serviceArea" data-reg='empty' placeholder="" id="phone"
+                    value="">
+            </div>
+        </div>
+        <!-- <div class="paddl15 bg_white ">
+            <div class="cellContent  bottomBorder ">
+                <div class="label f16  indicator icon_pre icon_name">最低收费标准(金额)</div>
+                <input type="number" maxlength="11" name="pacLowFee" data-reg='empty' placeholder="请设置最低标准"
+                    id="pacLowFee" value="" style="width: 40%" onblur="setpacking(this,1)">
+            </div>
+        </div>
+        <div class="paddl15 bg_white ">
+            <div class="cellContent  bottomBorder ">
+                <div class="label f16  indicator icon_pre icon_name">基础费率(%)</div>
+                <input type="number" maxlength="11" name="pacBasic" data-reg='empty' placeholder="请设置基础费率" id="pacBasic"
+                    value="" style="width: 40%" onblur="setpacking(this,2)">
+            </div>
+        </div>
+        <div class="paddl15 bg_white ">
+            <div class="cellContent   ">
+                <div class="label f16  indicator icon_pre icon_name">超出费率(%)</div>
+                <input type="number" maxlength="11" name="pacExcess" data-reg='empty' placeholder="请设置超出费率"
+                    id="pacExcess" value="" style="width: 40%" onblur="setpacking(this,3)">
+            </div>
+        </div> -->
+        <div class="paddl15 bg_white _mart10" onclick="Comm.go('vacation.html')">
+            <div class="cellContent indicator bottomBorder ">
+                <div class="label f16  indicator icon_pre icon_name ">店铺休假</div>
+                <input type="text" maxlength="11" readonly name="vacation" data-reg='empty' placeholder="" id="phone"
+                    value="">
+            </div>
+        </div>
+        <div class="paddl15 bg_white _mart10" onclick="Comm.go('explain.html?type=1')">
+            <div class="cellContent indicator bottomBorder ">
+                <div class="label f16  indicator icon_pre icon_name ">店铺说明</div>
+                <input type="text" maxlength="11" readonly name="vacation" data-reg='empty' placeholder="" id="phone"
+                    value="">
+            </div>
+        </div>
+        <div class="paddl15 bg_white _mart10" _onclick="Comm.go('explain.html')">
+            <div class="cellContent _indicator bottomBorder ">
+                <div class="label f16  indicator icon_pre icon_name ">订金比例(%)</div>
+                <input type="number" maxlength="11" onblur="model.dj(this)" name="dj" data-reg='empty'
+                    placeholder="请输入订金比例" id="" value="">
+            </div>
+        </div>
+        <div class="paddl15 bg_white ">
+            <div class="cellContent  bottomBorder ">
+                <div class="label f16  indicator icon_pre icon_name ">是否开发票</div>
+                <input type="text" maxlength="11" readonly name="isInvoice" data-reg='empty' placeholder="" id="phone"
+                    value="" class="hide">
+                <img src="./img/gbjfdk.png" alt="" class="isInvoice" data="0" onclick="setInvoice()">
+            </div>
+        </div>
+    </section>
+    <footer class="shared ">
+
+    </footer>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="./foot.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<script type="text/javascript" src="../inc/upimg/upload.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo");
+    // type= Comm.db("")
+
+    function pageresume() {
+    }
+
+    function pageload() {
+        model.getDj();
+        AJAX.POST("/bussiness/bussiness/detail", { customerId: userinfo.customerId }, function (res) {
+            if (res.code == "1") {
+                if (res.data.ifInvoice == "1") {
+                    $(".isInvoice").attr("src", './img/kqjfdk.png').toggleClass("ro180").attr("data", res.data.ifInvoice)
+                } else {
+                    $(".isInvoice").attr("src", './img/gbjfdk.png').attr("data", res.data.ifInvoice)
+                }
+                //初始化费率
+                // if (res.data.pacLowFee >= 0) {
+                //     $("#pacLowFee").val(res.data.pacLowFee)
+                // }
+                // if (res.data.pacBasic >= 0) {
+                //     $("#pacBasic").val(res.data.pacBasic)
+                // }
+                // if (res.data.pacExcess >= 0) {
+                //     $("#pacExcess").val(res.data.pacExcess)
+                // }
+            }
+        })
+
+    }
+    function setInvoice() {
+        var flag = $(".isInvoice").attr("data");
+        var opt = {
+            bussinessId: userinfo.bussinessId,
+            ifInvoice: flag == "0" ? "1" : "0",
+        }
+        AJAX.POST('/bussiness/bussiness/invoice', opt, function (res) {
+            if (res.code == 1) {
+                // Comm.db("isInvoice",flag)
+                if (opt.ifInvoice == "1") {
+                    $(".isInvoice").attr("src", './img/kqjfdk.png').toggleClass("ro180").attr("data", opt.ifInvoice)
+                } else {
+                    $(".isInvoice").attr("src", './img/gbjfdk.png').toggleClass("ro180").attr("data", opt.ifInvoice)
+                }
+                Comm.message("修改成功")
+            }
+        })
+    }
+    function reg(obj, type) {
+        var str = $(obj).val();
+        if (type) {
+            if (str.indexOf(".") != "-1") {
+                Comm.message("请输入整数~")
+                $(obj).val("")
+                return false
+            }
+        } else {
+            if (str.indexOf(".") != "-1") {
+                var arr = str.split(".")
+                if (arr[1].length > "2") {
+                    Comm.message("请输入不超过两位小数~")
+                    $(obj).val("")
+                    return false
+                }
+            }
+        }
+        return true
+    }
+    function setpacking(elm, type) {
+        var opt = {
+            pacLowFee: "",
+            pacBasic: "",
+            pacExcess: ''
+        }
+        var val = $(elm).val().trim();
+        if (val == "" && val.length == "0") {
+            Comm.message("输入错误,请重新输入~")
+            $(elm).val("")
+            return
+        }
+        if (val < 0) {
+            Comm.message("请输入大于0的值~")
+            $(elm).val("")
+            return
+        }
+        // console.info(val=="",val==null,val.length)
+        if (type == "1") { //1 最低标准 2 基础费率 3 超出费率
+            reg(elm) ? opt.pacLowFee = val : '';
+        } else if (type == "2") {
+            reg(elm, 1) ? opt.pacBasic = val : '';
+        } else if (type == "3") {
+            reg(elm, 1) ? opt.pacExcess = val : '';
+        }
+        console.info(opt)
+        AJAX.POST("/bussiness/bussiness/setNormalPac", opt, function (res) {
+            if (res.code == "1") {
+                Comm.message("修改成功~")
+            }
+        })
+    }
+    var model = {
+        dj: function (elm) {
+            var num = $(elm).val().trim();
+            if (num.indexOf(".") != "-1") {
+                var arr = num.split(".");
+                if (arr[1].length > "2") {
+                    Comm.message("请输入不超过两位小数~")
+                    $(elm).val("")
+                    return
+                }
+            }
+            Comm.loading(true);
+            var url = '/bussiness/bussiness/setbili'
+                opt = {
+                    bili:num
+                };
+            AJAX.POST(url, opt, function (res) {
+            Comm.loading(false);
+                if(res.code == 1) {
+                    Comm.message("设置成功~");
+               } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        getDj:function(){
+            Comm.loading(true);
+            var url = '/bussiness/bussiness/getbili'
+                opt = {
+             
+                };
+            AJAX.POST(url, opt, function (res) {
+            Comm.loading(false);
+                if(res.code == 1) {
+                    $('[name=dj]').val(Number(res.data))
+               } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+    }
+</script>
+
+</html>

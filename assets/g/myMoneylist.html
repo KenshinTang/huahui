@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <title>余额明细</title>
+    <link rel="stylesheet" href="../css/g.css">
+    <link rel="stylesheet" href="../css/comm.css">
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css">
+    <style>
+        .navItemIcon {
+            background-image: url('img/sousuo.png');
+        }
+
+        .F2772D {
+            color: #F2772D;
+        }
+
+        .color999 {
+            margin-top: 5px;
+        }
+
+        #sinbox {
+            width: 100%;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            padding: 0px;
+        }
+
+        #sinbox .item {
+            padding: 0px 10px;
+            line-height: 40px;
+        }
+
+        #sinbox .item span.btn {
+            background: inherit;
+            padding: 5px 10px;
+            border-radius: 3px;
+            color: #222;
+            border: 1px solid #EBEBEB;
+            font-size: 14px;
+        }
+
+        #sinbox .item span.btnp {
+            padding: 5px 15px;
+        }
+
+        #sinbox .item span.cur {
+            color: #DD1474;
+            border-color: #DD1474;
+        }
+
+        #sinbox .tb {
+            height: 50px;
+            line-height: 50px;
+        }
+
+        #sinbox .tb .td {
+            width: 50%;
+            float: left;
+            background-color: #EBEBEB;
+        }
+
+        #sinbox .tb .r {
+            width: 50%;
+            height: 50px;
+            float: left;
+            color: #fff;
+            border-radius: 0px;
+        }
+
+        #sinbox .item .scoll {
+            overflow: hidden;
+            overflow-x: auto;
+            white-space: nowrap;
+            text-align: left;
+        }
+
+        #sinbox .item input {
+            width: 100px;
+        }
+
+        #MainBg,
+        #WTDBOX {
+            top: 64px;
+            z-index: 99;
+        }
+
+        .bg {
+            background-image: url('img/my-bg.png');
+            background-repeat: no-repeat;
+            background-size: 100% auto;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="bg_white">
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navItemIcon marr10" onclick="Comm.showWindow('sinboxTemp',true);ttop()"></div>
+            <div class="navTitle">余额明细</div>
+        </div>
+    </header>
+    <section class="body mescroll" id="box">
+        <div class="">
+            <div style="height: 100px;" class="bg paddt10">
+                <div class="center f28 colorfff lh50" id="balance">
+
+                </div>
+                <div class="center colorfff">
+                    线上收款（元）
+                </div>
+            </div>
+            <div class="paddl15 linebod lh40 hide" style='height:40px' id="time">
+                <!-- 2018-9-9&nbsp;至&nbsp;2089-9-9&nbsp;提成收入 -->
+            </div>
+        </div>
+        <div id="list">
+        </div>
+
+    </section>
+
+    <div id="sinbox" wtd="sinboxTemp">
+        <div class="item">
+            <div class="colorb5 left">交易类型：</div>
+            <div class="scoll scollone" id="sco">
+            </div>
+            <div class="cls"></div>
+        </div>
+        <div class="item">
+            <div class="colorb5 left">时间筛选：</div>
+            <div class="tleft">
+                <input readonly id="start" placeholder="开始时间" onclick="datePickerstart.show();" />
+                <span>至&nbsp;</span>
+                <input id="end" readonly onclick="datePickerend.show();" placeholder="结束时间" />
+            </div>
+            <div class="cls"></div>
+        </div>
+        <div class="tb">
+            <div class="td f16 " onclick="reg()">重置</div>
+            <div class="td f16 r btn" onclick="okref()">确定</div>
+            <div class="cls"></div>
+        </div>
+    </div>
+</body>
+<script type="text/html" id="listTpl">
+    {{each $data as v k}}
+    <div class="paddl15 bg_white ">
+        <div class="cellContent bottomBorder">
+            <div class="label f16 icon_pre icon_phone ">
+                <p>{{v.dictname}}</p>
+                <p class="f12 color999">{{formatDate(v.addTime,'Y-m-d H:i')}}</p>
+            </div>
+            {{if v.state==2}}
+            <span class="f16">-{{priceTp(v.price)}}</span>
+            {{else}}
+            <span class="F2772D f16">+{{priceTp(v.price)}}</span>
+            {{/if}}
+        </div>
+    </div>
+    {{/each}}
+</script>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/art-template.js"></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<script>
+    var userinfo = Comm.db("userinfo");
+    var obj= JSON.parse(Comm.query("obj"));
+    var datePickerstart, merefreshbuy = null, datePickerend, coinType = [], activeText = '', selectType = "", start = "", end = "";
+    function pageload() {
+        datePickerstart = new Datepicker("开始时间", function (a, b, c) {
+            $("#WTDBOX #start").val(b);
+            start = b;
+        });
+        datePickerend = new Datepicker("结束时间", function (a, b, c) {
+            $("#WTDBOX #end").val(b);
+            end = b;
+        });
+        getType();
+        model.search();
+        //获取余额
+        AJAX.POST('/bussiness/wallet/detail', { bussinessId: userinfo.bussinessId }, function (res) {
+            if (res.code == 1) {
+                $('#balance').html(app.price(res.data.balance))
+            }
+        })
+    }
+    //手机端返回到本页面 回调方法
+    function pageresume() {
+        okref();
+    }
+
+    function getType() {
+		// $("#sco").append('<span id="btnone" class="btn cur marr5" onclick="scollclick(this,\'\')">全部</span>');
+		var a = {};
+		var data = [{
+			coinface: '',
+			coinname: '全部',
+			type: "-1",
+		},{
+			coinface: '',
+			coinname: '线上收款',
+			type: 0,
+		}, {
+			coinface: '',
+			coinname: '线下收款',
+			type: 1,
+		}]
+		a.data = data;
+		coinType = a.data;
+		for (var i = 0; i < a.data.length; i++) {
+			$("#sco").append('<span id="_cointypeid' + a.data[i].type + '" class="btn marr5"  onclick="scollclick(this,' + a.data[i].type + ')">' + a.data[i].coinname + '</span>')
+		}
+	}
+    var model={
+        data:obj,
+        search: function () {
+			if (!model.mere) {
+				model.mere = new MERefresh('box,list', {
+					pagesize: 10,
+					refreshUrl: '/common/wallet/list',
+					refreshTypeGet: true
+				});
+				model.mere.refreshOption.refreshParm = model.data;
+				//页面 <刷新> 的回调
+				model.mere.refreshOption.refresh_cb = function (refresh, d) {
+					refresh.successEndRef(d.data.length, d.totalCount);
+					var h = template('listTpl', d.data);
+					refresh.appendHtml(h);
+                    model.text();
+				};
+			} else {
+				model.mere.refreshOption.refreshParm = model.data;
+				//重置列表数据
+				model.mere.MeRefScroll.resetUpScroll();
+				//model.mere.MeRefScroll.triggerDownScroll();
+				//隐藏回到顶部按钮
+				model.mere.MeRefScroll.hideTopBtn();
+			}
+		},
+        text:function(){
+            var _str= "";
+            if(model.data.billType=="-1"){
+                _str= "全部收款"
+            }else if(model.data.billType=="0"){
+                _str= "线上收款"
+            }else{
+                _str= "线下收款"
+            }
+            if(model.data.startTime!=""&&model.data.endTime!=""){
+                var str=model.data.startTime+"&nbsp;至&nbsp;"+model.data.endTime+"&nbsp;"+_str
+                $("#time").removeClass("hide").html(str)
+            }else{
+                $("#time").addClass("hide")
+            }
+        }
+    }
+    function record() {
+        if (!model.mere) {
+				model.mere = new MERefresh('box,list', {
+					pagesize: 10,
+					refreshUrl: '/common/wallet/list',
+					refreshTypeGet: true
+				});
+				model.mere.refreshOption.refreshParm = model.data;
+				//页面 <刷新> 的回调
+				model.mere.refreshOption.refresh_cb = function (refresh, d) {
+					refresh.successEndRef(d.data.length, d.totalCount);
+					var h = template('listTpl', d.data);
+					refresh.appendHtml(h);
+				};
+			} else {
+				model.mere.refreshOption.refreshParm = model.data;
+				//重置列表数据
+				model.mere.MeRefScroll.resetUpScroll();
+				//model.mere.MeRefScroll.triggerDownScroll();
+				//隐藏回到顶部按钮
+				model.mere.MeRefScroll.hideTopBtn();
+			}
+
+    }
+
+    function okref() {
+        Comm.showWindow()
+        model.data.startTime=start;
+        model.data.endTime=end;
+        // model.text()
+        model.search()
+        
+    }
+
+    function reg() {
+        $("#WTDBOX #start").val("");
+        $("#WTDBOX #end").val("");
+        selectType = "";
+        scollclick("#btnone", '')
+    }
+
+    function ttop() {
+        start=""
+        end=""
+        $("#MainBg,#WTDBOX").css("top", $(".navBar").height());
+        $("#WTDBOX #start").val(start)
+        $("#WTDBOX #end").val(end)
+        if (selectType == "") {
+            scollclick("#btnone", '')
+        } else {
+            scollclick("#_cointypeid" + selectType, selectType)
+        }
+    }
+
+    function scollclick(a, id) {
+        activeText = $(a).html()
+        if (!$("#WTDBOX").find(a).hasClass("cur")) {
+            $("#WTDBOX .scollone span").removeClass("cur")
+            $("#WTDBOX").find(a).addClass("cur")
+            model.data.billType = id;
+        }
+    }
+</script>
+
+</html>

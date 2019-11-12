@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <title>添加支付宝账号</title>
+    <link rel="stylesheet" href="../css/g.css">
+    <link rel="stylesheet" href="../css/comm.css">
+    <style>
+        section {
+            background-color: #F6F6F6;
+        }
+
+        .button {
+            width: 90%;
+            margin: 0 auto;
+            font-size: 17px;
+            text-align: center;
+            height: 45px;
+            line-height: 45px;
+            border-radius: 3px;
+        }
+
+        .form .form_item {
+            background-color: #fff;
+            line-height: 50px;
+            position: relative;
+            display: hide;
+        }
+
+        .form .form_item label {
+            text-align: right;
+            display: inline-block;
+            padding-left: 10px;
+        }
+
+
+        .form .form_item input {
+            height: 50px;
+            font-size: 16px;
+            padding-left: 20px;
+            width: calc(100% - 100px);
+        }
+
+        .boldb {
+            border-bottom: 1px solid #eee;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header">
+            <div class="navBar bottomShadow">
+                <div class="navBackIcon" onclick="backClear()"></div>
+                <div class="navTitle"></div>
+            </div>
+        </div>
+    </header>
+    <section id="box">
+        <div class="form mart30">
+            <div class="form_item boldb input2">
+                <div class="khy hide">
+                    <label class="f16">开户行</label>
+                    <input class="fr tright paddr10" type="text" id="bankmsg" placeholder="开户行信息" />
+                </div>
+                <div>
+                    <label class="f16" id="title"></label>
+                    <input class="fr tright paddr10" type="text" id="number" placeholder="支付宝账号" maxlength="20" />
+                </div>
+            </div>
+            <div class="center mart30 marb10">
+                <div class="button" onclick="save()">确定</div>
+            </div>
+        </div>
+    </section>
+</body>
+<script src="../inc/z.js"></script>
+<script src="../inc/g.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/comm.js"></script>
+<script>
+    var type = Comm.query("type");
+    var u = Comm.db("userinfo"), pay_number = Comm.db("pay_number");
+    var data = [{ name: '微信账号', type: 1 }, { name: '支付宝账号', type: 2 }, { name: '银行卡', type: 3 }];
+    function pageload() {
+        var name = data[parseInt(type) - 1].name;
+        bankNumTmpl(name)
+
+    }
+    function save() {
+        var account = $("#number").val().replace(/\s+/g, "");
+        var bankmsg = $("#bankmsg").val().replace(/\s+/g, "");
+
+        if (type == "1") {
+            bankmsg = account;
+            account = $("#number").attr('data');
+        }
+
+        if (account == "") {
+            if (type == "1") {
+                Comm.message('请绑定微信账号')
+            } else {
+                Comm.message('请输入账号')
+            }
+            return
+        }
+        if (type == '3' && bankmsg == "") {
+            Comm.message('请输入开户行信息')
+            return
+        }
+        var params = {
+            bankcardAddress: bankmsg,
+            itemId: u.bussinessId,
+            bankcardNumber: account,
+            bankcardType: type,
+            itemType: u.userType,
+        }
+
+        Comm.loading(1)
+        AJAX.POST('/common/wallet/bang', params, function (res) {
+            Comm.loading()
+            if (res.code == 1) {
+                backClear()
+            } else {
+                Comm.message(res.msg)
+            }
+        })
+    }
+    function bankNumTmpl(name) {
+        var edit = pay_number ? "修改" : "添加"
+        var data = pay_number ? pay_number : ''
+        $(".navTitle").html(edit + name)
+        if (type == 1) {
+            $("#number").val(data.bankcardAddress).attr('data', data.bankcardNumber).attr("placeholder", '请绑定' + name).attr("readonly", 'readonly').click(function () {
+                Comm.extLogin({ type: type }, function (data) {
+                    if (data.code == 1) {
+                        $("#number").val(data.nickname).attr('data', data.openid);
+                    }
+                })
+            });
+        } else {
+            $("#number").val(pay_number ? data.bankcardNumber : '').attr("placeholder", '请输入' + name);
+        }
+        $("#title").html(name)
+        if (type == 3) {
+            $("#bankmsg").val(pay_number ? data.bankcardAddress : '').attr("placeholder", '请输入开户行信息');
+            $(".khy").removeClass('hide')
+        }
+
+    }
+    //清除当前页缓存的数据
+    function backClear() {
+        Comm.db('pay_number', '')
+        Comm.close();
+    }
+    function androidback() {
+        backClear();
+    }
+</script>
+
+</html>

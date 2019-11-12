@@ -1,0 +1,138 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../../css/g.css'>
+    <link rel='stylesheet' href='../../css/comm.css'>
+    <style>
+        .cellContent {
+            height: 50px;
+            /* justify-content: normal; */
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        .info {}
+
+        .info span {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>流水详情</div>
+        </div>
+    </header>
+
+    <section class='bg_hui' id=''>
+        <div class="info block paddt30 paddb30 t-a-c bg_white">
+            <span class="colordd bold block" style="font-size: 36px;height: 40px;">+1000.00</span>
+            <!-- <span class="c333 f16 ">线上订单</span> -->
+        </div>
+        <div class="mart10">
+            <!-- 线下 只有订单时间  订单号 操作人 -->
+            <div class="paddl15 bg_white ">
+                <div class="cellContent  _indicator bottomBorder ">
+                    <div class="label f16 icon_pre  color999">订单时间</div>
+                    <span class="c333 f16 ">2018-10-24 13:44:44
+                    </span>
+                </div>
+            </div>
+            <div class="paddl15 bg_white ">
+                <div class="cellContent  _indicator bottomBorder ">
+                    <div class="label f16 icon_pre  color999">订单号</div>
+                    <span class="c333 f16 ">45646546545641345646
+                    </span>
+                </div>
+            </div>
+            <div class="paddl15 bg_white ">
+                <div class="cellContent  _indicator bottomBorder ">
+                    <div class="label f16 icon_pre  color999">交易金额</div>
+                    <span class="c333 f16 ">280
+                    </span>
+                </div>
+            </div>
+            <div class="paddl15 bg_white ">
+                <div class="cellContent  _indicator bottomBorder ">
+                    <div class="label f16 icon_pre  color999">保证金</div>
+                    <span class="c333 f16 ">10
+                    </span>
+                </div>
+            </div>
+            <div class="paddl15 bg_white ">
+                <div class="cellContent  _indicator bottomBorder ">
+                    <div class="label f16 icon_pre  color999">花店佣金(未来久花店)</div>
+                    <span class="c333 f16 ">0.00
+                    </span>
+                </div>
+            </div>
+            <div class="paddl15 bg_white ">
+                <div class="cellContent  _indicator bottomBorder ">
+                    <div class="label f16 icon_pre  color999">实际收入</div>
+                    <span class="c333 f16 ">0.00
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../../inc/z.js'></script>
+<script src='../../inc/g.js'></script>
+<script src='../../inc/comm.js'></script>
+<script src='../../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+        model.init();
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        billId:Comm.query("billId"),
+        t :Comm.query('t'),//1 订单详情 2 流水详情
+        init :function(){//
+            Comm.loading(true);
+            var url = '/bussiness/financial/jizhangDetail',
+                opt = {
+                    billId:model.billId
+                };
+            AJAX.POST(url, opt, function (res) {
+            Comm.loading(false);
+                if(res.code == 1) {
+                   $("section").html(template("mainTpl",res.data))
+               } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+    }
+</script>
+
+</html>

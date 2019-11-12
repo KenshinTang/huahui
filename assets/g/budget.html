@@ -1,0 +1,154 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        .search {
+            background: #FFF2EB;
+            height: 44px;
+            line-height: 44px;
+        }
+
+        .search span {
+            color: #DA251C;
+        }
+
+        .pie {
+            height: 400px;
+        }
+
+        .yuanl {
+            width: 20px;
+            height: 20px;
+            background: #ffffff;
+            border-radius: 50%;
+            border: 3px solid #DD1474;
+        }
+
+        .yuanr {
+            width: 20px;
+            height: 20px;
+            background: #ffffff;
+            border-radius: 50%;
+            border: 3px solid #FF9000;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>收支情况</div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <div class="search paddl15">
+            <span class="f14" name='search'></span>
+        </div>
+        <div class="bg_hui pie" id='pie'></div>
+        <div class='flex-around mart30 paddl15 paddr15 paddt30'>
+            <div class="t-a-c block">
+                <p class="f20" name='shouru' style='min-height: 18px'></p>
+                <p class="f12 mart10 marb10">累计收入（元）</p>
+                <p class='mart20 yuanl marauto '></p>
+            </div>
+            <div class="t-a-c block">
+                <p class="f20" name='jieyu' style='min-height: 18px'></p>
+                <p class="f12 mart10 marb15">结余（元）</p>
+                <p class='mart20 yuanr marauto'></p>
+            </div>
+        </div>
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script src='../inc/echarts.simple.min.js'></script>
+<script>
+
+    function pageload() {
+        model.init();
+        // model.pie();//饼图
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        startTime: Comm.query('startTime'),
+        endTime: Comm.query('endTime'),
+        init: function () {//查询
+            Comm.loading(true);
+            var url = '/bussiness/financial/shouzhi',
+                opt = {
+                    startTime: model.startTime,
+                    endTime: model.endTime
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    $("[name=search]").html("查询结果："+model.startTime+"-"+model.endTime);
+                    $("[name=shouru]").html(res.data.shouru);
+                    $("[name=jieyu]").html(res.data.shouru-res.data.zhichu);
+                    model.pie(res.data);
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        pie: function (_d) {
+            var str = ['{a|' + _d.shouru + '}', '{b|累计收入(元)}'].join('\n');
+            var mychart = echarts.init(document.getElementById("pie"));
+            var option = {
+                color: ["#DD1474", "#FF9000"],
+                series: [
+                    {
+                        name: '收支情况',
+                        type: 'pie',
+                        radius: ['72%', '80%'],
+                        silent: true,
+                        label: {
+                            position: "center",
+                            formatter: str,
+                            rich: {
+                                a: {
+                                    color: "#000000",
+                                    fontSize: 30,
+                                    lineHeight: 50
+
+                                },
+                                b: {
+                                    color: "#999999",
+                                    fontSize: 12,
+                                }
+                            }
+                        },
+                        labelLine: {
+                            normal: {
+                                show: true
+                            }
+                        },
+                        data: [
+                            { value: _d.shouru, name: '累计支出' },
+                            { value: _d.shouru - _d.zhichu, name: '结余' },
+                        ]
+                    }
+                ]
+            };
+            mychart.setOption(option);
+        }
+    }
+</script>
+
+</html>

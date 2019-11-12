@@ -1,0 +1,178 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        .cellContent {
+            height: 50px;
+            /* justify-content: normal; */
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow' style="position: relative">
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>添加活动</div>
+            <div style='position: absolute;top:0px ;right:15px' class="colordd" onclick="model.save()" name="save">保存
+            </div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <!-- // 1 预定 2 竞拍  4 搭配销售 8 团购 16 店铺买赠 32 满减 64 预售 128 秒杀 256 积分 -->
+        <div class="paddl10 bg_white ">
+            <div class="cellContent  _indicator bottomBorder verticalP" style="padding-right:15px">
+                <div class="label f16 icon_pre">秒杀</div>
+                <div class="quan decir" data='128' onclick="model.choice(this)" ischoice='0'></div>
+            </div>
+        </div>
+        <div class="paddl10 bg_white hide">
+            <div class="cellContent  _indicator bottomBorder verticalP" style="padding-right:15px">
+                <div class="label f16 icon_pre">竞拍</div>
+                <div class="quan decir" data='2' onclick="model.choice(this)" ischoice='0'></div>
+            </div>
+        </div>
+        <div class="paddl10 bg_white ">
+            <div class="cellContent  _indicator bottomBorder verticalP" style="padding-right:15px">
+                <div class="label f16 icon_pre">团购</div>
+                <div class="quan decir" data='8' onclick="model.choice(this)" ischoice='0'></div>
+            </div>
+        </div>
+        <div class="paddl10 bg_white ">
+            <div class="cellContent  _indicator bottomBorder verticalP" style="padding-right:15px">
+                <div class="label f16 icon_pre">搭配销售</div>
+                <div class="quan decir" data='4' onclick="model.choice(this)" ischoice='0'></div>
+            </div>
+        </div>
+        <div class="paddl10 bg_white ">
+            <div class="cellContent  _indicator bottomBorder verticalP" style="padding-right:15px">
+                <div class="label f16 icon_pre">预售</div>
+                <div class="quan decir" data='64' onclick="model.choice(this)" ischoice='0'></div>
+            </div>
+        </div>
+        <div class="paddl10 bg_white ">
+            <div class="cellContent  _indicator bottomBorder verticalP" style="padding-right:15px">
+                <div class="label f16 icon_pre">预定</div>
+                <div class="quan decir" data='1' onclick="model.choice(this)" ischoice='0'></div>
+            </div>
+        </div>
+        <div class="paddl10 bg_white ">
+            <div class="cellContent  _indicator bottomBorder verticalP" style="padding-right:15px">
+                <div class="label f16 icon_pre">店铺买赠</div>
+                <div class="quan decir" data='16' onclick="model.choice(this)" ischoice='0'></div>
+            </div>
+        </div>
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+        var activitys = Comm.query('activitys');
+        if (activitys) {
+            model.getActivity(activitys)
+        }
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        activitys : Comm.query('activitys'),
+        getActivity: function (t) {
+            var arr = [];
+            for (var i = 0; i < 9; i++) {
+                //2的n - 1次方
+                var a = Math.pow(2, i);
+                //判断是否存在
+                //位运算
+                if ((t & a) == a) {
+                    //包含
+                    arr.push(a)
+                }
+            }
+            console.info(arr);
+            var l = $("section  .quan");
+
+            
+            $.each(l, function (i, v) {
+                var a = $(v).attr("data");
+                
+                $.each(arr,function(n,m){
+                    if(a==m) $(v).toggleClass("decir checkcir").attr("ischoice", '1');
+                })
+            });
+        },
+        choice: function (elm) {//选择可参与抵扣的活动
+            var f = $(elm).attr("ischoice");//获得状态 0 未参与  1 参与
+            $(elm).toggleClass("decir checkcir").attr("ischoice", f == '0' ? '1' : '0');
+        },
+        save: function () {//保存
+            var l = $("section  .quan");
+
+            var data = [];
+            $.each(l, function (i, v) {
+                var a = $(v).attr("ischoice");
+                if (a == '1') {
+                    data.push($(v).attr("data"))
+                }
+            });
+            if (data.length == '0') {
+                Comm.message("最少选择一个活动~");
+                return
+            }
+            var num = 0;
+            $.each(data, function (index, value) {
+                value = Number(value)
+                num += value;
+            });
+            var url = '/bussiness/bussiness/setManJian'
+            opt = {
+                manji: Comm.query("manji"),
+                ifActivity: Comm.query("ifActivity"),
+                activitys: num,
+            };
+            console.info(l, data, opt)
+            AJAX.POST(url, opt, function (res) {
+                if (res.code == 1) {
+                    Comm.message("设置成功~");
+                    Comm.close();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+    }
+</script>
+
+</html>

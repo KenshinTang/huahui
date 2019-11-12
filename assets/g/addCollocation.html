@@ -1,0 +1,476 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        .cellContent {
+            /* height: 50px; */
+            /* justify-content: normal; */
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        /* list */
+        .listinfo {
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .listinfo>p {
+            /* width: 100% */
+        }
+
+        .dfleximg {
+            width: 6px;
+            height: 11px;
+        }
+
+        .goodimg {
+            width: 90px;
+            height: 90px;
+            border-radius: 5px;
+        }
+
+        /* orderinfo */
+        [name='orderinfo'] {}
+
+        .list {
+            padding: 10px 0px;
+            height: 60px;
+            ;
+        }
+
+        .list>img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .list span {
+            height: 40px;
+            line-height: 40px;
+        }
+
+        /* footer */
+        footer button {
+            display: inline-block;
+            width: 45%;
+        }
+
+        #newGoods {
+            background: white;
+            color: black;
+            border: 1px solid #e2e2e2;
+        }
+
+        /* pic */
+
+        .closeimg {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow '>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>添加套餐</div>
+            <div style='position: absolute;top:0px ;right:10px' class="colordd" onclick="model.submit()" name="save">保存
+            </div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <div class="paddl15 bg_white ">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">商品名称</div>
+                <input type="text" name="goodsName" placeholder="请输入商品名称" data="" value="" data-reg='empty'
+                    class="f16 c333" />
+            </div>
+        </div>
+        <div class="paddl15 bg_white " onclick="model.type.show()">
+            <div class="cellContent  indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">商品分类</div>
+                <input type="text" name="categoryId" readonly disabled placeholder="请选择商品分类" data="" value=""
+                    data-reg='empty' class="f16 c333" />
+            </div>
+        </div>
+        <div class="paddl15 bg_white ">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">商品简介</div>
+                <input type="text" name="descript" placeholder="请输入商品简介" data="" value="" data-reg='empty'
+                    class="f16 c333" />
+            </div>
+        </div>
+        <div class="paddl15 bg_white ">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">商品价格(月)</div>
+                <input type="text" name="price" placeholder="请输入商品价格" data="" value="" data-reg='empty' class="f16 c333"
+                    onchange="model.inputNum(this,2)" />
+            </div>
+        </div>
+        <div class="paddl15 bg_white ">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">保证金</div>
+                <input type="text" name="bond" placeholder="请输入保证金" data="" value="" data-reg='empty' class="f16 c333"
+                    onchange="model.inputNum(this,2)" />
+            </div>
+        </div>
+        <!-- 搭配销售轮播图 -->
+        <div class="paddl15 bg_white paddt15 paddb15">
+            <span class="bold f16">商品轮播图</span>
+            <div class="clearfix  paddt10" id="bannerImg">
+                <div class="left marr10 marb10" id="bannerUmp">
+                    <img src="./img/xztp.png" width="80" height="80" id="banner" />
+                </div>
+            </div>
+            <input type="text" class="hide" name="pics" placeholder="请上传轮播图片" data="" value="" data-reg='empty' />
+        </div>
+        <div class="paddl15 paddt15 paddb15  f16 flex-between paddr15" id="goodsNum">
+            <span>商品清单</span>
+            <span class="colordd" onclick="model.delete(this)" data='1'>编辑</span>
+        </div>
+        <div id="goodsList" class="paddl15 paddr15">
+
+
+        </div>
+        <div>
+
+        </div>
+    </section>
+    <footer class="paddt5 paddb5 center">
+        <button onclick="Comm.go('./addGoods.html?t=4&ist=1')" id="newGoods" class="marauto"
+            style="border-radius: 5px;">新建租赁商品</button>
+        <button onclick="Comm.go('./leaseClass.html')" id="choiceGoods" class="marauto"
+            style="border-radius: 5px;">选择商品</button>
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script src="../inc/picker.min.js"></script>
+<script src="../inc/upimg/upload.js"></script>
+<script>
+
+    function pageload() {
+        model.uploadPic()
+        model.getCateClass()
+    }
+    function pageresume() {
+        model.leaseId_arr= Comm.db("leaseId_arr"),//套餐商品
+        model.init();
+    }
+    var model = {
+        leaseId_arr: Comm.db("leaseId_arr"),//套餐商品
+        newGoods: function () {//新建租赁商品
+            // Comm.
+
+        },
+        categoryArr: [],
+        userinfo: Comm.db("userinfo"),
+        getCateClass: function () {//获取类别
+            Comm.loading(true);
+            var url = '/common/categoryUser/getList'
+            opt = {
+                itemId: model.userinfo.bussinessId,
+                itemType: '1',
+                pId: '0'
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    $.each(res.data, function (i, v) {//
+                        model.categoryArr.push({
+                            "i": v.categoryUserId,
+                            "text": v.categoryName,
+                        })
+                    })
+                    model.choosingType()
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        choosingType: function () {//初始化分类
+            model.type = new Commpicker("选择商品分类", [model.categoryArr], function (obj, name, sid) {
+                $("[name=categoryId]").attr("data", sid).val(name)
+            })
+        },
+        bannerI: 0,
+        uploadPic: function (lb) { //上传图片初始化
+            var bannerloader = new imgUploader("bannerImg", lb, "banner");
+            bannerloader.success = function () {
+                if (this.imgList.length > 0) {
+                    $.each(this.imgList, function (i, v) {
+                        $("#bannerImg").prepend(
+                            template("imgTpl", {
+                                src: v
+                            })
+                        );
+                        Comm.iosInput();
+                        model.bannerI++;
+                    });
+                    this.imgList = [];
+                }
+                if (model.bannerI == 5) {
+                    $("#bannerUmp").hide();
+                } else {
+                    $("#bannerUmp")
+                        .show()
+                        .find(".moxie-shim")
+                        .width(80)
+                        .height(80);
+                }
+                var pics = [];
+                $("#bannerImg .upimg").each(function (i, e) {
+                    pics.push($(e).attr("data"));
+                });
+                $("#bannerImg")
+                    .siblings("[name=pics]")
+                    .val(pics.join(",")); //轮播图
+                model.uploadPic(5 - model.bannerI);
+            };
+        },
+        removeimg: function (a) { //移除图片
+            var idelm = $(a)
+                .parent()
+                .parent()
+                .attr("id");
+            if (idelm == "bannerImg") {
+                $("#bannerUmp")
+                    .show()
+                    .find(".moxie-shim")
+                    .width(80)
+                    .height(80);
+                model.bannerI--;
+                if (model.bannerI != 5) {
+                    $("#bannerUmp").removeClass("hide");
+                }
+                if (model.bannerI == 0) {
+                    $("input[name=pics]").attr("data-reg", "empty");
+                }
+            }
+            $(a)
+                .parent()
+                .remove();
+            model.uploadPic(5 - model.bannerI);
+        },
+        init: function () {//
+            Comm.loading(true);
+            var url = '/common/otherGoods/details',
+                opt = {
+                    otherGoodsIds: "",
+                };
+            if (model.leaseId_arr) {
+                var arr = JSON.parse(model.leaseId_arr);
+                var _t = [];
+                arr.forEach(function (v, i) {
+                    _t.push(v.otherGoodsId)
+                });
+                opt.otherGoodsIds = _t.join(",")
+            }
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1 && res.data) {
+                    res.data.forEach(function (n, m) {
+                        arr.forEach(function (v, i) {
+                            if (n.otherGoodsId == v.otherGoodsId) n.num = v.num
+                        })
+                    })
+                    $("#goodsList").html(template("leaseGoodsTpl", res.data))
+                } else {
+                    // Comm.message(res.msg)
+                }
+            })
+        },
+        addNum: function (a, i, id) {
+            //加减
+            var arr = JSON.parse(model.leaseId_arr);
+            var num =
+                $(a)
+                    .parent()
+                    .find("input")
+                    .val() *
+                1 +
+                i;
+            if (num > 0) {
+                $(a)
+                    .parent()
+                    .find("input")
+                    .val(num);
+                $(a).parent().find(".num").html(num);
+                arr.forEach(function (v, i) {
+                    if (v.otherGoodsId == id) v.num = num;
+                });
+                model.leaseId_arr = JSON.stringify(arr);
+                Comm.db("leaseId_arr", model.leaseId_arr);
+            } else {
+                Comm.Mess.confirm("是否删除该租赁商品？", Comm.setcb(function (c) {
+                    if (c == '1') {
+                        arr = $.grep(arr, function (v, i) {
+                            return v.otherGoodsId != id
+                        })
+                        model.leaseId_arr = JSON.stringify(arr);
+                        Comm.db("leaseId_arr", model.leaseId_arr);
+                        $(a).parents(".list").remove();
+                    }
+                }))
+            }
+
+        },
+        inputNum: function (obj, type) { //判断输入数字
+            var str = $(obj).val();
+            console.info(str)
+            if (str <= 0) {
+                Comm.message("请输入大于0的值~")
+                $(obj).val("1")
+                return
+            }
+            if (type == "1") {
+                if (str.indexOf(".") != "-1") {
+                    Comm.message("请输入整数~")
+                    $(obj).val("1")
+                    return
+                }
+            } else if (type == "2") {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val("")
+                        return
+                    }
+                }
+            }
+        },
+        delete: function (elm) {// 删除
+            var _l = $("[name=list]");
+            var f = $(elm).attr('data');// 1 进入删除 2 退出编辑
+            if (f == '1') {
+                $(elm).html("完成").attr("data", '2');
+                $.each(_l, function (i, v) {
+                    $(v).find("[name=editnum]").addClass('hide');
+                    $(v).find("[name=del]").removeClass('hide');
+                });
+
+            } else if (f == '2') {
+                $(elm).html("编辑").attr("data", '1');
+                $.each(_l, function (i, v) {
+                    $(v).find("[name=editnum]").removeClass('hide');
+                    $(v).find("[name=del]").addClass('hide');
+                });
+            }
+        },
+        editDel: function (elm) {//
+            var id = $(elm).parent().attr("data");
+            var arr = JSON.parse(model.leaseId_arr);
+            Comm.Mess.confirm("是否删除该租赁商品？", Comm.setcb(function (c) {
+                if (c == '1') {
+                    arr = $.grep(arr, function (v, i) {
+                        return v.otherGoodsId != id
+                    })
+                    model.leaseId_arr = JSON.stringify(arr);
+                    Comm.db("leaseId_arr", model.leaseId_arr);
+                    $(elm).parents(".list").remove();
+                }
+            }))
+        },
+        submit: function () {//
+            if (!model.leaseId_arr) {
+                Comm.message("请至少选择一个商品~");
+                return;
+            }
+            Comm.loading(true);
+            var opt = Check.submit("POST");
+            if (!opt) {
+                Comm.loading(false)
+                return
+            }
+            var url = '/common/otherGoods/add';
+            opt.ifTao = '1';//套餐添加
+            opt.userType = '1';
+            opt.categoryId = $("[name=categoryId]").attr("data");
+            opt.type = '3';//3 新增
+            opt.goodsType = '1';//1 供应商租赁
+            var _list = $("#goodsList").find(".list");
+            opt.cais = [];
+            $.each(_list, function (i, v) {
+                opt.cais.push({
+                    otherGoodsId: $(v).attr("data"),
+                    num: $(v).find("[name=num]").val()
+                })
+            })
+            opt.cais = JSON.stringify(opt.cais)
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("套餐添加成功~");
+                    Comm.close()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+    }
+</script>
+
+<script type="text/html" id="leaseGoodsTpl">
+    {{each $data as v k }}
+    <p class="list bottomBorder verticalP" data='{{v.otherGoodsId}}' name='list'>
+            <img src="{{OSS(v.img)}}" alt=""
+                onerror="app.errorimg(this)" class="marr10 left">
+            <span class="f14 c1a left wordW" style="width:35%">{{v.goodsName}}</span>
+            <span class="inblock v-a-b right " name='editnum'>
+                <span class="f12 marl5 c21">数量：</span>
+                <img src="./img/cart-jian.png" width="12" style="" onclick="model.addNum(this,-1,'{{v.otherGoodsId}}')">
+                <input type="number" name="num" id="" style="height:17px;width:35px;background:#F2F2F2"
+                    class="inblock t-a-c" placeholder="1" value="{{v.num}}" data-reg="empty"
+                    onchange="model.inputNum(this,1,'{{v.otherGoodsId}}')">
+                <img src="./img/cart-jia.png" width="12" style="" onclick="model.addNum(this,1,'{{v.otherGoodsId}}')">
+            </span>
+            <img onclick="model.editDel(this)" name='del' src="./img/deleteh.png" alt="" class="inline-block vertical hide" style='height:15px;width:15px;right:0px'>
+        </p>
+        {{/each}}
+</script>
+<script type="text/html" id="noleaseGoodsTpl">
+    <!-- <div class="mescroll-empty">
+        <img class="empty-icon" src="../img/wjg.png">
+        <p class="paddb10 empty-tip">您还未添加租赁商品~</p>
+    </div> -->
+</script>
+<!-- 上传图片 -->
+<script id="imgTpl" type="text/html">
+    <div class="left marr10 marb10" style="position:relative;">
+        <img src="./img/close.png" width="20" class="closeimg" onclick="model.removeimg(this)" />
+        <img class="upimg" src="{{OSS(src)}}" width="80" height="80" data="{{src}}" />
+    </div>
+</script>
+
+</html>

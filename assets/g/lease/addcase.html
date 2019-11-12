@@ -1,0 +1,107 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../../css/g.css'>
+    <link rel='stylesheet' href='../../css/comm.css'>
+    <style>
+        .cellContent {
+            /* height: 50px; */
+            /* justify-content: normal; */
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        /*  */
+        #details {
+            width: 100%;
+            height: 70px;
+            border: 0px;
+        }
+        /* footer */
+        footer button {
+            display: inline-block;
+            width: 45%;
+        }
+
+        #newGoods {
+            background: white;
+            color: black;
+            border: 1px solid #e2e2e2;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>上传案列</div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <div class="paddl15 bg_white " onclick="choosingType()">
+            <div class="cellContent  indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">商品分类</div>
+                <input type="text" name="categoryId" readonly disabled placeholder="请选择商品分类" data="" value=""
+                    data-reg='empty' class="f16 c333" />
+            </div>
+        </div>
+        <!-- 图片 -->
+        <div class="paddl15 bg_white">
+            <div class="cellContent  indicator bottomBorder upDoorPhoto" id="{{'img'+i||'img0'}}" style='height: 50px;'>
+                <div class="label f14 icon_pre  ">图片</div>
+                <img src="{{OSS(v.pics)}}" alt="" class="">
+                <input type="text" disabled readonly class="hide" name="otherpics" placeholder="请上传图片"
+                    data="{{v.pics||''}}" value="{{v.pics||''}}" data-reg='empty' />
+            </div>
+        </div>
+        <div class="paddl15 bg_white paddt15 paddb15">
+            <div class="label f16 icon_pre c333 ">详情描述</div>
+            <textarea name="details" id="details" class="details f14 mart10 " placeholder="请输入详情..."
+                data-reg='empty'></textarea>
+
+        </div>
+    </section>
+    <footer class="paddt5 paddb5 center">
+            <button onclick="model.newGoods()" id="newGoods" class="marauto" style="border-radius: 5px;">取消</button>
+            <button onclick="model.choiceGoods()" id="choiceGoods" class="marauto" style="border-radius: 5px;">保存</button>
+        </footer>
+</body>
+<script src='../../inc/z.js'></script>
+<script src='../../inc/g.js'></script>
+<script src='../../inc/comm.js'></script>
+<script src='../../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+
+    }
+    function pageresume() {
+
+    }
+    var model = {
+    }
+</script>
+
+</html>

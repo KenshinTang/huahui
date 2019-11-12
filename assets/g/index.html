@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        .filter {
+            position: relative;
+        }
+        
+        .filter .op {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.7);
+            z-index: 2;
+        }
+        
+        .filter .op>div {
+            text-align: center;
+            height: 64px;
+            line-height: 35px;
+            width: 215px;
+            margin: 0 auto;
+            color: #DD1474;
+            background-image: url('../img/noopen.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+        }
+        
+        .filter .op>div span {
+            font-size: 20px;
+            color: #DD1474;
+        }
+        
+        .colorred {
+            color: #dd1669 !important;
+        }
+        /* header */
+        
+        .headBtn {
+            width: 100%;
+            height: 40px;
+        }
+        
+        .headBtn .xiaoxi {
+            width: 20px;
+            height: 20px;
+            background: url("./img/my-xiaoxi.png") no-repeat center;
+            background-size: contain;
+        }
+        
+        .xiaoxiNum {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: red;
+            color: white;
+            transform: scale(.7);
+            position: absolute;
+            top: -7px;
+            padding: 1px;
+            left: 11px;
+            text-align: center;
+        }
+        
+        .set {
+            width: 20px;
+            height: 20px;
+            background: url("./img/setting.png") no-repeat center;
+            background-size: contain;
+        }
+        
+        #header {
+            background: url("./img/Background.png") no-repeat;
+            background-size: 100% auto;
+        }
+        
+        .headimg {
+            height: auto;
+            /* padding: 10px 0; */
+        }
+        
+        .headimg>img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            margin-left: 15px;
+            margin-top: 5px;
+        }
+        
+        .myName-box {
+            width: calc(100% - 70px - 40px);
+            /* height: 70px; */
+            padding: 5px 0;
+        }
+        
+        .myName-box>div {
+            width: 100%;
+            height: 25px;
+            ;
+        }
+        
+        .myName {
+            max-width: 52%;
+        }
+        
+        .myPhone {
+            width: 100%;
+            height: 25px;
+        }
+        
+        .myPhone span {
+            display: inline-block;
+        }
+        
+        #pfen {
+            vertical-align: bottom;
+            position: relative;
+            top: -1px;
+        }
+        
+        #pfen img {
+            /* display: inline-block; */
+            width: 13px;
+            height: 13px;
+        }
+        
+        #punchIn {
+            /* margin-left: 10px; */
+            padding: 3px 10px;
+            background: #f2f2f266;
+        }
+        
+        .goUser {
+            width: 15px;
+            height: 15px;
+            margin-right: 15px;
+            background-repeat: no-repeat;
+            background-position: right 0px center;
+            background-size: 15px auto;
+            background-image: url("./img/grzx.png");
+            background-size: contain;
+        }
+        
+        .orderCount {
+            width: 90%;
+            height: 108px;
+            margin: 0px 5%;
+            border-radius: 3px;
+            position: relative;
+            /* float: left; */
+            top: -30px;
+        }
+        
+        .jt {
+            width: 15px;
+            height: 15px;
+            background-repeat: no-repeat;
+            background-position: right 0px center;
+            background-size: 15px auto;
+            background-image: url("./img/identi.png");
+            background-size: contain;
+        }
+        
+        .m-box {
+            width: 100%;
+            height: 75px;
+            display: flex;
+            justify-content: space-around;
+            background: white;
+        }
+        
+        .m-box>div {
+            width: 45%;
+            height: 75px;
+            /* line-height: 75px; */
+            margin-top: -20px;
+            border: 1px solid #FCFEFF;
+            border-radius: 5px;
+            display: inline-block;
+            background: white;
+            box-shadow: 0px 4px 14px 0px rgba(60, 81, 89, 0.15);
+        }
+        
+        .m-box>div>div {
+            height: 30px;
+        }
+        
+        .m-img {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-image: url("./img/ljxse.png");
+        }
+        
+        .o-img {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-image: url("./img/zs.png");
+        }
+        
+        .statistics {
+            width: 45%;
+            margin: 5px 0px;
+        }
+        /* section */
+        
+        .paddr35 {
+            padding-right: 35px;
+        }
+        
+        #ordertype div {
+            width: 20%;
+        }
+        
+        #demo:after,
+        #demo:before {
+            border: solid transparent;
+            content: ' ';
+            height: 0;
+            left: 100%;
+            position: absolute;
+            width: 0;
+        }
+        
+        #demo:after {
+            top: 50%;
+            transform: translateY(-50%);
+            border-left-color: #fff;
+            border-width: 5px;
+        }
+        
+        #demo:before {
+            top: 50%;
+            transform: translateY(-50%);
+            border-left-color: #ebebeb;
+            border-width: 6px;
+        }
+        
+        #demo {
+            position: relative;
+        }
+        /* 花汇行情 */
+        
+        #quotation span {
+            color: #747474
+        }
+        
+        .lh55 {
+            height: 55px;
+            padding: 8px;
+        }
+        /* 当月统计 */
+        
+        .dytj:before {
+            position: relative;
+            top: 1px;
+            content: " ";
+            display: inline-block;
+            height: 16px;
+            width: 16px;
+            background: url(img/dytj.png) no-repeat;
+            background-size: 100%;
+        }
+        /* 抢单 */
+        
+        .endTime {
+            color: #E87570;
+            position: absolute;
+            bottom: 55px;
+            right: 10px;
+        }
+        /* 为你推荐 */
+        
+        .listbtn {
+            /* display: flex;
+            align-items: center;
+            justify-content: space-between; */
+        }
+        
+        .listbtn>div {
+            width: calc((100% - 20px) / 4);
+            display: inline-block;
+            padding: 15px 3px;
+        }
+        
+        .zh {
+            /* background-color: rgba(255, 255, 255, 0.7); */
+            opacity: .5;
+        }
+        
+        .zhuNum,
+        .shouNum {
+            width: 15px;
+            height: 15px;
+            line-height: 15px;
+            top: 8px;
+            right: 15px;
+            background: red;
+            border-radius: 50%;
+            color: white;
+            font-size: 12px;
+            transform: scale(.8);
+        }
+        
+        @media screen and (min-width: 375px) {
+            #quotation span {
+                padding: 0 3px;
+            }
+        }
+        
+        @media screen and (min-width: 414px) {
+            #quotation span {
+                padding: 0 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header></header>
+    <section id='' class="bg_white _paddl10 _paddr10">
+        <div style="height: 190px;" id="header">
+
+        </div>
+        <div id="section"></div>
+    </section>
+    <footer class="shared"></footer>
+
+    <div id="sinbox" wtd="articleTemp">
+        <div class="item">
+            <div class="colorb5 left">fdsfdsfdf</div>
+        </div>
+    </div>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="foot.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/area.js"></script>
+<script src="../inc/picker.min.js"></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo");
+
+    function pageload() {
+
+
+        Comm.db("_cataName", null);
+        Comm.db("cartGoodsId", null);
+        app.update(1);
+
+        Comm.loading(true)
+        if (!userinfo) {
+            Comm.loading(false)
+            setTimeout(function() {
+                Comm.gotop("login.html")
+            }, 600)
+        }
+        Foot.init()
+        GDict.init(function() {
+            var wl = GDict.get("logistics")
+            $.each(wl, function(i, v) {
+                model.wl.push({
+                    text: v.dictname,
+                    i: v.dictid
+                })
+            })
+            Area.init();
+            model.getHq();
+            // model.getDetail();
+        })
+
+
+    }
+
+    //
+    function pageresume() {
+        Comm.db("cartGoodsId", null);
+        Comm.db("_cataName",null)
+        model.getDetail()
+    }
+
+    var model = {
+        data: {},
+        wl: [],
+        getHq: function() { //获取行情
+            Comm.loading(true);
+            var url = '/bussiness/quotation/shouye',
+                opt = {};
+            AJAX.POST(url, opt, function(res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    model._hq = res.data
+                    model.getDetail();
+                } else {}
+            })
+        },
+        getDetail: function() { //获取供应商信息
+            AJAX.POST("/bussiness/bussiness/detail", {
+                customerId: userinfo.customerId
+            }, function(res) {
+                console.info(res);
+                if (res.code == 1) {
+                    model.roleId = res.data.roleId; //权限id
+                    model.data.detail = res.data;
+                    userinfo.shopName = res.data.bussinessName;
+                    Comm.db("userinfo", userinfo)
+
+                    //获取供应商统计信息
+                    AJAX.POST("/bussiness/bussiness/main", {
+                        bussinessId: userinfo.bussinessId
+                    }, function(res) {
+                        console.info(res);
+                        if (res.code == 1) {
+                            $.extend(model.data.detail, res.data);
+                            $.each(model.wl, function(i, v) {
+                                $.each(res.data.logistics, function(n, m) {
+                                    if (v.i == m.type) {
+                                        v.val = m.val
+                                    }
+
+                                })
+                            })
+                            model.data.detail.wl = model.wl;
+                            model.data.detail.ifDetail = userinfo.ifDetail;
+                            // model.data.detail._hq = model._hq;
+                            if (model._hq) {
+                                model._hq.today ? model.data.detail._today = model._hq.today : '';
+                                model._hq.zuotian ? model.data.detail._zuotian = model._hq.zuotian : '';
+                            }
+
+                            $("#header").html(template("userinfoTpl", model.data.detail))
+                            model.resetState();
+                            model.data.detail._rolr = model.hideCompetence(model.data.detail.roleId); //权限判定
+                            console.info(model.data.detail)
+                                // $("#manageAddress").html(model.data.detail.manageAddress)
+                            $("#section").html(template("sectionTpl", model.data.detail));
+                            if (model.data.detail._rolr.length == "0") $("[name=roleId]").hide();
+                            model.xiaoxi()
+                            Comm.loading(false)
+                        } else {
+                            Comm.message(res.msg)
+                            Comm.go('login.html')
+                        }
+                        model.filter();
+                        model.getTime();
+
+                    })
+                } else {
+                    Comm.message(res.msg)
+                    Comm.go('login.html')
+                }
+            })
+        },
+        goOrderCenter: function(v, num) {
+            Comm.go("orderCenter.html?type=" + v + "&num=" + num);
+        },
+        xiaoxi: function() {
+            AJAX.POST('/api/mess/count', {
+                userType: 1,
+                type: 1
+            }, function(res) {
+                if (res.code == 1) {
+                    if (res.data >= 99) {
+                        $(".xiaoxiNum").html("99")
+                    } else if (res.data <= 0) {
+                        $(".xiaoxiNum").addClass("hide")
+                    } else {
+                        $(".xiaoxiNum").html(res.data)
+                    }
+
+                } else {
+                    $(".xiaoxiNum").addClass("hide")
+                }
+            })
+        },
+        resetState: function() {
+            model.data.detail.vacationEnd = (model.data.detail.vacationEnd).replace(/-/g, "/").replace(/\.0/g, "")
+            model.data.detail.vacationStart = (model.data.detail.vacationStart).replace(/-/g, "/").replace(/\.0/g, "")
+            if (model.data.detail.vacationEnd != "" && model.data.detail.vacationStart != "") {
+                var nowTime = new Date().getTime();
+                var d1 = new Date(model.data.detail.vacationStart).getTime();
+                var d2 = new Date(model.data.detail.vacationEnd + " 23:59:59").getTime();
+                if (d1 <= nowTime && nowTime <= d2) {
+                    $("#state").html("(歇业中)")
+                } else {
+                    $("#state").html("(营业中)")
+                }
+            }
+        },
+        no: function() {
+            Comm.message("暂未开放，敬请期待")
+        },
+        filter: function() {
+            $('.filter').each(function(i, e) {
+                $(e).append('<div class="op"><div></div></div>').click(function() {
+                    Comm.message('暂未开放，敬请期待')
+                })
+                $(e).find('.op>div').css('margin-top', ($(e).find('.op').height() - 64) / 2 + "px");
+            })
+        },
+        getJc: function() { //获取竞彩列表
+            Comm.loading(true);
+            var url = '/bussiness/jincai/list',
+                opt = {
+                    // jinCaiId:0
+                }
+            AJAX.POST(url, opt, function(res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+
+                    if (res.data && res.data.length > 0) {
+                        var now = new Date();
+                        for (var i = 0; i < res.data.length; i++) {
+                            var e = res.data[i];
+                            e.ends = (hhmmss.todate(e.addTime).getTime() + (model.jctime * 60000) - now.getTime()) / 1000;
+                            e.starts = (hhmmss.todate(e.addTime).getTime() - now.getTime()) / 1000;
+
+                        }
+                        $("#jcList").html(template('jcTpl', res.data[0]));
+                    } else $("#jcList").html(template('nojcTpl'));
+
+
+                    var ind = setInterval(function() {
+                        var num = 0;
+                        $(".ttime").each(function(i, e) {
+                                if (!$(e).hasClass("hide")) {
+                                    var id = $(e).attr('data');
+                                    var result = $(e).attr('ttime');
+                                    if (result > 0) {
+                                        result = result - 1;
+                                        var hour = Math.floor(result / 3600);
+                                        var second = Math.floor(result % 60);
+                                        var minite = Math.floor((result / 60) % 60);
+                                        if (second < 10) second = "0" + second;
+                                        if (minite < 10) minite = "0" + minite;
+
+                                        var _t = model.resetTime(hour, minite, second);
+                                        $('#ttime' + id).html("距结束 " + _t).attr('ttime', result);
+                                    } else {
+                                        // $('#ttime' + id).addClass("hide")
+                                        $('#ttime' + id).html("已结束");
+                                    }
+                                } else {
+                                    num++
+                                }
+                            })
+                            // console.info(num)
+                        if (num == $(".ttime").length) clearInterval(ind)
+                    }, 1000)
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        resetTime: function(hour, minite, second) { //重置倒计时
+            if (hour * 1 > 0) {
+                hour = hour + ':';
+                if (minite * 1 > 0) {
+                    minite = minite + ':';
+                } else {
+                    minite = '00' + ':';
+                }
+            } else {
+                hour = '';
+                if (minite * 1 > 0) {
+                    minite = minite + ':';
+                } else {
+                    minite = '';
+                }
+            }
+            return hour + minite + second
+        },
+        getTime: function() { //获取竞采有效时间
+            AJAX.POST('/api/config/bykeys', {
+                keys: "jctime"
+            }, function(res) {
+                if (res.code == 1) {
+                    model.jctime = res.data[0].value;
+                    model.getJc()
+                }
+            })
+        },
+        lease: function() { //判断是否为租赁供应商
+            // 0未填写 1审核成功 2审核中 3审核失败 是否租赁
+            var _l = model.data.detail.ifLease;
+            if (_l == '0') {
+                Comm.Mess.confirm("你还未申请成为租赁供应商，是否前往申请成为租赁供应商？", Comm.setcb(function(a) {
+                    if (a == '1') {
+                        Comm.go("./applyLease.html")
+                    }
+                }))
+            } else {
+                Comm.go("./lease_index.html?ifLease=" + _l)
+            }
+            // Comm.go("./lease_index.html?ifLease="+_l)
+        },
+        go: function(v) {
+            Comm.db("acGoodsId", null);
+            if (v == '1') { //预定西安判断有误设置订金比列
+                if (model.dj <= 0) {
+                    Comm.message('请设置订金比例~');
+                    // setTimeout(function(){
+                    //     Comm.go('storeSetup.html')
+                    // },600)
+                    return;
+                }
+            }
+            Comm.go('activityInfo.html?type=' + v);
+        },
+        hideCompetence: function(roleId) { //列表隐藏权限判断
+            // 1 订单管理 2 财务管理 4 商品管理 8 租赁管理 16 活动管理 32 评论管理 64 员工管理 128 全部权限
+            // 256 售后管理 512 新建订单 1024 我的客户 2048 权限管理 4096 员工操作 8192 预订管理 16384 店铺管理 32768 抢单 65536 数据统计
+            var _rolr = [];
+            for (var i = 0; i < 17; i++) {
+                //2的n - 1次方
+                var a = Math.pow(2, i);
+                //判断是否存在
+                //位运算
+                if ((model.roleId & a) == a) {
+                    //包含
+                    _rolr.push(a)
+                }
+            };
+            var _f = _rolr.indexOf(128)
+            if (_f != -1) {
+                _rolr = [];
+                for (var i = 0; i < 17; i++) {
+                    _rolr.push(Math.pow(2, i))
+                };
+            }
+            return _rolr;
+        },
+        ifCompetence: function(ifroleId, v, gorul) { //权限判定
+            // 1 订单管理 2 财务管理 4 商品管理 8 租赁管理 16 活动管理 32 评论管理 64 员工管理 128 全部权限
+            // 256 售后管理 512 新建订单 1024 我的客户 2048 权限管理 4096 员工操作 8192 预订管理 16384 店铺管理 32768 抢单 65536 数据统计
+            var _rolr = [];
+            for (var i = 0; i < 17; i++) {
+                //2的n - 1次方
+                var a = Math.pow(2, i);
+                //判断是否存在
+                //位运算
+                if ((v & a) == a) {
+                    //包含
+                    _rolr.push(a)
+                }
+            }
+            var _f = _rolr.indexOf(128)
+            if (_f != -1) {
+                _rolr = [];
+                for (var i = 0; i < 17; i++) {
+                    _rolr.push(Math.pow(2, i))
+                };
+            }
+            var f = _rolr.indexOf(ifroleId * 1);
+            if (f != -1) {
+
+                app.checkIslogin(true, gorul)
+
+
+            } else {
+                Comm.message("权限不足~");
+                return;
+            }
+        },
+    }
+    template.defaults.imports.resMoney = function(value) {
+        var str = "0"
+        if (value) {
+            str = app.price(value)
+        }
+        return str
+    }
+</script>
+
+<script type="text/html" id="userinfoTpl">
+    <div id="user" style="height: 130px;">
+        <div class="headBtn paddt10 paddl15 paddr10 flex-between">
+            <div style="position:relative" class="" onclick="Comm.go('mess.html')">
+                <div class="xiaoxi"></div>
+                <div class="xiaoxiNum"></div>
+            </div>
+            <div>
+                <div class="set" onclick="model.ifCompetence('16384','{{roleId}}','storeSetup.html')"></div>
+            </div>
+        </div>
+
+        <div onclick="model.ifCompetence('16384','{{roleId}}','applySuppliers.html?type=1')" class="headimg flex-between">
+
+            <img src="{{OSS(headPic)||''}}" class="fl inblock" alt="" onerror="app.herrorimg(this)" style="padding-right: 0px">
+            <div class=" inblock myName-box marl10 ">
+                <div class=" colorfff block lh25">
+                    <span class="myName f16 wordW   colorfff left" id="nickname">{{shopAbbr||'点击申请商家入驻'}}</span> {{if state =="1"}}
+                    <span class="f16 wordW colorfff left marl5" id="state">(营业中)</span> {{/if}} {{if state===""&&ifDetail!="0"}}
+                    <span class="f16 wordW colorfff left marl5" id="state">(审核中)</span> {{/if}}
+                </div>
+                {{if state=="1"}}
+                <div class="myPhone block f14 lh25 ">
+                    <span class="colorfff  f12 marr5" id="manageAddress">{{getAreaName(manageAddress)}}</span>
+                    <span class="colorfff  f12 marr5" id="">|</span>
+                    <span class="colorfff  f12 marr5" id="pfen">
+                            {{set len=[0,1,2,3,4]}}
+                            {{each len as i v}}
+                            {{if v < starrat}}
+                            <img src="./img/index-pingfen.png" alt="">
+                            {{else}}
+                            <img src="./img/index-pfen.png" alt="">
+                            {{/if}}
+                            {{/each}}
+                        </span>
+                    <span class="colorfff  f12" id="">{{starrat}}分</span>
+                </div>
+                {{else if state=="0"}}
+                <div class="myPhone block f14 lh25 ">
+                    <span class="colorfff  f12 marr5">资料审核中</span>
+                </div>
+                {{else if state=="2"}}
+                <div class="myPhone block f14 lh25 ">
+                    <span class="colorfff  f12 marr5">审核拒绝</span>
+                </div>
+                {{/if}}
+            </div>
+            <div class="goUser"></div>
+        </div>
+    </div>
+    <div class="m-box ">
+        <div onclick="">
+            <div class="center paddt15 ">
+                <span class=" f16 bold inblock" name="money">{{allPrice|resMoney}}</span>
+            </div>
+            <div class="center paddt10">
+                <span class="m-img inblock contain"></span>
+                <span class="f14 color74">累计销售额</span>
+            </div>
+        </div>
+        <div id="allGoodsNum" onclick="model.ifCompetence('4','{{roleId}}','goodlist.html?state=1')" _onclick="Comm.go('goodlist.html?state=1')">
+            <div class="center paddt15 ">
+                <span class=" f16 bold inblock" name="orderNum">{{allGoodsNum||"0"}}</span>
+            </div>
+            <div class="center paddt10">
+                <span class="o-img inblock contain"></span>
+                <span class="f14 color74">在售商品</span>
+            </div>
+        </div>
+    </div>
+</script>
+<script type="text/html" id="sectionTpl">
+    <!-- 订单信息 -->
+    <div class="flex-between   paddt15 paddb15 bottomShadow" id="ordertype">
+        <div class="center   border_right triangle" id="" onclick="model.ifCompetence('1','{{roleId}}','orderCenter.html?type=undefined')" _onclick="model.goOrderCenter()">
+            <p class="f22 colordd marb10">{{nowMonthOrderDai}}</p>
+            <p class="f14">待接单</p>
+        </div>
+        {{each wl as v i }}
+        <div class="center" onclick="model.ifCompetence('1','{{roleId}}','orderCenter.html?type='+{{v.i}}+'&num='+{{v.val}})" _onclick="model.goOrderCenter('{{v.i}}',{{v.val}})">
+            <p class="f22  marb10">{{v.val||'0'}}</p>
+            <p class="f14 color77">{{v.text}}</p>
+        </div>
+        {{/each}}
+    </div>
+    <!-- 花汇行情 -->
+    <div class="lh55 mart15 bottomShadow hide" id="quotation">
+        <div class="fl">
+            <img height="40" src="./img/index-icon.png">
+        </div>
+        <div class="" style="margin-left: 45px;height:40px;display:flex;flex-direction:column;justify-content: center">
+            {{if _today}}
+            <p class=" flex-center block wordW" style="height:25px">
+                <span>●</span>&nbsp;
+                <span class="">{{_today.name}}</span>&nbsp;
+                <span>|</span>&nbsp;
+                <span>今日平均{{_today.average}}</span>&nbsp;
+                <span class="">最高{{_today.high}}</span>&nbsp;
+                <span class="">最低{{_today.lower}}</span>
+            </p>
+            {{/if}} {{if _zuotian}}
+            <p class=" flex-center block wordW" style="height:25px">
+                <span>●</span>&nbsp;
+                <span class="">{{_zuotian.name}}</span>&nbsp;
+                <span>|</span>&nbsp;
+                <span>今日平均{{_zuotian.average}}</span>&nbsp;
+                <span class="">最高{{_zuotian.high}}</span>&nbsp;
+                <span class="">最低{{_zuotian.lower}}</span>
+            </p>
+            {{/if}}
+        </div>
+
+    </div>
+    <!-- 待处理订单 -->
+    <div class="mart15  paddt15 paddb15 flex-between hide">
+        <div class="bottomShadow paddt15 paddb15 paddl15 paddr15" style="width:45%;">
+            <p class="mart5 color74">待处理订单</p>
+            <p>0</p>
+        </div>
+        <div class="bottomShadow paddt15 paddb15 paddl15 paddr15" style="width:45%">
+            <p class="mart5 color74">订单总数</p>
+            <p>0</p>
+        </div>
+    </div>
+    <!-- 当月统计 -->
+    <div class="mart15 bottomShadow paddt15 paddb15" id="nowMonthCount">
+        <div class="flex-between paddl10 paddr10  cellContent  indicator">
+            <span class="f16 bold dytj marl10">当月统计</span>
+            <span class="" style="color:#acacac" onclick="model.ifCompetence('2','{{roleId}}','sale.html')" _onclick="Comm.go('sale.html')">查看历史</span>
+        </div>
+        <div class="flex-around paddl10 paddr10 paddt20">
+            <div class="paddl20 paddr20 center">
+                <p class="colordd f18 bold marb10">{{nowMonthOrderNum}}</p>
+                <p class="color74">当月订单总数(单)</p>
+            </div>
+            <div class="paddl20 paddr20 center">
+                <p class="colordd f18 bold marb10">&yen;{{nowMonthOrderCash}}</p>
+                <p class="color74">当月销售总额(元)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 推荐 -->
+    <div class="mart15 bottomShadow paddt15 paddb15 " name="roleId">
+        <div class="f16 bold paddl10">为你推荐</div>
+        <div class="_flex-between paddl10 paddr10 paddt20 paddb15 listbtn ">
+            <!-- // 1 订单管理 2 财务管理 4 商品管理 8 租赁管理 16 活动管理 32 评论管理 64 员工管理 128 全部权限
+            // 256 售后管理 512 新建订单 1024 我的客户 2048 权限管理 4096 员工操作 8192 预订管理 16384 店铺管理 32768 抢单 65536 数据统计 -->
+
+            {{each _rolr as v k}} {{if v=='2'}}
+            <div class="center" onclick="app.checkIslogin(true,'money.html')">
+                <img src="./img/wdqb.png" alt="" height="20">
+                <span class="block mart10 color74 f12">我的钱包</span>
+            </div>
+            {{/if}} {{if v=='2'}}
+            <div class="center" onclick="app.checkIslogin(true, 'financial.html')">
+                <img src="./img/cwtji.png" alt="" height="20">
+                <span class="block mart10 color74 f12">财务统计</span>
+            </div>
+            {{/if}} {{if v=='65536'}}
+            <div class="center" onclick="app.checkIslogin(true,'./dataindex.html')">
+                <img src="./img/sjtj.png" alt="" height="20">
+                <span class="block mart10 color74 f12">数据统计</span>
+            </div>
+            {{/if}} {{if v=='4'}}
+            <div class="center" onclick="Comm.go('goodlist.html?state=1')">
+                <img src="./img/spgl.png" alt="" height="20">
+                <span class="block mart10 color74 f12">商品管理</span>
+            </div>
+            {{/if}} {{if v=='16'}}
+            <div class="center" onclick="app.checkIslogin(true,'activity.html')">
+                <img src="./img/hdgl.png" alt="" height="20">
+                <span class="block mart10 color74 f12">活动管理</span>
+            </div>
+            {{/if}} {{if v=='256'}}
+            <div class="center verticalP" onclick="app.checkIslogin(true,'afterSaleList.html')">
+                <img src="./img/shgli.png" alt="" height="20">
+                <span class="block mart10 color74 f12">售后管理</span> {{if shouNum*1>"0"}}
+                <p class="circle vertical zhuNum">{{shouNum*1>0?shouNum*1>99?'99':shouNum:''}}</p>
+                {{/if}}
+            </div>
+            {{/if}} {{if v=='512'}}
+            <div class="center" onclick="app.checkIslogin(true,'newOrder.html')">
+                <img src="./img/xjddan.png" alt="" height="20">
+                <span class="block mart10 color74 f12">新建订单</span>
+            </div>
+            {{/if}} {{if v=='1024'}}
+            <div class="center" onclick="app.checkIslogin(true,'customer.html')">
+                <img src="./img/wdkefu.png" alt="" height="20">
+                <span class="block mart10 color74 f12">我的客户</span>
+            </div>
+            {{/if}} {{if v=='32'}}
+            <div class="center" onclick="app.checkIslogin(true,'storeEvaluation.html')">
+                <img src="./img/plgli.png" alt="" height="20">
+                <span class="block mart10 color74 f12">评论管理</span>
+            </div>
+            {{/if}} {{if v=='8'}}
+            <div class="center verticalP zh" onclick="model.no()" _onclick="model.lease()">
+                <img src="./img/zulfw.png" alt="" height="20">
+                <span class="block mart10 color74 f12">租凭服务</span> {{if zhuNum*1>"0"}}
+                <p class="circle vertical zhuNum">{{zhuNum*1>0?zhuNum*1>99?'99':zhuNum:''}}</p>
+                {{/if}}
+
+            </div>
+            {{/if}} {{if v=='2048'}}
+            <div class="center" onclick="app.checkIslogin(true,'authorityManagement.html')">
+                <img src="./img/qxgli.png" alt="" height="20">
+                <span class="block mart10 color74 f12">权限管理</span>
+            </div>
+            {{/if}} {{if v=='4096'}}
+            <div class="center" onclick="app.checkIslogin(true,'operationLog.html')">
+                <img src="./img/ygczuo.png" alt="" height="20">
+                <span class="block mart10 color74 f12">员工操作</span>
+            </div>
+            {{/if}} {{if v=='8192'}}
+            <div class="center zh" onclick="model.no()" _onclick="model.go(1)">
+                <img src="./img/yuding.png" alt="" height="20">
+                <span class="block mart10 color74 f12">预定管理</span>
+            </div>
+            {{/if}} {{/each}}
+        </div>
+    </div>
+    <!-- 抢单 -->
+    <div class=" bottomShadow paddt15 paddb15 hide" id="jcList" onclick="model.ifCompetence('32768','{{roleId}}','competitive.html')">
+        <!-- <div id="jsl"></div> -->
+    </div>
+</script>
+
+<script type="text/html" id="jcTpl">
+    <div class="flex-between marl10 marr10  cellContent  indicator bottomBorder">
+        <div>
+            <span class="f16 bold  ">抢单</span>
+            <span class="f16 bold  colorff6 hide">(399)</span>
+        </div>
+        <!-- <span class="" style="color:#acacac">查看历史</span> -->
+    </div>
+    <div class="marl10 marr10 mart15" style="position:relative">
+        <div>
+            <p class="paddb10">商品：{{goodsName}}</p>
+            <p class="paddb10">数量：{{jinNum}}</p>
+            <p class="wordW3">商品描述：{{jinDes}}</p>
+        </div>
+        <!-- <div class="endTime">距结束：01:59</div> -->
+        <span class=' f14 ttime endTime' id="ttime{{jinCaiId}}" data='{{jinCaiId}}' ttime="{{ends}}" style="color:#DA251C;right:15px">距结束 00:00</span>
+    </div>
+
+</script>
+<script type="text/html" id="nojcTpl">
+
+    <div class="flex-between marl10 marr10  cellContent  indicator _bottomBorder ">
+        <div>
+            <span class="f16 bold  ">抢单</span>
+            <span class="f16 bold  colorff6 hide">(399)</span>
+        </div>
+    </div>
+    <div class="t-a-c">
+        <img src="../img/wjg.png" alt="" style="width:140px;margin:0 auto" class="block paddt10 paddb10">
+        <span class="color999 f14">抱歉,暂无抢单信息</span>
+    </div>
+</script>
+
+</html>

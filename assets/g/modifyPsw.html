@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <title>修改密码</title>
+    <link rel="stylesheet" href="../css/g.css">
+    <link rel="stylesheet" href="../css/comm.css">
+    <style>
+        section>div {
+            margin-left: 25px;
+            margin-right: 25px;
+        }
+
+        .pw {
+            background-color: #fff;
+            border-bottom: 1px solid #ededf5;
+            position: relative;
+            box-sizing: border-box;
+            height: 48px;
+            line-height: 48px;
+        }
+
+        .pw input {
+            background-image: url('../img/login/pass.png');
+        }
+
+        .pw input {
+            width: 90%;
+            height: 30px;
+            color: #111;
+            padding-left: 30px;
+            background-repeat: no-repeat;
+            background-size: auto 20px;
+            background-position: left center;
+        }
+
+        .pw i {
+            position: absolute;
+            right: 10px;
+            top: 20px;
+            padding: 0 5px;
+            width: 30px;
+        }
+        .sign-btn {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+        </div>
+    </header>
+
+    <section id=''>
+        <div style="margin-top: 45px; margin-bottom: 45px;">
+            <span class="f24" id="titl">修改密码</span>
+        </div>
+        <div class="pw">
+            <input class="f16" type="password" name="oldPassword" id="oldPassword" data-reg='empty p' placeholder="请输入旧密码" maxlength="20"
+                autocomplete="off" />
+        </div>
+        <div class="pw mart15">
+            <input class="f16" type="password" name="password" id="password" data-reg='empty p' placeholder="请输入新密码" maxlength="20" autocomplete="off"
+            />
+        </div>
+        <div class="pw mart15">
+            <input class="f16" type="password" name="newPassword" id="newPassword" data-reg='empty p' placeholder="重新输入确认密码" maxlength="20"
+                autocomplete="off" />
+        </div>
+        <div class="mart30 tcenter">
+            <button type="button"  class="sign-btn"  onclick="save()">确定</button>
+        </div>
+    </section>
+    <script src="../inc/g.js"></script>
+    <script src="../inc/z.js"></script>
+    <script src="../inc/comm.js"></script>
+    <script>
+        var userinfo = Comm.db("userinfo");
+        function pageload() {
+
+        }
+
+        function save() {
+            var data = Check.submit('POST')
+            if (!data) {
+                return false;
+            }
+            if (data.password != data.newPassword) {
+                Comm.message('两次密码必须相同');
+                return;
+            }
+            data.customerId = userinfo.customerId;
+            AJAX.POST('/common/customer/modifyPassword', data, function (res) {
+                if (res.code == 1) {
+                    Comm.message('修改密码成功');
+                    setTimeout(function () {
+                        // Comm.close();
+                        Comm.gotop("./login.html")
+                    }, 1000)
+                } else {
+                    Comm.message(res.msg);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

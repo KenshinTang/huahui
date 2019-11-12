@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link href="../css/g.css" type="text/css" rel="stylesheet">
+    <link href="../css/comm.css" type="text/css" rel="stylesheet">
+    <style>
+        section {
+            background: #F4F4F4;
+        }
+        
+        textarea {
+            border: 0px solid white;
+        }
+        
+        .boldb {
+            border-bottom: 1px solid #eee;
+            line-height: 50px;
+            width: 100%;
+        }
+        
+        .boldb span {
+            width: 24%;
+            display: inline-block;
+        }
+        
+        .boldb img,
+        .boldb span {
+            vertical-align: middle;
+        }
+        
+        .boldb img.right {
+            margin-top: 19px;
+        }
+        
+        .boldb input {
+            text-align: left;
+            font-size: 15px;
+            height: 30px;
+            width: 65%;
+        }
+        
+        .boldb input[type=button] {
+            color: #CCCCCC;
+            background-color: white;
+            margin-right: 15px;
+            margin-top: 10px;
+            float: right;
+        }
+        
+        #loadingbox {
+            display: none;
+        }
+        
+        button {
+            border: 0px;
+        }
+        
+        footer {
+            padding: 5px 0px
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="backClear()"></div>
+            <!-- <div class="navItem f16" id="edit" onclick="del()">删除</div> -->
+            <div class="navTitle">添加客户</div>
+        </div>
+    </header>
+    <section>
+
+    </section>
+    <footer class="shared">
+        <button onclick="save()" id="modify" class="marauto block" style="border-radius: 5px;">保存</button>
+    </footer>
+</body>
+
+<script type="text/html" id="mainTpl">
+    <div class="bg_white">
+        <div class="marr10 marl10">
+            <!-- <input type="hidden" name="addressId" id="addressId" value="{{addressId?addressId:''}}"/> -->
+            <div class="boldb">
+                <span class="f16">收件人</span>
+                <input type="text" id="userName" name="userName" value="{{userName?userName:''}}" placeholder="请填写收件人" data-reg='empty' />
+            </div>
+
+            <div class="boldb">
+                <span class="f16">手机号</span>
+                <input type="tel" name="phone" id="phone" maxlength="11" value="{{phone?phone:''}}" placeholder="请填写收件人手机号" data-reg='m' />
+            </div>
+
+            <div class="boldb" onclick="selmap()">
+                <!-- <div class="boldb" onclick="areaPicker.show()"> -->
+                <span class="f16">所在地区</span>
+                <input type="text" id="region" name="region" readonly="readonly" placeholder="请选择地区" data="{{region?region:''}}" value="{{region?(region):''}}" data-reg='empty' />
+                <img class="right" src="../img/r.png" height="12" />
+            </div>
+            <div class="boldb" style="border: none">
+                <span class="f16">详细地址</span>
+                <textarea data-reg='empty' placeholder="请填写详细地址" name="address" id="address" class="f14 paddl5 paddr10 paddb10 mart10" placeholder="" data="{{coordinate?coordinate:''}}" style="padding-left:8px;float:right;width: 76%; height: 70px;box-sizing: border-box; padding-top:8px;">{{address?address:''}}</textarea>
+            </div>
+
+        </div>
+        <div class="linebod" style="margin-top: 30px;background: #F4F4F4"></div>
+    </div>
+</script>
+<script src="../inc/g.js"></script>
+<script src="../inc/z.js"></script>
+<script src="../inc/comm.js"></script>
+<script src="../inc/area.js"></script>
+<script src="../inc/art-template.js"></script>
+<script type="text/javascript">
+    var userinfo = Comm.db("userinfo");
+    var deliveryAddressId = Comm.query('deliveryAddressId');
+    var address = Comm.db("loc_addAddress");
+    var ifDefault, cityID;
+    /**
+     * userinfo: 用户基本信息
+     * deliveryAddressId:传入当前地址ID
+     * address:地图选中的地理位置
+     * formData：当前表单数据
+     * ifDefault：当前地址是否为默认地址
+     * cityID:所选地区城市ID
+     */
+    function pageload() {
+
+        Area.init();
+        if (deliveryAddressId) { //修改地址
+            AJAX.GET('/common/address/getAddressByid?deliveryAddressId=' + deliveryAddressId, function(d) {
+                if (d.code == 1) {
+                    ifDefault = d.data[0].ifDefault;
+                    $('section').html(template('mainTpl', d.data[0]));
+                    if (!Comm.w9()) {
+                        pageresume()
+                    }
+                }
+            })
+            $("#modify").text('修改');
+            $(".navTitle").html('编辑客户信息');
+        } else {
+            $('section').html(template('mainTpl', {}));
+
+            if (!Comm.w9()) {
+                pageresume()
+            }
+        }
+    }
+
+    function pageresume() {
+        address = Comm.db("loc_addAddress");
+        loc_aadd = Comm.db("loc_aadd");
+        if (loc_aadd) {
+            if (loc_aadd.userName) {
+                $('#userName').val(loc_aadd.userName)
+            }
+            if (loc_aadd.phone) {
+                $('#phone').val(loc_aadd.phone)
+            }
+        }
+
+        if (!address) return false;
+        filterCity(_area, address);
+
+        var info = Area.getFullName(cityID)
+            //重新赋值地区数据
+        $("#region").val(info).attr('data', cityID)
+        $("#address").val(address.detail).attr('data', address.lng + ',' + address.lat);
+
+
+    }
+
+
+    function selmap() {
+        Comm.db('loc_aadd', {
+            userName: $('#userName').val(),
+            phone: $('#phone').val()
+        })
+        Comm.go('map.html?soursePage=addAddress')
+    }
+
+    //返回选中地区城市code
+    function filterCity(arr, address) {
+
+        if (arr && arr.length > 0) {
+            address.dis = address.dis.replace('县', '').replace('市', '')
+            for (var i = 0; i < arr.length; i++) {
+                var item = arr[i]
+                if (item.f.indexOf(address.pro.replace('省', '').replace('市', '')) >= 0 && (item.s == address.dis || item.n == address.dis)) {
+                    cityID = item.i;
+                    break;
+                } else {
+                    filterCity(item.c, address)
+                }
+            }
+        }
+    }
+    //提交
+    function save() {
+        var data = Check.submit('POST')
+        if (!data) {
+            return false;
+        }
+        //当前是否为默认地址：ifDefault
+        data.ifDefault = ifDefault ? ifDefault : 2
+        data.region = $("#region").attr('data')
+        data.coordinate = $("#address").attr('data')
+            // deliveryAddressId ? 修改 ：新增
+        deliveryAddressId ? data.deliveryAddressId = deliveryAddressId : data.itemId = userinfo.bussinessId;
+        // data.itemId=userinfo.bussinessId;
+        data.regionCn = Area.getFullName(data.region);
+        data.itemType = 2; // 1收货地址 2 我的客户
+        data.clientType = 1; // 1 供应商 2 采购
+        Comm.loading(1);
+        //新增、修改地址
+        var url = "/common/address/addAddress";
+        if (deliveryAddressId) url = '/common/address/modifyAddress'
+        AJAX.POST(url, data, function(a) {
+            Comm.loading(0);
+            if (a.code == 1) {
+                Comm.message('保存成功!');
+                setTimeout(function() {
+                    backClear();
+                }, 500);
+            } else {
+                // Comm.message(a.msg);
+            }
+        });
+    }
+
+    function del() {
+        Comm.confirm("确定删除该地址?", function(a) {
+            if (a) {
+                Comm.loading(1);
+                AJAX.POST("/common/address/delAddress", {
+                    deliveryAddressId: deliveryAddressId
+                }, function(a) {
+                    if (a && a.code == 1) {
+                        Comm.message('删除成功');
+                        setTimeout(function() {
+                            backClear();
+                        }, 500);
+                    } else {
+                        Comm.message(a.msg);
+                    }
+                });
+            }
+        });
+    }
+    //清除当前页缓存的数据
+    function backClear() {
+        Comm.db('loc_addAddress', '')
+        Comm.db('loc_aadd', '')
+        Comm.close();
+    }
+
+    function androidback() {
+        backClear();
+    }
+</script>
+
+</html>

@@ -1,0 +1,279 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title>考勤记录</title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel='stylesheet' href='../inc/calendar/calendar.css'>
+
+    <style>
+        /* 日历样式 */
+        /* #calendar img {
+            width: 16px;
+            height: 16px;
+        } */
+
+
+        .cq {
+            width: 8px;
+            height: 8px;
+            background: #94DB8A;
+
+        }
+
+        .qk {
+            width: 8px;
+            height: 8px;
+            background: #EB635B;
+
+        }
+
+        .c {
+            height: 20px;
+            line-height: 20px;
+        }
+
+        /* color */
+        .c33 {
+            color: #333333;
+        }
+
+        .cf4 {
+            color: #F4F4F4;
+        }
+
+        /* 考勤列表 */
+        #info li {
+            display: flex;
+        }
+
+        #info span {
+            flex: 1;
+            text-align: center;
+        }
+
+        .infoNav {
+            height: 44px;
+            line-height: 44px;
+            background: #F4F4F4;
+        }
+
+        .infoNav span {
+            font-size: 16px;
+        }
+
+        .infoList {
+            height: 44px;
+            line-height: 44px;
+
+        }
+
+        .infoList span {
+            color: #5C5C5C;
+            font-size: 14px;
+        }
+
+        /* 缺勤 */
+        .noduty {
+            background: #EB635B;
+            color: #FFFFFF;
+            font-size: 16px;
+        }
+
+        .duty {
+            background: #94DB8A;
+            color: white;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>考勤记录</div>
+        </div>
+    </header>
+
+    <section class='bg_hui' id='box'>
+        <!-- 日历模块 -->
+        <div id="calendar" class="white mart5">
+
+            <div id="nowCalendar" class="" _style="width: 300px;">
+
+            </div>
+            <div class="paddl10 paddr10 paddt10 paddb20">
+                <span class="inblock lh20 verticalP" style="padding-left:2px;height: 20px;;">
+                    <span class="inblock cq"></span>
+                    <span class="inblock f12 c33 c">出勤</span>
+                </span>
+                <span class="inblock lh20 verticalP marl10" style="padding-left:2px;height: 20px;;">
+                    <span class="inblock qk"></span>
+                    <span class="inblock f12 c33 c">缺卡</span>
+                </span>
+            </div>
+        </div>
+        <!-- 记录模块 -->
+        <div id="info" class="">
+
+        </div>
+
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script src='../inc/calendar/calendar.js'></script>
+
+<script>
+
+    function pageload() {
+       var xx =  $("body").width();
+        var option = {
+            
+            containerId: "nowCalendar",// Calendar容器
+            addClass: { // 失效日期 生效日期 class
+                invalid: "",
+                effective: "nowdate",
+            },
+            stateClass: [{ i: '1', class: 'a1' }, { i: '5', class: 'a2' }, { i: '6', class: 'a3' },],
+            callback: {
+                last: model.init,
+                next: model.init,
+                click: model.cc,
+            }
+        };
+        Calendar.show(option);//调用日历
+        model.getNowDate();
+    }
+    var model = {
+        _size: {},
+        size: function () {
+            var dom = $("#nowCalendar");
+            var padding = parseInt(dom.css("padding-left")) + parseInt(dom.css("padding-right"));
+            if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+                model._size.boxWidth = dom.width();
+                model._size.boxHeight = window.screen.height;
+            } else { }
+            model._size.w = ((model._size.boxWidth - 28 - padding) / 7).toFixed(2);
+
+
+        },
+        getNowDate: function () {//获取当前月份和时间
+            model._nowDate = {};
+            var nowDate = new Date();
+            model._nowDate = {
+                year: nowDate.getFullYear(),
+                month: nowDate.getMonth() + 1,
+                day: nowDate.getDate(),
+            }
+            model.init({ 'y': model._nowDate.year, 'm': model._nowDate.month });
+        },
+        userinfo: Comm.db("userinfo"),
+        init: function (d) {//点击事件
+            Comm.loading(true);
+            var url = '/ident/ident/playCardList'
+            opt = {
+                userType: '1',
+                monthDay: d.y + "-" + d.m
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    console.info(d.m, model._nowDate.month)
+                    if (res.data) {
+                        Calendar.option.stateClass = [];
+                        var _t = [];
+                        $.each(res.data, function (i, v) {
+                            var a = app.formatDate(v.dayTime, 'd') * 1;
+                            v.startTime = v.startTime ? app.formatDate(v.startTime, "H:i") : "";
+                            v.endTime = v.endTime ? app.formatDate(v.endTime, "H:i") : "";
+                            if (v.endTime && v.startTime) { _t.push(a); }
+                        })
+                        if (d.y == model._nowDate.year) {//当年
+                            if (d.m == model._nowDate.month) { //当月处理
+                                for (var i = 1; i < model._nowDate.day; i++) {
+                                    if (_t.indexOf(i) == '-1') {
+                                        Calendar.option.stateClass.push({
+                                            'i': i,
+                                            'class': 'noduty'
+                                        })
+                                    }
+                                }
+                            } else if (d.m < model._nowDate.month) {
+                                for (var i = 1; i <= d.days; i++) {
+                                    if (_t.indexOf(i) == '-1') {
+                                        Calendar.option.stateClass.push({
+                                            'i': i,
+                                            'class': 'noduty'
+                                        })
+                                    } else {
+                                        Calendar.option.stateClass.push({
+                                            'i': i,
+                                            'class': 'duty'
+                                        })
+                                    }
+                                }
+                            }
+                        } else if (d.y < model._nowDate.year) {//小于当前年
+                            for (var i = 1; i <= d.days; i++) {
+                                if (_t.indexOf(i) == '-1') {
+                                    Calendar.option.stateClass.push({
+                                        'i': i,
+                                        'class': 'noduty'
+                                    })
+                                } else {
+                                    Calendar.option.stateClass.push({
+                                        'i': i,
+                                        'class': 'duty'
+                                    })
+                                }
+                            }
+                        } else if (d.y > model._nowDate.year) {//大于当前年
+
+                        }
+
+
+                    }
+                    Calendar.showCalenderMain();
+                    $("#info").html(template("infoTpl", res.data))
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        cc: function (a) {
+            console.info(a);
+            alert($(a).attr('data'))
+        }
+    }
+</script>
+
+
+<script type="text/html" id="infoTpl">
+		<ul>
+        <li class="infoNav ">
+            <span>日期</span>
+            <span>上班签到</span>
+            <span>下班签到</span>
+        </li>
+        {{each $data as v k}}
+        <li class="infoList bg_white bottomBorder">
+            <span>{{v.dayTime}}</span>
+            <span>{{v.startTime}}</span>
+            <span>{{v.endTime||""}}</span>
+        </li>
+        {{/each}}
+    </ul>
+</script>
+
+</html>

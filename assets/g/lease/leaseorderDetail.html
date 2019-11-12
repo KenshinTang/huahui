@@ -1,0 +1,347 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../../css/g.css'>
+    <link rel='stylesheet' href='../../css/comm.css'>
+    <style>
+        section header {
+            background-image: url('../img/order/ddxqbj.png');
+            background-size: 100% 100%;
+        }
+
+        section .navBackIcon {
+            background-image: url('../../img/back_w.png');
+        }
+
+        .navTitle {
+            color: #fff;
+        }
+
+        button {
+            background: inherit;
+            border: 1px solid #ebebeb;
+            border-radius: 3px;
+            color: #222;
+            width: auto;
+            min-width: 80px;
+            max-width: 110px;
+            ;
+            height: auto;
+            line-height: 20px;
+            font-size: 14px;
+            padding: 5px 8px;
+            margin-bottom: 10px;
+        }
+
+        button.red {
+            border: 1px solid #DD1474;
+            color: #DD1474;
+        }
+
+        button.w110 {
+            width: 110px;
+        }
+
+        button.return {
+            margin-bottom: 0px;
+            border-radius: 20px;
+        }
+
+        .mymsbtn {
+            font-size: 12px;
+            border-radius: 2px;
+            padding: 0px 2px;
+            line-height: 20px;
+            height: 20px;
+        }
+
+        .cancelCommodity {
+            position: absolute;
+            right: 0px;
+            bottom: 5px;
+            border-radius: 5px;
+            border: 1px solid #d2caca;
+            padding: 3px 5px;
+        }
+
+        .bordert {
+            /* display: flex;
+            flex-wrap:wrap;
+            justify-content: flex-start; */
+        }
+
+        .border {
+            border: 1px solid #EBEBEB;
+            border-radius: 20px;
+            min-width: 90px;
+        }
+
+        #WTDBOX button {
+            background: -webkit-linear-gradient(right, #EE900E, #DD1474);
+            color: #fff;
+            line-height: 30px;
+            border-radius: 20px;
+            width: calc(100% - 30px);
+            font-size: 16px;
+        }
+
+        /* li */
+        ul {
+            padding-left: 20px;
+
+        }
+
+        li {
+            list-style: disc;
+            display: list-item;
+
+        }
+
+        /* 收起 展开 */
+        .retract>img {
+            width: 10px;
+            height: 10px;
+            transform: rotate(270deg)
+        }
+
+        /* 维护 */
+        .maintain>div {
+            display: flex;
+            line-height: 44px;
+        }
+
+        .maintain span {
+            flex: 1;
+            text-align: center;
+        }
+
+        .completed>span {
+            color: #333333;
+            font-size: 12px;
+
+        }
+
+        .beging>span {
+            color: #DD1474;
+            font-size: 12px;
+        }
+
+        .noStart>span {
+            color: #999999;
+            font-size: 12px;
+        }
+
+        .beging [name='btn'] {
+            background: #FFE8F3;
+            border-radius: 3px;
+            color: #DD1474;
+            font-size: 12px;
+            padding: 3px 10px;
+        }
+
+        /* color */
+        .c5c {
+            color: #5C5C5C;
+        }
+
+        .c1a {
+            color: #1A191E;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+    </header>
+
+    <section class='' id=''>
+        <header>
+            <div class="navBar">
+                <div class="navBackIcon" onclick="back()"></div>
+                <div class="navTitle colorfff">订单详情</div>
+            </div>
+            <div class="pad10 mart10 marb10">
+                <p class="f24 colorfff state">等待接单</p>
+            </div>
+            <div class="radius5 bottomShadow bg_white marl10 marr10 pad10" style="padding-bottom:0px">
+                <div>
+                    <span class="bold f16">请尽快接单</span>
+                    <span class="block colordd f12 mart10">2018-12-31 服务到期</span>
+                </div>
+                <div class="bordert paddt10 mart10 _flex-center">
+                    <button onclick="model.printMd('3')" class="">接单</button>
+                    <button onclick="model.printMd('3')" class="">修改订单</button>
+                    <button onclick="model.printMd('3')" class="">取消订单</button>
+                </div>
+            </div>
+        </header>
+        <div class="main mart15 ">
+            <div class="pad10 bg_white">
+                <div class="flex-between">
+                    <span class="f18 c21 bold">绿萝（0.3米）等10件商品</span>
+                    <span class="retract" onclick="model.retract(this)" data="0">
+                        <span class="f12 colordd ">展开</span>
+                        <img src="../img/ddfh.png" alt="" class="">
+                    </span>
+                </div>
+                <ul class="mart15 hide" name="listInfo">
+                    <li class='lh25 '>
+                        <span class="c333 f16 wordW inline-block"
+                            style="max-width: 40%">绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝</span>
+                        <span class="f12 color999">(8盆)</span>
+                        <span class="c5c f14 fr">￥168</span>
+                    </li>
+                    <li class='lh25 '>
+                        <span class="c333 f16 wordW inline-block"
+                            style="max-width: 40%">绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝</span>
+                        <span class="f12 color999">(8盆)</span>
+                        <span class="c5c f14 fr">￥168</span>
+                    </li>
+                    <li class='lh25 '>
+                        <span class="c333 f16 wordW inline-block"
+                            style="max-width: 40%">绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝</span>
+                        <span class="f12 color999">(8盆)</span>
+                        <span class="c5c f14 fr">￥168</span>
+                    </li>
+                    <li class='lh25 '>
+                        <span class="c333 f16 wordW inline-block"
+                            style="max-width: 40%">绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝</span>
+                        <span class="f12 color999">(8盆)</span>
+                        <span class="c5c f14 fr">￥168</span>
+                    </li>
+                    <li class='lh25 '>
+                        <span class="c333 f16 wordW inline-block"
+                            style="max-width: 40%">绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝</span>
+                        <span class="f12 color999">(8盆)</span>
+                        <span class="c5c f14 fr">￥168</span>
+                    </li>
+                    <li class='lh25 '>
+                        <span class="c333 f16 wordW inline-block"
+                            style="max-width: 40%">绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝</span>
+                        <span class="f12 color999">(8盆)</span>
+                        <span class="c5c f14 fr">￥168</span>
+                    </li>
+                    <li class='lh25 '>
+                        <span class="c333 f16 wordW inline-block"
+                            style="max-width: 40%">绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝</span>
+                        <span class="f12 color999">(8盆)</span>
+                        <span class="c5c f14 fr">￥168</span>
+                    </li>
+                    <li class='lh25 '>
+                        <span class="c333 f16 wordW inline-block"
+                            style="max-width: 40%">绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝</span>
+                        <span class="f12 color999">(8盆)</span>
+                        <span class="c5c f14 fr">￥168</span>
+                    </li>
+                    <li class='lh25 '>
+                        <span class="c333 f16 wordW inline-block"
+                            style="max-width: 40%">绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝绿萝</span>
+                        <span class="f12 color999">(8盆)</span>
+                        <span class="c5c f14 fr">￥168</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="pad10 bg_white maintain" name="maintain">
+                <div class="" style="background: #F4F4F4">
+                    <span class="c1a f14 ">时间</span>
+                    <span class="c1a f14 ">计划内容</span>
+                    <span class="c1a f14 ">状态</span>
+                    <span class="c1a f14 ">操作</span>
+                </div>
+                <div class="bottomBorder beging">
+                    <span class="c1a ">2018-06-01</span>
+                    <span class="c1a ">日常维护</span>
+                    <span class="c1a ">已完成</span>
+                    <span class="c1a ">
+                        <span name='btn'>养护</span>
+                    </span>
+                </div>
+                <div class="bottomBorder noStart">
+                    <span class="c1a ">2018-06-01</span>
+                    <span class="c1a ">日常维护</span>
+                    <span class="c1a ">已完成</span>
+                    <span class="c1a "></span>
+                </div>
+                <div class="bottomBorder completed">
+                    <span class="c1a ">2018-06-01</span>
+                    <span class="c1a ">日常维护</span>
+                    <span class="c1a ">已完成</span>
+                    <span class="c1a "></span>
+                </div>
+            </div>
+            <div class="linebod"></div>
+            <div class="pad10 bg_white">
+                <div class="lh25">
+                    <sapn class="bold">租赁周期：</sapn><span class="v-a-b">2018-06-01 至 2018-12-31</span>
+
+                </div>
+                <div class="lh25">
+                    <span class="bold">养护频率：</span><span class="v-a-b">1月4次</span>
+                </div>
+            </div>
+
+            <div class="linebod"></div>
+            <div class="pad10 bg_white">
+                <p>
+                    <img src="../img/order/kfdz.png" height="15" class="marr5 ">
+                    <span class="f14 ">陈木生</span>
+                    <span class="f14 colordd marl5">18681112222</span>
+                </p>
+                <p class="f12 paddl20 mart15 c333">
+
+                    地址：四川省成都市武侯区四川省成都市武侯区科园二路10
+                    号航利中心902
+
+                </p>
+            </div>
+            <div class="linebod"></div>
+            <div class="pad10 bg_white">
+                <div class="lh30">
+                    <span class=" c21 bold f14">店铺小计</span>
+                    <span class="fr c21 bold f14">&yen;100</span>
+                </div>
+                <div class="lh30">
+                    <span class=" c21 bold f14">保证金</span>
+                    <span class="fr c21 bold f14">&yen;100</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../../inc/z.js'></script>
+<script src='../../inc/g.js'></script>
+<script src='../../inc/comm.js'></script>
+<script src='../../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        retract: function (elm) {//展开  收起
+            var _f = $(elm).attr("data");// 0  收起状态 1  展开状态
+            if (_f == '0') {
+                $(elm).attr("data", '1').find("span").html("收起");
+                $(elm).find("img").css("transform", "rotate(90deg)");
+
+            } else if (_f == '1') {
+                $(elm).attr("data", '0').find("span").html("展开");
+                $(elm).find("img").css("transform", "rotate(270deg)");
+            }
+            $("[name=listInfo]").toggleClass("hide")
+        }
+    }
+</script>
+
+</html>

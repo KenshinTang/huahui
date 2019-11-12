@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>权限管理</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        .navTitle {
+            font-weight: normal;
+        }
+
+        /* header */
+        /* section */
+        .authorityList {
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .authorityBtn {
+            position: absolute;
+            right: 10px;
+            ;
+        }
+
+        .authorityBtn span {
+            border-radius: 3px;
+        }
+
+        .authority {
+            background: #e66416;
+            padding: 3px 8px;
+        }
+
+        .transferAuthority {
+            padding: 3px 8px;
+        }
+
+        .transfer {
+            height: 45px;
+            line-height: 45px;
+            border-radius: 10px;
+        }
+
+        img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">权限转移</div>
+        </div>
+    </header>
+    <section id='' class="bg_hui paddl10 paddr10">
+        <div id='main'>
+
+        </div>
+        <div id="list"></div>
+    </section>
+    <footer class="shared paddl15 paddt5 paddb5 paddr15">
+        <div class="bgdd-ef transfer center colorfff f16" onclick="model.transfer()">确认转移</div>
+    </footer>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="./foot.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<script type="text/javascript" src="../inc/upimg/upload.js"></script>
+
+<script>
+    function pageresume() {
+
+    }
+
+    function pageload() {
+        model.init();
+    }
+    var model = {
+        userRelationId: Comm.query('userRelationId'),
+        main: [],
+        ordinary: [],
+        init: function () {//
+            Comm.loading(true);
+            var url = '/common/roleManager/list'
+            opt = {
+                userType: '1',
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    $.each(res.data, function (i, v) {
+                        if (v.userRelationId == model.userRelationId) {
+                            model.main.push(v)
+                        }
+                        if (v.userRelationId != model.userRelationId && v.roleId != '128') {
+                            model.ordinary.push(v);
+                        }
+                    })
+                    model.Rendering();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        newP: function () {//新建账号
+            Comm.go("newPermission.html")
+        },
+        Rendering: function () {// 渲染管理员
+            if (model.main.length != '0') $("#main").html(template("mainTpl", model.main))
+            if (model.ordinary.length != '0') $("#list").html(template("listTpl", model.ordinary))
+        },
+        choice: function (elm, userRelationId) {// 选择
+            var _f = $(elm).hasClass("checkcir") ? '1' : '0';
+            if (_f == '0') {
+                if (model.transferId == userRelationId || !model.transferId) {
+                    $(elm).toggleClass("decir checkcir");
+                    model.transferId = userRelationId;
+                }
+                if (model.transferId != userRelationId) {
+                    $(".checkcir").toggleClass("decir checkcir");
+                    $(elm).toggleClass("decir checkcir");
+                    model.transferId = userRelationId;
+                }
+            } else {
+                if (model.transferId == userRelationId) {
+                    $(elm).toggleClass("decir checkcir");
+                    model.transferId = null;
+                }
+            }
+        },
+        transfer: function () {//转移权限
+            if (!model.transferId) {
+                Comm.message("请选择一个权限转移人~");
+                return
+            }
+            Comm.loading(true);
+            var url = '/common/roleManager/zhuan'
+            opt = {
+                userRelationId: model.userRelationId,
+                userRelationId1: model.transferId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("权限转移成功~");
+                    Comm.close();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+    }
+</script>
+
+<script type="text/html" id="mainTpl">
+    <div class="color74 paddt10 paddb15 f18">
+        {{each $data as v k }}
+        <div class="authorityList bg_white flex-center paddt15 paddb15  paddl10 bottomShadow">
+            <div class="marr10">
+                <img src="{{OSS(v.avatar)}}" alt="" style="width:40px" onerror="app.herrorimg(this)">
+            </div>
+            <div class="">
+                <p class="paddb5">{{v.customerName}}</p>
+                <p class="f14 color74">{{v.phone}}</p>
+            </div>
+            <div class="authorityBtn">
+                <!-- <span class="authority colorfff  f12">权限</span> -->
+                <span class="transferAuthority colorfff  f12 bgdd" onclick="Comm.go('./newPermission.html?t=1&userRelationId='+'{{v.userRelationId}}')">查看权限</span>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</script>
+<script type="text/html" id="listTpl">
+    <div class="color74 paddt10 paddb15 f18">
+        <span class="color74  f16 paddb10 block bold">请选择转移人</span>
+        {{each $data as v k }}
+        <div class="authorityList bg_white flex-center paddt15 paddb15  paddl10 bottomShadow marb5">
+            <div class="marr10">
+                <img src="{{OSS(v.avatar)}}" alt="" style="width:40px" onerror="app.herrorimg(this)">
+            </div>
+            <div class="">
+                <p class="paddb5">{{v.customerName}}</p>
+                <p class="f14 color74">{{v.phone}}</p>
+            </div>
+            <div class="authorityBtn">
+                <!-- <span class="authority colorfff  f12" onclick="Comm.go('./newPermission.html?userRelationId='+'{{v.userRelationId}}')">权限</span>
+                <span class="transferAuthority colorfff  f12 bgdd" >转移权限</span> -->
+                <div class="quan decir" onclick="model.choice(this,'{{v.userRelationId}}')" style='top:0px'></div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</script>
+
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>店铺评价</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        .navTitle{
+            font-weight: normal;
+        }
+        /* header */
+        /* section */
+        .evaluationInfo{
+
+        }
+        .score{
+            padding-top:3px;
+        }
+        .pfinfo{
+            height: 40px;
+            line-height: 40px;
+        }
+        .pf img{
+            width: 15px;
+            height: 15px;
+        }
+        .evaluationType{
+            width: 100%;
+        }
+        .evaluationType >div{
+            text-align: center;
+            border-radius: 15px;
+            background: #ffe8f3;
+            padding: 2px 10px;
+        }
+        .active{
+            border: 1px solid #dd1669;
+        }
+        .active>span{
+            color: #dd1669;
+        }
+        .evaluationText{
+            /* width: 80%; */
+            margin-left: 60px;
+            max-height: 35px;
+        }
+        .hf{
+            width: 17px;
+        }
+        .colorb0{
+            color: #b0b4b8;
+        }
+        .paddl60{
+            padding-left: 60px;
+        }
+        #sinbox{
+            padding: 10px 15px;
+        }
+        #sinbox button{
+            display: inline-block;
+            width: 45%;
+            height: 35px;
+            line-height: 35px;
+            border: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">店铺评价</div>
+        </div>
+    </header>
+    <section id='box' class="bg_hui ">
+        <!-- 店铺评价 -->
+        <div class="evaluationInfo  paddb15 paddt5 bg_white">
+
+        </div>
+        <div class="mart10"></div>
+        <!-- 评价列表 -->
+        <div id="list" class="evaluationList">
+
+        </div>
+    </section>
+    <footer class="shared">
+    </footer>
+    <div id="sinbox" wtd="mtype">
+        <textarea name="" cols="30" rows="10" placeholder="请输入评论..." style="border:0px" id="reply"></textarea>
+        <div>
+            <button style="background: white;color: #000;border:1px solid #eeeeee" onclick="Comm.showWindow()">取消</button>
+            <button onclick="model.text()">回复</button>
+        </div>
+    </div>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="./foot.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<script type="text/javascript" src="../inc/upimg/upload.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo")
+    function pageresume() {
+
+    }
+
+    function pageload() {
+        model.getEvaluateNum()
+        model.search()
+
+    }
+    var model = {
+        data: {
+        },
+        opt: {
+            bussinessId: userinfo.bussinessId,
+            type: "-1"
+        },
+        replyOpt: {
+        },
+        qh: function (el, type) {
+            model.opt.type = type;
+            $.each($(el).parent().find("div"), function (i, v) {
+                $(v).removeClass("active")
+            })
+            $(el).addClass("active")
+            model.search();
+        },
+        getEvaluateNum: function () {
+            AJAX.POST("/common/evaluate/getEvaluateNum", { bussinessId: userinfo.bussinessId }, function (res) {
+                if (res.code == "1") {
+                    model.data.getEvaluateNum = res.data;
+                    AJAX.POST("/bussiness/bussiness/detail", { customerId: userinfo.customerId }, function (res) {
+                        console.info(res);
+                        if (res.code == 1) {
+                            $.extend(model.data.getEvaluateNum, { starrat: res.data.starrat });
+                            $(".evaluationInfo").html(template("evaluationInfoTpl", model.data.getEvaluateNum))
+                        }
+                    })
+                }
+            })
+        },
+        search: function () {
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/common/evaluate/getEvaluateByBussiness',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.opt;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    // console.info(d)
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    var h = template('evaluationListTpl', d.data);
+                    refresh.appendHtml(h);
+                };
+            } else {
+                model.mere.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+        text: function () {
+            var str = $("#WTDBOX textarea").val().trim();
+            if (str.length != "0") {
+                model.replyOpt.content = str;
+                AJAX.POST("/common/evaluate/reply", model.replyOpt, function (res) {
+                    if (res.code == "1") {
+                        Comm.message("评论成功!")
+                        Comm.showWindow()
+                        model.search()
+                    }
+                })
+            } else {
+                Comm.message("请输入回复评论~")
+            }
+        },
+        reply: function (id) {
+            model.replyOpt.evaluateId = id;
+            Comm.showWindow('mtype', true);
+            
+        }
+    }
+    template.defaults.imports.setTime = function (time) {
+        return app.formatDate(time, 'Y-m-d')
+    }
+    template.defaults.imports.resName = function (name) {
+        var frontLen = 1,
+            endLen = 1,
+            len = name.length - frontLen - endLen;
+        var xing = '';
+        if(name.length=="2"){
+            return name.substring(0,1)+"*"
+        }
+        for (var i = 0; i < len; i++) {
+            xing += '*';
+        }
+        return name.substring(0, frontLen) + xing + name.substring(name.length - endLen);
+    }
+</script>
+<script type="text/html" id="evaluationInfoTpl">
+    <div class="pfinfo   paddl15 paddr15  bottomBorder" style="">
+            <div class="left">店铺评价</div>
+            <div class="right marl10 score ">{{starrat}}</div>
+            <div class="right pf">
+                    {{set len=[0,1,2,3,4]}}
+                    {{each len as i v}}
+                    {{if v < starrat}}
+                    <img src="./img/index-pingfen.png" alt="">
+                    {{else}}
+                    <img src="./img/index-pfen.png" alt="">
+                    {{/if}}
+                    {{/each}}
+            </div>
+        </div>
+        <div class="flex-between paddl15 paddr15 paddt20 evaluationType">
+            <div class="active " onclick="model.qh(this,'-1')">
+                <span class="f12">全部</span>
+                <span>{{differenceNum+goodNum+middleNum}}</span>
+            </div>
+            <div class="" onclick="model.qh(this,'1')">
+                <span>好评</span>
+                <span>{{goodNum}}</span>
+            </div>
+            <div class="" onclick="model.qh(this,'2')">
+                <span>中评</span>
+                <span>{{middleNum}}</span>
+            </div>
+            <div class="" onclick="model.qh(this,'3')">
+                <span>差评</span>
+                <span>{{differenceNum}}</span>
+            </div>
+        </div>
+</script>
+<script type="text/html" id="evaluationListTpl">
+    {{each $data as v i}}
+    <div class="paddt20 paddb20  paddl15 paddr15 marb5 bg_white">
+            <!-- 评价时间  星级 评价人 -->
+            <div class="flex-center">
+                <div>
+                    <img src="{{OSS(v.avatar)}}" alt="" style="width:50px" onerror="app.herrorimg(this)">
+                </div>
+                <div class=" marl10 flex-between" style="min-width:80%">
+                    <div class="">
+                        <p class="paddb5">{{v.customerName|resName}}</p>
+                        <p class="f12 color74">{{v.addTime|setTime}}</p>
+                    </div>
+                    <div class="pf">
+                            {{set len=[0,1,2,3,4]}}
+                            {{each len as n m}}
+                            {{if m < v.star}}
+                            <img src="./img/index-pingfen.png" alt="">
+                            {{else}}
+                            <img src="./img/index-pfen.png" alt="{{v.star}}">
+                            {{/if}}
+                            {{/each}}
+                    </div>
+                </div>
+            </div>
+            <!-- 评价描述 -->
+            <div class="paddl60   mart10 ">
+                {{v.content}}
+            </div>
+            <!-- 回复评论 -->
+            {{if v.rContent!=""}}
+            <div class="paddl5 mart10 paddt10 lh20 f12 color999 bordert">
+                    店家回复：{{v.rContent}}
+                </div>
+                {{/if}}
+            <!-- 评论来源 -->
+            {{if v.ifFlowerSuper=="1"}}
+            <div class="t-a-r mart10">
+                <span class="colorb0">来自鲜花超市</span>
+            </div>
+            {{/if}}
+            <!-- 评论回复 -->
+            {{if v.rContent==""&&v.ifFlower!="1"}}
+            <div class="t-a-r mart10" onclick="model.reply('{{v.evaluateId}}')">
+                <img src="./img/huifu.png" alt="" class="hf marr5">
+                <span class="colorb0">回复</span>
+            </div>
+            {{/if}}
+        </div>
+        {{/each}}
+    </script>
+
+</html>

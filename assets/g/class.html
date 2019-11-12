@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>分类</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        header {
+            z-index: 2;
+        }
+
+        .navItemIcon {
+            background: inherit;
+            position: relative;
+            right: 70px;
+        }
+
+        .searchBar {}
+
+        .searchBar input {
+            width: 80%;
+            padding-left: 30px;
+            line-height: 30px;
+            height: 30px;
+            font-size: 14px;
+            color: #8891A7;
+            background-color: #F2F6F7;
+            border-radius: 18px;
+            background-image: url('img/search.png');
+            background-repeat: no-repeat;
+            background-size: 14px;
+            background-position: 10px center;
+            margin: 0 auto;
+            margin-left: 2.5%;
+        }
+
+        .bgF5F7FA {
+            background-color: #F5F7FA;
+            position: fixed;
+            left: 0px;
+            top: 44px;
+            z-index: 0;
+            overflow: hidden;
+            overflow-y: auto;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        #rheight {
+            margin-left: 100px;
+        }
+
+        .active {
+            border-left: 3px solid #DD1474;
+            background-color: #fff;
+        }
+
+        .lhgb {
+            background-color: #F7F7F7;
+            height: 5px;
+        }
+
+        .serviceArea {
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 头部 -->
+    <header>
+        <div class="navBar bottomShadow " style="position:relative" name="type">
+            <div class="navBackIcon" onclick="modle.close()"></div>
+            <div class="navTitle">商品类别</div>
+            <!-- <div id="calendar"></div> -->
+        </div>
+        <div class="navBar bottomShadow hide" style="padding: 0;box-shadow: none;position: relative;" name="search">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navItemIcon marl5 marr10 colorred" onclick="modle.searchInp()">搜索</div>
+            <div class="nav-title block searchBar" style="width: calc(100% - 60px);height: 44px;"
+                _onclick="model.searchInp()">
+                <form action="javascript:return true;" onsubmit="modle.searchInp()">
+                    <input id="id_searchInput" type="search" placeholder="玫瑰花">
+                </form>
+            </div>
+            <div class="f12  inblock colorred  " style="position: absolute;right: 0px;top:0px"
+                onclick="modle.addGoods()" id="addgoods">添加商品</div>
+        </div>
+    </header>
+    <section>
+        <div class="clearfix">
+            <div class="bgF5F7FA fl" style="width: 100px;" id="one">
+                <div class="lh50 center f16 " onclick="modle.allgoods()" id="allgoods">
+                    全部
+                </div>
+            </div>
+            <div id="rheight" class="fl" style="width: calc(100% - 100px);">
+                <div id="children">
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="shared"></footer>
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="../inc/art-template.js"></script>
+<script>
+    var type = Comm.query("type"), // 5 租赁 4 新建进来 3 活动进来 2 商品管理 1添加商品分类
+        f = Comm.query("f"),//活动type
+        userinfo = Comm.db("userinfo");
+
+    function pageload() {
+        if ($("#addgoods").parent().css("padding-top") == "20px") {
+            $("#addgoods").addClass("paddt20")
+        }
+        if (type == "2") {
+            $("[name=type]").addClass("hide")
+            $("[name=search]").removeClass("hide");
+        }
+        if (type != '3') {
+            $("#allgoods").hide()
+        }
+        if (f == '2') $("#allgoods").hide()
+
+        if (Comm.ios()) {
+            $(".bgF5F7FA").css('top', '64px;').css('height', 'calc(100% - 64px)');
+        }
+        // if(type=='3'){
+        //     modle.close()
+        // }
+        modle.detail();
+
+    }
+
+    function pageresume() {
+
+    }
+    function androidback() {
+        if (type == '4') {
+            Comm.close(1);
+            return;
+        }
+        Comm.close(2)
+    }
+    var modle = {
+        close: function () {
+            if (type == '4') {
+                Comm.close(1);
+                return;
+            }
+            Comm.close(2)
+        },
+        allgoods: function () {//
+            Comm.go("activitylist.html?&f=" + f)
+        },
+        qk: function (a, i) {
+            if (!$(a).hasClass('active')) {
+                $(a).parent().find('div').removeClass('active')
+                $(a).addClass('active')
+                $("#children").html(template('childrenTpl', modle.data[i].children));
+            }
+        },
+        getAll: function () { //得到一级类别
+            Comm.loading(true)
+            AJAX.GET('/common/category/getAll', function (d) {
+                Comm.loading(0)
+                if (d.code == 1) {
+                    modle.data = [];
+                    for (var i = 0; i < d.data.length; i++) {
+                        var e = d.data[i];
+                        if (e.pId == "0") {
+                            if (f == "2" && e.ifFlower != "1") break
+                            e.children = [];
+
+                            modle.getData(e, d.data)
+                            modle.data.push(e);
+                        }
+                    }
+                    $("#one").append(template('oneTpl', modle.data));
+                    if (modle.data && modle.data.length > 0) {
+                        $("#children").html(template('childrenTpl', modle.data[0].children));
+                    }
+                }
+            })
+        },
+        getData: function (pe, d) {
+            var t = [];
+            if (d) {
+                for (var i = 0; i < d.length; i++) {
+                    var e = d[i];
+                    if (e.pId == pe.categoryId) {
+                        e.children = [];
+                        e.type = type;
+                        modle.getData(e, d)
+                        pe.children.push(e)
+                    }
+                }
+            }
+        },
+        back: function (categoryId, two, three, ifFlower) { // 5 租赁 4 新建进来 3 活动进来 2 商品管理 1添加商品分类
+            if (type == "1" && ifFlower) {
+                var one = $(".bgF5F7FA").find(".active").html().replace(/(^\s*)|(\s*$)/g, "");
+                var str = one + "-" + two + "-" + three;
+                Comm.db("category", str)
+                Comm.db("categoryId", categoryId)
+                Comm.db("ifFlower", ifFlower)
+                Comm.close()
+            } else if (type == "2") {
+                if (three) {
+                    Comm.db("_cataName", two + ">" + three);
+                    Comm.go('goodlist.html?cid=' + categoryId);
+                    return
+                }
+                Comm.db("_cataName", two)
+                Comm.go('goodlist.html?cid=' + categoryId)
+            } else if (type == '3') {
+                Comm.go('activitylist.html?cid=' + categoryId + "&f=" + f)
+            } else if (type == '4') {
+                if (three) {
+                    Comm.db("_cataName", two + ">" + three);
+                    Comm.go('newOrder.html?cid=' + categoryId);
+                    return
+                }
+                Comm.db("_cataName", two)
+                Comm.go('newOrder.html?cid=' + categoryId)
+            } else if (type == '5') {
+                if (three) {
+                    Comm.db("_cataName", two + ">" + three)
+                    Comm.go('newOrder.html?cid=' + categoryId + "&t=" + type)
+                    return
+                }
+                Comm.db("_cataName", two)
+                Comm.go('newOrder.html?cid=' + categoryId + "&t=" + type)
+            }
+        },
+        searchInp: function () {
+            var str = $("#id_searchInput").val()
+            if (!str) {
+                Comm.message("请输入搜索内容~")
+                return
+            }
+            Comm.db("serchtext", str)
+            Comm.go("goodlist.html?search=" + "1")
+        },
+        addGoods: function () {
+            if (!modle.ifstate()) {
+                Comm.showWindow()
+                return
+            }
+            Comm.showWindow()
+            modle.cleanDB()
+            Comm.go('addMerchandise.html?type=' + 4)
+        },
+        ifstate: function () {
+            // 测试说的 0 可以添加商品
+            // if (modle.state == "0") {
+            //     Comm.message("供应商资料审核中,暂无添加商品权限~")
+            //     return false
+            // }
+            if (modle.state == "2") {
+                Comm.message("供应商资料审核未通过,暂无添加商品权限~")
+                return false
+            }
+            if (modle.state === "") {
+                Comm.message("供应商未入驻,暂无添加商品权限~")
+                return false
+            }
+            return true
+        },
+        detail: function () {
+            AJAX.POST("/bussiness/bussiness/detail", {
+                customerId: userinfo.customerId
+            }, function (res) {
+                if (res.code == 1) {
+                    modle.state = res.data.state
+                    modle.getAll();
+                }
+            })
+        },
+        cleanDB: function () {
+            Comm.db("category", null)
+            Comm.db("categoryId", null)
+            Comm.db("ifFlower", null)
+        }
+    }
+</script>
+
+
+<script id="oneTpl" type="text/html">
+    {{each $data v k }}
+    <div class="lh50 center f16 {{k==0?'active':''}}" onclick="modle.qk(this,{{k}})">
+        {{v.categoryName}}
+    </div>
+    {{/each}}
+</script>
+<script id="childrenTpl" type="text/html">
+    {{each $data v k }}
+    <div class="marb10 pad10">
+
+        <p class="wordW" onclick="modle.back('{{v.categoryId}}','{{v.categoryName}}')">
+            <span>{{v.categoryName}}</span>
+            <span class="bgdd-ef colorfff f12 serviceArea {{v.type!='2'?'hide':''}}" onclick="event.stopPropagation();Comm.go('selcity.html?categoryId='+{{v.categoryId}})">服务区域</span>
+            <img src="../img/arrowRight.png" height="14" class="fr" />
+        </p>
+        <div class="mart10 clearfix">
+            {{each v.children c i }}
+            <dl onclick="modle.back('{{c.categoryId}}','{{v.categoryName}}','{{c.categoryName}}','{{c.ifFlower}}')" style="width:33%;" class="fl center">
+                <dt>
+                                <img src="{{OSS(c.picAddress)}}" height="45" width="45"  onerror="app.errorimg(this)"/>
+                        </dt>
+                <dd class="color999 wordW pad5">{{c.categoryName}}</dd>
+            </dl>
+            {{/each}}
+        </div>
+    </div>
+    <div class="lhgb"></div>
+    {{/each}}
+</script>
+
+</html>

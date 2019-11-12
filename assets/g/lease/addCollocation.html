@@ -1,0 +1,184 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../../css/g.css'>
+    <link rel='stylesheet' href='../../css/comm.css'>
+    <style>
+        .cellContent {
+            /* height: 50px; */
+            /* justify-content: normal; */
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        /* list */
+        .listinfo {
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .listinfo>p {
+            /* width: 100% */
+        }
+
+        .dfleximg {
+            width: 6px;
+            height: 11px;
+        }
+
+        .goodimg {
+            width: 90px;
+            height: 90px;
+            border-radius: 5px;
+        }
+
+        /* orderinfo */
+        [name='orderinfo'] {}
+
+        .list {
+            padding: 10px 0px;
+            height: 60px;
+            ;
+        }
+
+        .list > img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .list span {
+            height: 40px;
+            line-height: 40px;
+        }
+         /* footer */
+         footer button {
+            display: inline-block;
+            width: 45%;
+        }
+
+        #newGoods {
+            background: white;
+            color: black;
+            border: 1px solid #e2e2e2;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow '>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>添加套餐</div>
+            <div style='position: absolute;top:0px ;right:10px' class="colordd" onclick="model.save()" name="save">保存
+                </div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <div class="paddl15 bg_white " onclick="choosingType()">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">商品名称</div>
+                <input type="text" name="categoryId" readonly disabled placeholder="请输入商品名称" data="" value=""
+                    data-reg='empty' class="f16 c333" />
+            </div>
+        </div>
+        <div class="paddl15 bg_white " onclick="choosingType()">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">商品简介</div>
+                <input type="text" name="categoryId" readonly disabled placeholder="请输入商品简介" data="" value=""
+                    data-reg='empty' class="f16 c333" />
+            </div>
+        </div>
+        <div class="paddl15 bg_white " onclick="choosingType()">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">商品价格(月)</div>
+                <input type="text" name="categoryId" readonly disabled placeholder="请输入商品价格" data="" value=""
+                    data-reg='empty' class="f16 c333" />
+            </div>
+        </div>
+        <div class="paddl15 bg_white " onclick="choosingType()">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">保证金</div>
+                <input type="text" name="categoryId" readonly disabled placeholder="请输入保证金" data="" value=""
+                    data-reg='empty' class="f16 c333" />
+            </div>
+        </div>
+        <div class="paddl15 paddt15 paddb15  f16" id="goodsNum">商品清单</div>
+        <div id="goodsList" class="paddl15 paddr15">
+            <p class="list bottomBorder">
+                <img src="http://huahuiapp.oss-cn-shenzhen.aliyuncs.com/img/2019-06/1561525329094.jpg/250" alt=""
+                    onerror="app.errorimg(this)" class="marr10 left">
+                <span class="f14 c1a left wordW" style="width:35%">浅粉绣球</span>
+                <span class="inblock v-a-b right">
+                    <span class="f12 marl5 c21">数量：</span>
+                    <img src="../img/cart-jian.png" width="12" style="" onclick="model.addNum(this,-1,1087,1)">
+                    <input type="number" name="num" id="" style="height:17px;width:35px;background:#F2F2F2"
+                        class="inblock t-a-c" placeholder="1" value="1" data-reg="empty"
+                        onblur="model.inputNum(this,1,'1087','1')">
+                    <img src="../img/cart-jia.png" width="12" style="" onclick="model.addNum(this,1,1087,1)">
+                </span>
+                <!-- <span class=" " style="font-size: 9px;color:#666666;">X1</span> -->
+            </p>
+            <p class="list bottomBorder">
+                <img src="http://huahuiapp.oss-cn-shenzhen.aliyuncs.com/img/2019-06/1561525329094.jpg/250" alt=""
+                    onerror="app.errorimg(this)" class="marr10 left">
+                <span class="f14 c1a left wordW" style="width:35%">浅粉绣球</span>
+                <span class="inblock v-a-b right">
+                    <span class="f12 marl5 c21">数量：</span>
+                    <img src="../img/cart-jian.png" width="12" style="" onclick="model.addNum(this,-1,1087,1)">
+                    <input type="number" name="num" id="" style="height:17px;width:35px;background:#F2F2F2"
+                        class="inblock t-a-c" placeholder="1" value="1" data-reg="empty"
+                        onblur="model.inputNum(this,1,'1087','1')">
+                    <img src="../img/cart-jia.png" width="12" style="" onclick="model.addNum(this,1,1087,1)">
+                </span>
+                <!-- <span class=" " style="font-size: 9px;color:#666666;">X1</span> -->
+            </p>
+        </div>
+        <div>
+
+        </div>
+    </section>
+     <footer class="paddt5 paddb5 center">
+        <button onclick="model.newGoods()" id="newGoods" class="marauto" style="border-radius: 5px;">新建租赁商品</button>
+        <button onclick="Comm.go('./leaseClass.html')" id="choiceGoods" class="marauto" style="border-radius: 5px;">选择商品</button>
+    </footer>
+</body>
+<script src='../../inc/z.js'></script>
+<script src='../../inc/g.js'></script>
+<script src='../../inc/comm.js'></script>
+<script src='../../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+
+    }
+    function pageresume() {
+
+    }
+    var model = {
+    }
+</script>
+
+</html>

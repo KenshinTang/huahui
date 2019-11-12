@@ -1,0 +1,421 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        /* header */
+        .headBtn {
+            width: 100%;
+            height: 40px;
+        }
+
+        .headBtn .xiaoxi {
+            width: 20px;
+            height: 20px;
+            background: url("./img/my-xiaoxi.png") no-repeat center;
+            background-size: contain;
+        }
+
+        .xiaoxiNum {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: red;
+            color: white;
+            transform: scale(.7);
+            position: absolute;
+            top: -7px;
+            padding: 1px;
+            left: 11px;
+            text-align: center;
+        }
+
+        .set {
+            width: 20px;
+            height: 20px;
+            background: url("./img/setting.png") no-repeat center;
+            background-size: contain;
+        }
+
+        .header {
+            background: url("./img/Background.png") no-repeat;
+            background-size: 100% 82%;
+        }
+
+        .headimg {
+            height: auto;
+            /* padding: 10px 0; */
+        }
+
+        .headimg>img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            margin-left: 15px;
+            margin-top: 5px;
+
+        }
+
+        .myName-box {
+            width: calc(100% - 70px - 40px);
+            /* height: 70px; */
+            padding: 5px 0;
+        }
+
+        .myName-box>div {
+            width: 100%;
+            height: 25px;
+            ;
+        }
+
+        .myName {
+            max-width: 52%;
+        }
+
+        .myPhone {
+            width: 100%;
+            height: 25px;
+        }
+
+        .myPhone span {
+            display: inline-block;
+        }
+
+        #pfen {
+            vertical-align: bottom;
+            position: relative;
+            top: -1px;
+        }
+
+        #pfen img {
+            /* display: inline-block; */
+            width: 13px;
+            height: 13px;
+        }
+
+        #punchIn {
+            /* margin-left: 10px; */
+            padding: 3px 10px;
+            background: #f2f2f266;
+
+        }
+
+        .goUser {
+            width: 15px;
+            height: 15px;
+            margin-right: 15px;
+            background-repeat: no-repeat;
+            background-position: right 0px center;
+            background-size: 15px auto;
+            background-image: url("./img/grzx.png");
+            background-size: contain;
+        }
+
+        .orderCount {
+            width: 90%;
+            height: 108px;
+            margin: 0px 5%;
+            border-radius: 3px;
+            position: relative;
+            /* float: left; */
+            top: -30px;
+
+        }
+
+        .jt {
+            width: 15px;
+            height: 15px;
+            background-repeat: no-repeat;
+            background-position: right 0px center;
+            background-size: 15px auto;
+            background-image: url("./img/identi.png");
+            background-size: contain;
+        }
+
+        .m-box {
+            width: 100%;
+            /* height: 75px; */
+            display: flex;
+            justify-content: space-around;
+            /* background: white; */
+        }
+
+        .m-box>div {
+            width: 45%;
+            height: 75px;
+            /* line-height: 75px; */
+            margin-top: -5px;
+            border: 1px solid #FCFEFF;
+            border-radius: 5px;
+            display: inline-block;
+            background: white;
+            box-shadow: 0px 4px 14px 0px rgba(60, 81, 89, 0.15);
+        }
+
+        .m-box>div>div {
+            height: 30px;
+        }
+
+        .m-img {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-image: url("./img/ljxse.png");
+        }
+
+        .s-img {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-image: url("./img/hdsp.png");
+        }
+        .o-img {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-image: url("./img/zs.png");
+        }
+        .statistics {
+            width: 45%;
+            margin: 5px 0px;
+        }
+
+        .navBackIcon {
+            height: 100%;
+            width: 40px;
+            background-image: url(./img/grzx.png);
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-size: auto 16px;
+            float: left;
+            transform: rotate(180deg)
+        }
+
+        /* section */
+        .box {
+            width: calc((100% - 40px) / 2);
+            margin: 5px 10px;
+            display: inline-block;
+        }
+
+        .box img,
+        .box span {
+            width: 100%;
+        }
+
+        .box img {
+            width: 60px;
+            height: 60px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+    </header>
+
+    <section class='bg_hui   t-a-c verticalP' id=''>
+
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script src="../inc/dict.js"></script>
+<script src="../inc/area.js"></script>
+_
+<script>
+    var userinfo = Comm.db("userinfo");
+    function pageload() {
+		 Area.init();
+        model.getLeaseState()
+    }
+    function pageresume() {
+        model.getLeaseState()
+    }
+    var model = {
+        ifLease: '0',
+        getLeaseState: function () {//获取租赁状态
+            Comm.loading(true);
+            AJAX.POST("/bussiness/bussiness/detail", { customerId: userinfo.customerId }, function (res) {
+                Comm.loading(false);
+                if (res.code == '1') {
+                    model.ifLease = res.data.ifLease;
+                }
+                model.getGroupState();
+            })
+        },
+        getGroupState: function () {//获取租赁统计
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/group',
+                opt = {
+
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    // Comm.message()
+                    model.gropuState = res.data;
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        init: function () {//初始化 租赁界面
+            // $("header").html(template("userinfoTpl"))
+
+            Comm.loading(true);
+            var url = '/bussiness/lease/detail'
+            opt = {
+
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    var data = {};
+                    if (res.data) {
+                        data = res.data;
+                        data.ifLease = model.ifLease;
+                        $.extend(data,model.gropuState)
+                    }
+                    console.info(data)
+                    $("section").html(template("mainTpl", data));
+                   
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        addrole :function(){// 添加规则
+
+        },
+    }
+</script>
+
+<!-- 租赁详情 -->
+<script type="text/html" id="userinfoTpl">
+</script>
+<!-- 子界面列表 -->
+<script type="text/html" id="mainTpl">
+    <div class="header ">
+        <div class='navBar _bottomShadow verticalP'>
+                <div class='navBackIcon' onclick="Comm.go('./index.html')"></div>
+                <div class='navTitle ' style='color:white'>租赁服务</div>
+                <div class="f14 vertical colorfff" style="right:15px;" onclick="Comm.go('explain.html?type=2')">租赁规则</div>
+            </div>
+        <div id="user" style="height: 80px;">
+                    <div onclick="app.checkIslogin(true,'applyLease.html?type=1')" class="headimg flex-between">
+                    
+                    <img src="{{OSS(headPic)||''}}" class="fl inblock" alt="" onerror="app.herrorimg(this)" style="padding-right: 0px">
+                    <div class=" inblock myName-box marl10 t-a-l ">
+                        <div class=" colorfff block lh25">
+                            <span class="myName f16 wordW   colorfff left" id="nickname">{{shopAbbr||'点击申请成为租赁供应商'}}</span>
+                            <!-- // 0未填写 1审核成功 2审核中 3审核失败 是否租赁 -->
+                            {{if ifLease =="1"}}
+                            <span class="f16 wordW colorfff left marl5" id="ifLease">(营业中)</span>
+                            {{/if}}
+                            {{if ifLease==="2"}}
+                            <span class="f16 wordW colorfff left marl5" id="ifLease">(审核中)</span>
+                            {{/if}}
+                            {{if ifLease==="3"}}
+                            <span class="f16 wordW colorfff left marl5" id="ifLease">(审核失败)</span>
+                            {{/if}}
+                        </div>
+                        {{if ifLease=="1"}}
+                        <div class="myPhone block f14 lh25 t-a-l">
+                            <span class="colorfff  f12 marr5" id="manageAddress">{{getAreaName(manageAddress)}}</span>
+                            <span class="colorfff  f12 marr5" id="">|</span>
+                            <span class="colorfff  f12 marr5" id="pfen">
+                                {{set len=[0,1,2,3,4]}}
+                                {{each len as i v}}
+                                {{if v < star}}
+                                <img src="./img/index-pingfen.png" alt="">
+                                {{else}}
+                                <img src="./img/index-pfen.png" alt="">
+                                {{/if}}
+                                {{/each}}
+                            </span>
+                            <span class="colorfff  f12 " id="">{{star*1}}分</span>
+                        </div>
+                        {{else if ifLease=="2"}}
+                        <div class="myPhone block f14 lh25 ">
+                            <span class="colorfff  f12 marr5">资料审核中</span>
+                        </div>
+                        {{else if ifLease=="3"}}
+                        <div class="myPhone block f14 lh25 ">
+                            <span class="colorfff  f12 marr5">审核拒绝</span>
+                        </div>
+                        {{/if}}
+                    </div>
+                    <div class="goUser"></div>
+                </div>
+            </div>
+            <div class="m-box " style="">
+                <div onclick="">
+                    <div class="center paddt15 ">
+                        <span class=" f16 bold inblock" name="money">{{leijixiaoshoue||'0'}}</span>
+                    </div>
+                    <div class="center paddt10">
+                        <span class="m-img inblock contain"></span>
+                        <span class="f14 color74">累计销售额</span>
+                    </div>
+                </div>
+                <div  id="allGoodsNum" onclick="Comm.go('goodsList.html')">
+                        <div class="center paddt15 ">
+                                <span class=" f16 bold inblock" name="orderNum">{{zaizhuNum||"0"}}</span>
+                            </div>
+                            <div class="center paddt10">
+                                <span class="o-img inblock contain"></span>
+                                <span class="f14 color74">在租商品</span>
+                            </div>       
+                </div>
+            </div>
+    </div>
+    <div class="bg_hui t-a-c mart20" style="position:absolute;">
+        <div class=" box white left" onclick="app.checkIslogin(true,'./orderList.html')">
+                <img src="./img/zlddan.png" alt="" class="inblock" >
+                <span class="inblock mart10 bold f16">租赁订单</span>
+                <span class="inblock mart10 color999 paddb10">待接单{{daijei}}&nbsp;待配送{{daipei}}</span>
+            </div>
+            <div class=" box white left" onclick="app.checkIslogin(true,'./curingPlan.html')">
+                <img src="./img/yhjhua.png" alt="" class="inblock" onclick="model.go(2)">
+                <span class="inblock mart10 bold f16">养护计划</span>
+                <span class="inblock mart10 color999 paddb10">待处理 &nbsp;{{dai}}</span>
+            </div>
+            <div class=" box white left" onclick="app.checkIslogin(true,'./goodsList.html?type=1')">
+                <img src="./img/tgou.png" alt="" class="inblock" onclick="model.go(8)">
+                <span class="inblock mart10 bold f16">商品管理</span>
+                <span class="inblock mart10 color999 paddb10">商品{{shang}}&nbsp;套餐{{tao}}</span>
+            </div>
+            <div class=" box white left">
+                <img src="./img/anli.png" alt="" class="inblock" onclick="app.checkIslogin(true,'./caseList.html')">
+                <span class="inblock mart10 bold f16">案例</span>
+                <span class="inblock mart10 color999 paddb10">全部案例 &nbsp;{{anli}}</span>
+            </div>
+            <div class=" box white left">
+                <img src="./img/yggl.png" alt="" class="inblock" onclick="app.checkIslogin(true,'./staff.html')">
+                <span class="inblock mart10 bold f16">员工管理</span>
+                <span class="inblock mart10 color999 paddb10">员工管理 &nbsp;{{yuangong}}</span>
+            </div>
+            <div class=" box white left">
+                <img src="./img/zltji.png" alt="" class="inblock" onclick="app.checkIslogin(true,'./statistics.html')">
+                <span class="inblock mart10 bold f16">租赁统计</span>
+                <span class="inblock mart10 color999 paddb10 v-a-b">累计收益{{xiaoshoue}}元</span>
+            </div>
+           
+    </div>
+</script>
+
+</html>

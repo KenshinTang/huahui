@@ -1,0 +1,260 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../../css/g.css'>
+    <link rel='stylesheet' href='../../css/comm.css'>
+    <style>
+        .cellContent {
+            /* height: 50px; */
+            /* justify-content: normal; */
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        #details {
+            width: 100%;
+            height: 70px;
+            border: 0px;
+        }
+
+        /* footer */
+        .sumbit {
+            height: 45px;
+            line-height: 45px;
+            border-radius: 5px;
+        }
+
+        /* img */
+        .closeimg {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>添加商品</div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <div class="paddl15 bg_white ">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">商品名称</div>
+                <input type="text" name="goodsName" placeholder="请输入商品名称" data="" value="" data-reg='empty'
+                    class="f16 c333" />
+            </div>
+        </div>
+        <div class="paddl15 bg_white ">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">商品简介</div>
+                <input type="text" name="descript" placeholder="请输入商品简介" data="" value="" data-reg='empty'
+                    class="f16 c333" />
+            </div>
+        </div>
+        <div class="paddl15 bg_white " onclick="model.type.show()">
+            <div class="cellContent  indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">商品分类</div>
+                <input type="text" name="categoryId" readonly disabled placeholder="请选择商品分类" data="" value=""
+                    data-reg='empty' class="f16 c333" />
+            </div>
+        </div>
+        <div class="paddl15 bg_white ">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">商品价格(月)</div>
+                <input type="number" name="price" placeholder="请输入商品分价格" data="" value="" data-reg='empty'
+                    class="f16 c333" />
+            </div>
+        </div>
+        <div class="paddl15 bg_white ">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre c333  ">保证金</div>
+                <input type="number" name="bond" placeholder="请输入保证金" data="" value="" data-reg='empty'
+                    class="f16 c333" />
+            </div>
+        </div>
+        <!-- 商品轮播图 -->
+        <div class="mart5"></div>
+        <div class="paddl15 bg_white paddt15 paddb15">
+            <span class="f16 c333">商品轮播图<span class="color999 f12 hide">(比例：1:1)</span></span>
+            <div class="clearfix  paddt10" id="bannerImg">
+                <div class="left marr10 marb10" id="bannerUmp">
+                    <img src="../img/xztp.png" width="80" height="80" id="banner" />
+                </div>
+            </div>
+            <input type="text" class="hide" name="pics" placeholder="请上传轮播图片" data="" value="" data-reg='empty' />
+        </div>
+        <!-- 商品详情 -->
+        <div class="mart5"></div>
+        <div class="paddl15 bg_white paddt15 paddb15">
+            <div class="label f16 icon_pre c333 ">详情描述</div>
+            <textarea name="details" id="details" class="details f14 mart10 " placeholder="请输入详情..."
+                data-reg='empty'></textarea>
+            <div class="clearfix  paddt10" id="detailMapImg">
+                <div class="left marr10 marb10" id="detailMapUpm">
+                    <img src="../img/xztp.png" width="80" height="80" id="detailMap" />
+                </div>
+            </div>
+            <input type="text" class="hide" name="dpics" placeholder="请上传详情图片" data="" value="" data-reg='empty' />
+        </div>
+
+    </section>
+    <footer class="shared paddl15 paddt5 paddb5 paddr15">
+        <div class="bgdd-ef sumbit center colorfff f18" onclick="model.submit()">
+            保存商品
+        </div>
+    </footer>
+</body>
+<script src='../../inc/z.js'></script>
+<script src='../../inc/g.js'></script>
+<script src='../../inc/comm.js'></script>
+<script src='../../inc/art-template.js'></script>
+<script src="../../inc/picker.min.js"></script>
+<script src="../../inc/upimg/upload.js"></script>
+<script src="../../inc/upimg/plupload.full.min.js"></script>
+<script>
+
+    function pageload() {
+        model.choosingType()
+        model.uploadImg()
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        t:Comm.query("t"),
+        imgNum: {
+            nav: 0,
+            detail: 0
+        },
+        uploadImg: function () {//初始化图片上传
+            // 上传轮播图
+            var uploader = new imgUploader("bannerImg", 5 - model.imgNum.nav, "banner");
+            uploader.success = function () {
+                if (this.imgList.length > 0) {
+                    $.each(this.imgList, function (i, v) {
+                        $("#bannerImg").prepend(template('imgTpl', {
+                            src: v
+                        }))
+                        Comm.iosInput();
+                        model.imgNum.nav++;
+                    })
+                }
+                if (model.imgNum.nav == 5) {
+                    $("#bannerUmp").hide();
+                } else {
+                    $("#bannerUmp").show().find('.moxie-shim').width(80).height(80);
+                }
+                var pics = [];//轮播图片
+                $("#bannerImg .upimg").each(function (i, e) {
+                    pics.push($(e).attr("data"));
+                });
+                $("[name=pics]").val(pics.join(","));
+                model.uploadImg()
+            }
+            // 上传详情图
+            var uploader1 = new imgUploader("detailMapImg", 5 - model.imgNum.detail, "detailMap");
+            uploader1.success = function () {
+                if (this.imgList.length > 0) {
+                    $.each(this.imgList, function (i, v) {
+                        $("#detailMapImg").prepend(template('imgTpl', {
+                            src: v
+                        }))
+                        Comm.iosInput();
+                        model.imgNum.detail++;
+                    })
+                }
+                if (model.imgNum.detail == 5) {
+                    $("#detailMapUpm").hide();
+                } else {
+                    $("#detailMapUpm").show().find('.moxie-shim').width(80).height(80);
+                }
+                var dpics = [];//详情图片
+                $("#detailMapImg .upimg").each(function (i, e) {
+                    dpics.push($(e).attr("data"));
+                });
+                $("[name=dpics]").val(dpics.join(","));
+                model.uploadImg()
+            }
+        },
+        removeimg: function (a) {//移除图片
+            var flag = $(a).parents("#bannerImg")
+            $(a).parent().remove();
+            if (flag.length > 0) {
+                model.imgNum.nav--;
+                $("#bannerUmp").show().find('.moxie-shim').width(80).height(80);
+                if (model.imgNum.nav != 5) {
+                    $("#bannerUmp").removeClass("hide")
+                }
+            } else {
+                model.imgNum.detail--;
+                $("#detailMapUpm").show().find('.moxie-shim').width(80).height(80);
+                if (model.imgNum.detail != 5) {
+                    $("#detailMapUpm").removeClass("hide")
+                }
+            }
+            model.uploadImg()
+        },
+        choosingType: function () {//初始化分类
+            model.categoryId = [{ i: '1', text: '小花' }, { i: '2', text: "大花" }];
+            model.type = new Commpicker("选择供应商类别", [model.categoryId], function (obj, name, sid) {
+                $("[name=categoryId]").attr("data", sid).val(name)
+            })
+        },
+        submit: function () {//添加商品
+            var opt = Check.submit("POST");
+            if (!opt) {
+                return;
+            }
+            opt.categoryId = $("[name=categoryId]").attr("data");//类别id
+            opt.userType = "1";
+            opt.type=model.t;//新增
+            opt.goodsType='1';//供应商租赁
+            Comm.loading(true);
+            var url = '/common/otherGoods/add';
+            if(model.t=='4') url="";
+            
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+    }
+</script>
+<!-- 上传图片 -->
+<script id="imgTpl" type="text/html">
+    <div class="left marr10 marb10" style="position:relative;">
+        <img src="../img/close.png" width="20" class="closeimg" onclick="model.removeimg(this)" />
+        <img class="upimg" src="{{OSS(src)}}" width="80" height="80" data="{{src}}" />
+    </div>
+</script>
+
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <title>开团成功</title>
+    <link rel="stylesheet" href="../css/g.css">
+    <link rel="stylesheet" href="../css/comm.css">
+    <style>
+        body {
+            background-color: #F7F7F7;
+        }
+        
+        .goodimg {
+            width: 90%;
+            height: 90px;
+            border-radius: 5px;
+        }
+        
+        button.btn {
+            padding: 0px 2px 0px 8px;
+            border-radius: 3px;
+            width: auto;
+            height: 20px;
+            line-height: 20px;
+            font-size: 12px;
+            background-image: url('../img/ptj.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="bg_white">
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle"></div>
+        </div>
+    </header>
+    <section>
+        <div class="main  bg_white" id="main ">
+        </div>
+    </section>
+    <footer>
+    </footer>
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/art-template.js"></script>
+<script type="text/javascript" src="../inc/area.js"></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<script type="text/javascript" src="js/c.js"></script>
+
+<script>
+    function pageload() {
+        model.init();
+    }
+
+    function pageresume() {
+
+    }
+
+    var model = {
+        id: Comm.query('id'),
+        succ: Comm.query('succ') ? Comm.query('succ') : 0,
+        sharep: Comm.query('sharep') ? Comm.query('sharep') : 0,
+        gogd: function() {
+            event.stopPropagation();
+            Comm.go('ab.html?id=57')
+        },
+        init: function() {
+            if (model.succ) {
+                document.title = '开团成功';
+                $('.navTitle').html(document.title);
+            } else {
+                document.title = '拼团详情';
+                $('.navTitle').html(document.title);
+            }
+            AJAX.GET('/purchase/activitygroupbuy/myselfdetail?activityGroupBuyDetailId=' + model.id, function(d) {
+                if (d.code == 1) {
+                    d.data.pnum = d.data.purchases ? d.data.purchases.length : 0;
+                    d.data.share = model.sharep;
+                    model.data = d.data;
+                    var now = new Date();
+                    hms = (hhmmss.todate(d.data.endTime).getTime() - now.getTime()) / 1000;
+                    d.data.hms = hms;
+                    $('section .main').html(template('mainTpl', d.data));
+                    setInterval(function() {
+                        var m = $('section .main').find('#hhmmss');
+                        if (m) {
+                            if (hms > 0) {
+                                var r = hhmmss.covert(hms);
+                                hms--;
+                                if (hms >= 0) {
+                                    $(m).html('剩余' + r[0] + ":" + r[1] + ":" + r[2]);
+                                } else {
+                                    $(m).html('已结束');
+                                }
+                            }
+                        }
+                    }, 1000)
+                }
+            })
+        },
+        agin: function() {
+            var url = 'gooddetailgroup.html?id=' + model.data.goodsId + '&activityId=' + model.data.activityId + '&ifflower=' + model.data.ifFlower;
+            Comm.go(url);
+        },
+        myg: function() {
+            var url = 'gooddetailgroup.html?id=' + model.data.goodsId + '&activityId=' + model.data.activityId + '&ifflower=' + model.data.ifFlower + '&activityGroupBuyDetailId=' + model.id;
+            Comm.go(url);
+        },
+        share: function() {
+            config.webroot = ''
+            var url = 'groupsucc.html?id=' + model.id + '&sharep=1';
+            var opt = {
+                title: '邀请好友' /*分享标题*/ ,
+                pic: config.webroot + 'img/login/logo.png' /*分享图标*/ ,
+                url: config.webroot + '/c/' + url /*分享链接 OR app的线上fir下载地址*/ ,
+                desc: '邀请好友参团' /*分享描述*/
+            };
+            Comm.shareUrl(opt, function(d) {
+                if (d == 1) {
+                    Comm.message("分享成功");
+                }
+            });
+        }
+    }
+</script>
+<script id="mainTpl" type="text/html">
+    <div>
+        <div class="clearfix pad15 paddt10">
+            <div class="fl" style="width: 30%;">
+                <img src="{{OSS(img)}}" class="goodimg" onerror="app.errorimg(this)">
+            </div>
+            <div class="" style="margin-left:30%;">
+                <p class="wordW2 f16">
+                    <span>{{goodsName}}&nbsp;20181212</span>
+                </p>
+                <div class="mart10">
+                    <span class="colorred f16">￥{{price}}</span>
+                    <button class="btn" onclick="">{{groupNum}}人拼购价</button>
+                </div>
+                <div class="mart10 color666">单价购买￥{{yuanPrice}}</div>
+            </div>
+        </div>
+    </div>
+
+    {{if(state==0&&groupNum*1-pnum*1>0&&hms>0)}}
+    <div class="center lh50">
+        <span class="colorred marr10">还差{{groupNum*1-pnum*1}}人成团</span>
+        <span class="color999 marl10" id="hhmmss">剩余00:00:00</span>
+    </div>
+    {{/if}} {{if(state==1)}}
+    <div class="center lh50 colorred">
+        恭喜您拼团成功
+    </div>
+    {{/if}} {{if(state==2||(0>=hms&& groupNum*1>pnum*1))}}
+    <div class="center lh50 color999">
+        该团未能按时凑齐人数，拼团失败
+    </div>
+    {{/if}} {{if(purchases&&purchases.length)}}
+    <div class="center"> {{each purchases v k}}
+        <img src="{{OSS(v.avatar)}}" onerror="app.herrorimg(this)" height="40" width="40" style="border-radius:40px;" class="marl10 marr10" /> {{/each}}
+    </div>
+    {{/if}} {{if(share)}}
+    <div class="center mart30">
+        <button style="border-radius: 5px;" class="marb30" onclick="model.myg()">我要参团</button>
+    </div>
+    {{else}} {{if(state==0&&groupNum*1-pnum*1>0&&hms>0)}}
+    <div class="center mart30 ">
+        <button style="border-radius: 5px;" class="marb30" onclick="model.share()">邀请好友参团</button>
+    </div>
+    {{/if}} {{if(state==2||(0>=hms&& groupNum*1>pnum*1))}}
+    <div class="center mart30 ">
+        <button style="border-radius: 5px;" class="marb30" onclick="model.agin()">再开一团</button>
+    </div>
+    {{/if}} {{if(state==1)}}
+    <div class="center mart30 ">
+        <button style="border-radius: 5px;" class="marb30" onclick="model.look()">查看订单</button>
+    </div>
+    {{/if}} {{/if}}
+
+</script>
+
+</html>

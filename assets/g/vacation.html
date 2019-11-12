@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>店铺休假</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        .navTitle{
+            font-weight: normal;
+        }
+        /* header */
+        /* section */
+        .cellContent {
+            height: 50px;
+        }
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+        .head, .head>img {
+            height: 40px;
+            width: 40px;
+        }
+        .head {
+            overflow: hidden;
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+            color: #999;
+        }
+        .cellContent input, #wx_id, #sex, #sj_id {
+            color: black;
+        }
+        .isInvoice{
+            width:40px;
+            float: right;
+        }
+        .save{
+            position: absolute;
+            right: 15px;
+            top:50%;
+            transform: translateY(-50%);
+        }
+        /* footer */
+        .quit {
+            height: 45px;
+            line-height: 45px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow" style="position:relative">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">店铺休假</div>
+            <div class="save" onclick="save()">保存</div>
+        </div>
+    </header>
+    <section id='' class="bg_hui ">
+        <div class="paddl15 bg_white " onclick="datePickerstart.show();">
+            <div class="cellContent indicator bottomBorder ">
+                <div class="label f16  indicator icon_pre icon_name ">开始时间</div>
+                <input type="text" maxlength="11" readonly name="vacationStart" data-reg='empty' placeholder="开始时间未设置"
+                    id="vacationStart" value="">
+            </div>
+        </div>
+        <div class="paddl15 bg_white " onclick="datePickerend.show();">
+            <div class="cellContent indicator bottomBorder ">
+                <div class="label f16  indicator icon_pre icon_name ">结束时间</div>
+                <input type="text" maxlength="11" readonly name="vacationEnd" data-reg='empty' placeholder="结束时间未设置" id="vacationEnd"
+                    value="">
+            </div>
+        </div>
+    </section>
+    <footer class="shared ">
+
+    </footer>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="./foot.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<script type="text/javascript" src="../inc/upimg/upload.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo"),
+        start = "",
+        end = "";
+
+    function pageresume() {
+        userinfo = Comm.db("userinfo");
+    }
+
+    function pageload() {
+        datePickerstart = new Datepicker("开始时间", function (a, b, c) {
+            $("[name=vacationStart]").val(b);
+        });
+        datePickerend = new Datepicker("结束时间", function (a, b, c) {
+            $("[name=vacationEnd]").val(b);
+        });
+        detaile()
+    }
+    function detaile() {
+        AJAX.POST("/bussiness/bussiness/detail", { customerId: userinfo.customerId }, function (res) {
+            if (res.code == 1) {
+                if (res.data.vacationStart) $("input[name=vacationStart]").val(res.data.vacationStart).attr()
+                if (res.data.vacationEnd) $("input[name=vacationEnd]").val(res.data.vacationEnd).attr()
+            }
+        })
+    }
+    function save() {
+        var opt = Check.submit('POST');
+        if (!opt) {
+            return
+        }
+        opt.bussinessId = userinfo.bussinessId
+        var tiemStart= new Date(opt.vacationStart)
+        var tiemEnd= new Date(opt.vacationEnd)
+        
+        if(tiemStart.getTime()>tiemEnd.getTime()){
+            Comm.message("结束时间不能小于开始时间~")
+            return
+        }
+        AJAX.POST("/bussiness/bussiness/vacation",opt,function(res){
+            if(res.code==1){
+                Comm.message("设置成功")
+                setTimeout(function(){
+                    Comm.close();
+                },600) 
+            }
+        })
+    }
+</script>
+
+</html>

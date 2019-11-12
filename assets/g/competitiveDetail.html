@@ -1,0 +1,254 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        .goodslist {}
+
+        .goodslist>span {
+            display: block;
+            padding-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .goodslist img {
+            width: 12px;
+
+        }
+
+        /* footer */
+        footer button {
+            width: 75px;
+            height: 30px;
+            line-height: 30px;
+            background: #ffffff;
+            border: 1px #EEEEEE solid;
+            border-radius: 3px;
+            color: black;
+            /* padding: 10px; */
+        }
+
+
+        /* 列表 */
+        .goodimg {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+        }
+
+        .listinfo {
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .listinfo>p {
+            /* width: 100% */
+        }
+
+        .dfleximg {
+            width: 6px;
+            height: 11px;
+        }
+
+        .qiantou{
+            width:14px;
+            margin-left: 5px;
+            top:17px;
+            transform: rotateY(180deg)
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>竞采详情</div>
+        </div>
+    </header>
+
+    <section class='bg_hui verticalP' id=''>
+
+    </section>
+    <footer >
+       
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src="../inc/dict.js"></script>
+<script src='../inc/art-template.js'></script>
+<script>
+    var userinfo = Comm.db("userinfo");
+    function pageload() {
+        GDict.init(function () {
+            model.getTime()
+        })
+       
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        jinCaiId: Comm.query("jinCaiId"),
+        init: function () {//获取竞采详情
+            Comm.loading(true);
+            var url = '/bussiness/jincai/detail'
+            opt = {
+                jinCaiId: Comm.query("jinCaiId"),
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    var now = new Date();
+                    res.data.ends = (hhmmss.todate(res.data.addTime).getTime() + (model.jctime * 60000) - now.getTime()) / 1000;
+                    res.data.starts = (hhmmss.todate(res.data.addTime).getTime() - now.getTime()) / 1000;
+                    var ind = setInterval(function () {
+                        var num = 0;
+                        $(".ttime").each(function (i, e) {
+                                var id = $(e).attr('data');
+                                var result = $(e).attr('ttime');
+                                if (result > 0) {
+                                    result = result - 1;
+                                    var second = Math.floor(result % 60);
+                                    var minite = Math.floor((result / 60) % 60);
+                                    if (second < 10) second = "0" + second;
+                                    if (minite < 10) minite = "0" + minite;
+                                    $('#ttime' + id).html("距结束 " + minite + ":" + second).attr('ttime', result);
+                                } else {
+                                    num++;
+                                    // $('#ttime' + id).addClass("hide")
+                                    // $('#ttime' + id).html("已结束");
+                                    // $("footer").addClass('hide');
+                                    // Comm.resizeSection()
+                                }
+                            
+                        })
+                        // console.info(num)
+                        if (num == $(".ttime").length) clearInterval(ind)
+                    }, 1000)
+
+                    res.data.shopName = userinfo.shopName;
+                    $("section").html(template('mainTpl', res.data))
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        getTime: function () {//获取竞采有效时间
+            AJAX.POST('/api/config/bykeys', { keys: "jctime" }, function (res) {
+                if (res.code == 1) {
+                    model.jctime = res.data[0].value;
+                    model.init()
+                }
+            })
+        },
+        canJincai :function(){//取消竞采
+            Comm.loading(true);
+            var url = '/bussiness/jincai/refuse'
+                opt = {
+                    jinCaiId:model.jinCaiId,
+                };
+            AJAX.POST(url, opt, function (res) {
+            Comm.loading(false);
+                if(res.code == 1) {
+                    Comm.message("取消竞采成功~")
+                    // Comm.close();
+                    model.init();
+               } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+    }
+</script>
+
+<script type='text/html' id="mainTpl">
+    {{if state =='0'}}
+    <span class="f14 paddt10 paddb10 paddl15 block ttime" style="background: #FFF2EB;color:#DA251C;height:38px" id="ttime{{jinCaiId}}" data='{{jinCaiId}}' ttime="{{ends}}">距结束 00:00</span>
+    {{else if state=='1'}}
+    <span class="f14 paddt10 paddb10 paddl15 block ttime" style="background: #FFF2EB;color:#DA251C;height:38px" >竞采成功</span>
+    {{else if state=='2'}}
+    <span class="f14 paddt10 paddb10 paddl15 block ttime" style="background: #FFF2EB;color:#DA251C;height:38px" >竞采失败</span>
+    {{else if state=='3'}}
+    <span class="f14 paddt10 paddb10 paddl15 block ttime" style="background: #FFF2EB;color:#DA251C;height:38px" >取消竞采</span>
+    {{/if}}
+    <div class="goodslist paddt15 paddb15 paddl15 paddr15 white">
+        <span>竞采编号：{{orderNum}}</span>
+        <span>发布时间：{{formatDate(addTime,'Y-m-d H:i:s')}}</span>
+        <div>
+            <span>发布者：{{userName}} </span>
+            <span style='color:#DD1474'>{{phone}}</span>
+            <img src="./img/call.png" alt="">
+        </div>
+        <span class="mart15">商品：{{goodsName}}</span>
+        <span>数量：{{jinNum}}</span>
+        <span class="wordW block">商品描述：{{jinDes}}</span>
+    </div>
+    <div class="linebod"></div>
+    {{if details&&details.length!='0'}}
+    <div class="paddt15 paddb15 paddl15 f16 white">我的报价</div>
+    <div  class="paddt15 paddb15 paddl15  white mart10 verticalP">
+        <span class="f16 c212121 bold " >{{shopName}}</span>
+        <img src="./img/jcfhui.png" alt="" style="" class="vertical qiantou">
+        <div class="bg_hui">
+                {{each details v k }}
+                <div class="clearfix  paddr15  paddt15 paddb10 marb5 bg_white" name="listinfo" data="{{v.goodsId}}" style="padding-right:0px">
+                    <div style="height:90px " class="verticalP">
+                        <!-- <div class='quan decir inblock left' style="margin-top:55px" onclick="model.checked(this)"></div> -->
+                        <div class="fl center marr10  clearFloat" style=";height:90px;position:relative" >
+                            <img src="{{OSS(v.img)}}" class="goodimg" onerror="app.errorimg(this)"> 
+                        </div>
+                        <div class="listinfo clearFloat">
+                            <p class="wordW f16" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                                <span class="f16 bold color333">{{v.goodsName}} {{v.versionNumber}}</span>
+                            </p>
+                            <p class="lh20 wordW2" style="min-height: 40px;" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                                {{if(v.grade*1>0)}}
+                                <span class="color999 f12 inblock">等级:{{getItemName(v.grade)}}</span> {{/if}} {{if(v.maturity*1>0)}}
+                                <span class="color999 f12 inblock">成熟度:{{getItemName(v.maturity)}}</span> {{/if}} {{if(v.color*1>0)}}
+                                <span class="color999 f12 inblock">颜色:{{getItemName(v.color)}}</span> {{/if}}
+                                 {{if(v.speci*1>0)}}
+                                
+                                <span class="color999 f12 inblock">规格:{{(v.speci)}}/{{v.company}}</span>
+                                 {{/if}}
+                                 {{if(v.weight>0)}}
+                                <span class="color999 f12 inblock">重量:{{(v.weight)}}g</span> 
+                                {{/if}} 
+                                {{if(v.keyValue)}}
+                                <span class="color999 f12 inblock">规格:{{(v.keyValue)}}</span>
+                                 {{/if}}
+                            </p>
+                            
+                            <div class="" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                                <span class="color999 f12">价格:</span> <span class="f12 color333">&yen;{{v.singleprice}}</span>
+                                <span class="color999 f12">购买数量:</span> <span class="f12 color333">{{v.jinNum}}</span>
+                                <span class="color999 f12 linethrough hide">￥18.90</span>
+            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+        </div>
+    </div>
+    {{/if}}
+
+    {{if state=='0'}}
+    <footer class='paddt10 paddb10 paddr10 t-a-r white ' _style="top:calc(100% - 50px)">
+        <button name='canJincai' onclick="model.canJincai()" >取消竞采</button>
+    </footer>
+    
+    {{/if}}
+</script>
+
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <title>邀请好友</title>
+    <link rel="stylesheet" href="../css/g.css">
+    <link rel="stylesheet" href="../css/comm.css">
+    <style>
+        body {
+            background-color: #F4F4F4;
+        }
+
+        .navItemIcon {
+            background-image: inherit;
+            width: auto;
+        }
+
+        .bg {
+            background-image: url('img/share/yqhy.png');
+            background-size: 100% 100%;
+            height: 164px;
+        }
+
+        .content {
+            padding: 12% 15%;
+        }
+
+        img.head {
+            border-radius: 50px;
+            width: 50px;
+            height: 50px;
+        }
+
+        .ph,
+        .pw,
+        .code {
+            background-color: #fff;
+            border-bottom: 1px solid #EDEDF5;
+            position: relative;
+        }
+
+        .ph input {
+            background-image: url('img/share/sjh.png');
+        }
+
+        .code input {
+            background-image: url('img/share/yzm.png');
+        }
+
+        .pw input {
+            background-image: url('img/share/dlmm.png');
+        }
+
+        section>div input {
+            width: 90%;
+            height: 30px;
+            font-size: 16px;
+            color: #111;
+            padding-left: 30px;
+            background-repeat: no-repeat;
+            background-size: auto 20px;
+            background-position: left center;
+        }
+
+        .pw i,
+        .ph i {
+            position: absolute;
+            right: 10px;
+            top: 0px;
+            padding: 0 5px;
+            width: 30px;
+        }
+
+        .code-btn {
+            background: inherit;
+            background-color: #fff;
+            border-radius: 5px;
+            color: #DD1474;
+            border: 1px solid #DD1474;
+            height: 35px;
+            line-height: 35px;
+            width: 28%;
+            float: right;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .fot button {
+            border-radius: 3px;
+            border: 0px;
+            margin-bottom: 10px;
+        }
+
+        #sinbox {
+            background-image: url('img/share/wbg.png');
+            background-size: 100% 100%;
+            background-color: inherit;
+            width: calc(150% - 20px);
+        }
+
+        #WTDBOX {
+            left: -12.5%;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="bg_white">
+        <div class="navBar">
+            <div class="navTitle">邀请好友</div>
+        </div>
+    </header>
+    <section>
+        <div class="bg_white">
+            <div>
+                <img src="img/share/bg.png" width="100%" />
+            </div>
+            <div class="mart20">
+                <div class="bg">
+                    <div class="content">
+                        <img id="avatar" src="../img/wjg.png" class="head fl" onerror="app.herrorimg(this)" />
+                        <div class="lh25" style="margin-left: 60px;">
+                            <p class="f18">
+                                <span class="colorA8">您的好友</span>
+                                <span class="colorA8" id="customerName"></span>
+                            </p>
+                            <p class="f18 colorA8">邀请您加入花汇云</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mart20">
+                <div>
+                    <div class="center">
+                        <img src="img/share/sqby.png" height="6" class="marr5" />
+                        <span class="f16">申请表</span>
+                        <img src="img/share/sqbz.png" height="6" class="marl5" />
+                    </div>
+                    <div class="center colorA8 f12">APPLCATION</div>
+                </div>
+                <div class="paddl20 paddr20 mart20">
+                    <div class="ph lh45 marb10">
+                        <input number id="phone" value="" name="phone" data-reg="m" type="tel" placeholder="请输入11位手机号码" maxlength="11">
+                    </div>
+                    <div class="code lh45 marb10" id="code">
+                        <input number type="tel" class="f16" style="width: 60%;" name="code" data-reg="c" id="code1" placeholder="请输入验证码" maxlength="4">
+                        <button type="button" onclick="getCode(this,1)" class="code-btn">获取验证码</button>
+                    </div>
+                    <div class="pw lh45" id="pw">
+                        <input value="" class="f16" type="password" name="password" id="password" data-reg="p" placeholder="设置登录密码" maxlength="20">
+                        <i>
+                            <img onclick="app.checkimg(this)" class="imgContain" src="../img/login/close.png">
+                        </i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="fot mart20">
+            <div class="center">
+                <button onclick="reg()">立即注册</button>
+            </div>
+        </div>
+    </section>
+
+    <div id="sinbox" wtd="addsubWinTemp">
+        <div>
+            <div class="center marb20">
+                <img src="img/share/zccg.png" width="100" />
+            </div>
+            <div class="center paddt20">
+                <p class="colorred f24 mart20">注册成功</p>
+            </div>
+            <div class="colorA8 mart20">
+                <span id="inviterIntegral"></span>
+                <span>积分已到账，登录APP使用</span>
+            </div>
+            <div class="mart20">
+                <button style="border: 0px;width: 150px;">下载APP</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script>
+
+
+    //获取验证码
+    function getCode(t) {
+        var type = 1; //1：注册 2：找回密码  5：手机验证
+        app.timeCountDown(t, $('#phone').val(), type);
+    }
+
+    function pageload() {
+        //获取系统配置
+        AJAX.GET('/api/config/all', function (d) {
+            if (d.code == 1) {
+                for (var i = 0; i < d.data.length; i++) {
+                    if (d.data[i].key == "inviterIntegral") {
+                        model.inviterIntegral = d.data[i].value;
+                        $("#inviterIntegral").html(model.inviterIntegral)
+                    }
+                }
+            }
+        })
+        model.init();
+    }
+    var model = {
+        customerName: Comm.query('customerName'),
+        customerId: Comm.query('customerId'),
+        avatar: Comm.query('avatar'),
+        init: function () {
+            $('#customerName').html(model.customerName)
+            $('#avatar').attr('src', Comm.OSS.getImgUrl(model.avatar))
+        }
+    }
+
+    function reg() {
+        var opt = Check.submit('POST');
+        var _password = $("#password").val();
+        //_againpassword = $("#againpassword").val();
+        /*if (_password != _againpassword) {
+            console.info(_password, _againpassword);
+            return Comm.message("密码不一致，请重新输入")
+        }*/
+        if (opt) {
+            opt.identity = "0";
+            opt.inviterCusid = model.customerId;
+            AJAX.POST('/purchase/user/regist', opt, function (a) { //注册
+                console.info(a)
+                if (a.code == 1) {
+                    Comm.message('注册成功!');
+                    Comm.db('userinfo', a.data);
+                    setTimeout(function () {
+                        Comm.showWindow('addsubWinTemp', true)
+                    }, 600);
+                } else {
+                    Comm.message(a.msg);
+                }
+            });
+        }
+    }
+</script>
+
+</html>

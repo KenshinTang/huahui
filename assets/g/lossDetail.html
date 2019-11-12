@@ -1,0 +1,128 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+          .closeimg {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>详情</div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        
+    </section>
+    <footer>
+        
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script>
+   
+    function pageload() {
+       model.init();
+    }
+    function pageresume() {
+ 
+    }
+    var model={
+        init :function(){//
+            Comm.loading(true);
+            var url = '/bussiness/data/jipDetail',
+                opt = {
+                    reportLossId:Comm.query('reportLossId'),
+                };
+            AJAX.POST(url, opt, function (res) {
+            Comm.loading(false);
+                if(res.code == 1) {
+                    $("section").html(template("mainTpl",res.data));
+                    model.shopImg(res.data.pics)
+               } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        //修改入驻商品图片
+        shopImg: function (pics) {
+            if (pics.length> 0) {
+                pics = pics.split(",");
+                $.each(pics, function (i, v) {
+                    $("#conimg").prepend(template('imgTpl', {
+                        src: v
+                    }))
+                })
+            }
+           
+        },
+    }
+</script>
+
+<script type="text/html" id="mainTpl">
+    <div class="padd15 flex-between">
+            <span class=" f16 c333">{{goodsName}}</span>
+            <span class="f16 colordd bold">报损：{{num}}</span>
+        </div>
+        <div class="linebod"></div>
+        <div>
+            <div class="padd15 flex-between bottomBorder">
+                <span class='color999 f16'>上架时间</span>
+                <span class='c333 f16'>{{jiaTime}}</span>
+            </div>
+            <div class="padd15 flex-between bottomBorder">
+                <span class='color999 f16'>报损时间</span>
+                <span class='c333 f16'>{{addTime}}</span>
+            </div>
+            <div class="padd15 flex-between bottomBorder">
+                <span class='color999 f16'>报损单价</span>
+                <span class='c333 f16'>{{baoPrice}}</span>
+            </div>
+            <div class="padd15 flex-between ">
+                <span class='color999 f16'>报损人</span>
+                <span class='c333 f16'>{{userName}}</span>
+            </div>
+        </div>
+        <div class='linebod'></div>
+        <div class="padd15">
+            <span class="color999 f16 ">报损原因</span>
+            <p class='f16 mart10'>
+                  {{reason||''}} 
+            </p>
+        </div>
+        <div class="paddl15 bg_white " onclick="">
+            <div class="cellContent    ">
+                <div class="color999 f16 ">报损图片</div>
+            </div>
+            <div class="  paddr10">
+                <div class="clearfix  paddt10" id="conimg">
+                   
+                </div>
+            </div>
+    
+        </div>
+</script>
+<script id="imgTpl" type="text/html">
+    <div class= "left marr10 marb10" style="position:relative;">
+        <!-- <img src="./img/close.png" width="20" class="closeimg" onclick="removeimg(this)" /> -->
+        <img class="upimg" src="{{OSS(src,'d')}}" width="80" height="80" data="{{src}}"/>
+    </div>
+</script>
+</html>

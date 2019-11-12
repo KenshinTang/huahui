@@ -1,0 +1,1453 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel="stylesheet" href="./js/picker.css">
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        .cellContent {
+            /* height: 50px; */
+            /* justify-content: normal; */
+        }
+
+        .navItemIcon {
+            background: inherit;
+            width: auto;
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        .rili {
+            width: 20px;
+        }
+
+        .vertical {
+            right: 15px
+        }
+
+        /* time */
+
+        div[name='time'] input {
+            margin-right: 5px;
+        }
+
+        /* 输入库存框 */
+
+        .border {
+            border: 1px solid #ebebeb;
+            border-radius: 20px;
+            min-width: 90px;
+        }
+
+        #numberBox {
+            border-radius: 5px;
+            background-color: #fff;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* 商品列表 */
+
+        #goodsList {
+            height: auto;
+        }
+
+        #goodsList img {
+            /* width: 35%;
+            float: left;
+            display: inline-block; */
+        }
+
+        #goodsList div[name='goodsInfo'] {
+            width: 60%;
+            display: inline-block;
+        }
+
+        /* footer */
+
+        footer button {
+            display: inline-block;
+            width: 45%;
+        }
+
+        #choiceGoods {
+            background: white;
+            color: black;
+            border: 1px solid #e2e2e2;
+        }
+
+        /* picker */
+
+        .picker button {
+            background: white;
+            color: black;
+            line-height: 20px;
+            border-radius: 44px;
+            font-size: 16px;
+            border: 0px;
+        }
+
+        /* pic */
+
+        .closeimg {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+        }
+
+        /* 活动商品列表 */
+
+        #goodsList input[type='number'] {
+            /* min-width:40%;
+            max-width: 50%; */
+            width: 40%;
+            display: inline-block;
+            border: 1px solid #E5E5E5;
+        }
+
+        /* flex */
+
+        .flex1-5 {
+            flex: 1.5;
+        }
+
+        /* 开关 */
+
+        .isInvoice {
+            width: 40px;
+            float: right;
+        }
+
+        /* 满减 */
+
+        .ro180 {
+            transform: rotate(180deg)
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow' style="position: relative">
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class="navItemIcon marr10 colorred" onclick="model.newGoods()" id="newGoods">新建商品</div>
+            <div class='navTitle'>添加活动</div>
+        </div>
+    </header>
+
+    <section class='bg_hui' id=''>
+        <!-- 时间选择 -->
+        <div name="time" class="white" id="time">
+
+        </div>
+        <!-- 其他选项 -->
+        <div name="others" id='others'>
+
+        </div>
+        <div class="paddl10 paddt15 paddb15 bold f16" id="goodsNum">活动商品&nbsp;(0)</div>
+        <div id="goodsList" class="">
+            <div id="list"></div>
+        </div>
+        <!-- 竞拍描述  买赠描述 -->
+        <!-- <div id="des">
+
+
+        </div> -->
+    </section>
+    <footer class="paddt5 paddb5 center">
+        <button onclick="model.choiceGoods()" id="choiceGoods" class="marauto" style="border-radius: 5px;">选择商品</button>
+        <button onclick="model.save()" class="marauto" id="save" style="border-radius: 5px;">保存</button>
+    </footer>
+    <div id="numberBox" wtd="addNumber" class="bottomShadow">
+        <div>
+            <div class="center lh30 f18" id="tkTitle"></div>
+            <input type="number" class="lh40 border mart10 marb20 center f18" id="num" style="width: auto;" number />
+            <div>
+                <button style="border: 0px;width: 150px;" onclick="model.qkaddsubWin(this)">
+                    确定
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script src="../inc/picker.min.js"></script>
+<script src="../inc/upimg/upload.js"></script>
+<script src="../inc/dict.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+
+<script>
+    var bannerI = 0;
+    Array.prototype.indexOf = function (val) {
+        for (var i = 0; i < this.length; i++) {
+            if (this[i] == val) return i;
+        }
+        return -1;
+    };
+    Array.prototype.remove = function (val) {
+        var index = this.indexOf(val);
+        if (index > -1) {
+            this.splice(index, 1);
+        }
+    };
+
+    function pageload() {
+        // model.uploadPic(5)
+        GDict.init(function () {
+            // model.search();
+            // model.ptdj=Di
+            // Comm.loading(true)
+            model.isType()
+
+        })
+        // if (!Comm.w9()) {
+        //     pageresume()
+        // }
+
+    }
+
+    function pageresume() {
+        if (Comm.db("acGoodsId")) {
+            model.init()
+        }
+    }
+    var model = {
+        type: Comm.query("type"),
+        cc: [], //竞拍场次
+        isType: function () { //添加活动页面 初始化
+            // 1 预定 2 竞拍  4 搭配销售 8 团购 16 店铺买赠 32 满减 64 预售 128 秒杀 256 积分
+            var t = model.type;
+            if (t) {
+                var str = t == "1" ? "添加预定" : t == "2" ? "添加竞拍" : t == "4" ? "添加搭配销售" :
+                    t == "8" ? "添加团购" : t == "16" ? "添加买赠" : t == "32" ? "添加满减" :
+                        t == "64" ? "添加预售" : t == "128" ? "添加秒杀" : t == "256" ? "添加积分" : '';
+                $(".navTitle").html(str);
+            }
+            if (t == '128' || t == '8' || t == '4' || t == '64' || t == '1') {
+                $("#time").html(template("startEndTimeTpl"));
+                model.resetTime(1)
+            }
+            if (t == 2) {
+                $("#time").html(template("jpTimeTpl"));
+                // $("#des").html(template("desTpl"));
+                $.each(GDict.get("jpcc"), function (i, v) { // 竞拍场次
+                    model.cc.push({
+                        text: v.dictname,
+                        i: v.dictid,
+                        v: v.remark
+                    });
+                });
+                model.resetTime(2)
+            }
+            if (t == '8') {
+                $('#others').html(template("groupTpl"));
+                model.choiceGroup()
+            }
+            if (t == '4') {
+                $('#others').html(template("collocationTpl"));
+                model.uploadPic()
+            }
+            if (t == '64') {
+                faTimePicker = new Datepicker("发货时间", function (a, b, c) {
+                    $(model.elm).html(b);
+                    var skuId = $(model.elm).parents("[name=listinfo]").attr('data');
+
+                    model.editCollArr(skuId, b, 6);
+                });
+            }
+            if (t == '1') { //预定
+                model.getPtdj()
+                model.getDj()
+                return
+            }
+            if (t == '16' || t == '32') {
+                Comm.loading(false)
+                $("#newGoods").hide();
+                $("#choiceGoods").hide();
+                $("#save").css({ 'width': '95%' });
+                // $("footer").addClass("hide");
+                Comm.resizeSection()
+                if (t == '16') {
+                    $("section").html(template("mzTpl"));
+                    model.upzengImg();//图片上传
+                    var data = [{
+                        "i": '1',
+                        "text": "按价格"
+                    }, {
+                        "i": '2',
+                        'text': "按数量"
+                    }]
+                    model.choiceMaiType = new Commpicker('买赠方式', [data], function (obj, name, sid) {
+                        $('[name=maiType]').val(name).attr("data", sid)
+
+                    })
+                } else if (t == '32') {
+                    $("section").html(template("mjTpl"))
+                }
+            } else {
+                model.init();
+            }
+        },
+        getmzList: function (data, type) {//判断是否重复
+            // 
+            Comm.loading(true);
+            if (type == '16') {
+                var url = '/bussiness/activityMaiZeng/judgeHave';
+                var opt = {
+                    type: data.maiType,
+                    num: data.mainum
+                };
+                var str = '已有重复类型买赠活动，是否继续添加？';
+            } else {
+                var url = '/bussiness/activityManJian/judgeHave';
+                var opt = {
+                    num: data.manprice
+                }
+                var str = "已有重复类型满减活动，是否继续添加？"
+            }
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    if (res.data != '1') {
+                        Comm.Mess.confirm(str, Comm.setcb(function (a) {
+                            if (a == '1') {
+                                model.postData(data)
+                            }
+                        }))
+                    } else {
+                        model.postData(data)
+                    }
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+
+        },
+        resetTime: function (f) { // f 1 初始化开始 截至时间  2 初始化 开始 竞拍场次时间
+            if (f == 1) {
+                datePickerstart = new DatafullTime("开始时间", function (a, b, c) {
+                    $("[name=startTime]").val(b);
+                    model.if_time("startTime");
+                });
+                datePickerend = new DatafullTime("截至时间", function (a, b, c) {
+                    $("[name=endTime]").val(b);
+                    model.if_time("endTime");
+                });
+            } else if (f == 2) {
+                model.jpcc = new Commpicker(
+                    "选择竞拍场次", [model.cc],
+                    function (obj, name, sid) {
+                        $("[name=changci]")
+                            .val(name)
+                            .attr("data", sid);
+                    }
+                );
+                datePickerstart = new Datepicker("开始时间", function (a, b, c) {
+                    $("[name=startTime]").val(b);
+                    model.if_time("startTime");
+                });
+            }
+
+
+        },
+        addNum_s: function (a, i, id, stock) {
+            //加减
+            var a = $(a).parent().find(".input");
+            var num = $(a).val() * 1 + i * 1;
+
+            if (num * 1 > 0) {
+                if (num * 1 > stock * 1) {
+                    Comm.message("超出最大库存~");
+                    return;
+                }
+                $(a)
+                    .parent()
+                    .find(".input")
+                    .val(num);
+                $(a).parent().find(".num").html(num);
+                if (id) {
+                    model.editCollArr(id, num, 1);
+                }
+            }
+        },
+        addNum_kc: function (a, i, id) {
+            //加减
+            var num = $(a).parent().find(".input").html() * 1 + i;
+            if (num * 1 > 0) {
+                if (model._callNum * 1 < num * 1) {
+                    Comm.message("超出库存最大限制~");
+                    return;
+                }
+                $(a)
+                    .parent()
+                    .find("input")
+                    .val(num);
+                $(a).parent().find(".num").html(num);
+                if (id) {
+                    model.editCollArr(id, num);
+                }
+            }
+        },
+        addsub: function (a, v, index) { //弹出框
+            model.index = index;
+            this.divnum = a;
+            if (v != "2") {
+                var num = $(a).text().trim() || "";
+            } else {
+                var num = $(a).text().slice(1).trim() || "";
+            }
+            if (num == "0") {
+                num = null;
+            }
+            Comm.showWindow("addNumber", true);
+            $("#WTDBOX #num").val(num);
+            v == "1" ?
+                $("#WTDBOX #tkTitle").html("输入数量") :
+                v == "2" ?
+                    $("#WTDBOX #tkTitle").html("输入价格") :
+                    $("#WTDBOX #tkTitle").html("输入库存");
+            // 
+            if (v != "2") {
+                $("#WTDBOXTD").find("#num").attr("onchange", "model.inputNum(this,1)")
+            } else {
+                $("#WTDBOXTD").find("#num").attr("onchange", "model.inputNum(this)")
+            }
+        },
+        collNum: function (obj, skuid, stock) {
+            var str = $(obj).val();
+            console.info(str)
+            if (str == 0) {
+                Comm.message("请输入大于0的值~")
+                $(obj).val("")
+                return
+            }
+            if (str.indexOf(".") != "-1") {
+                Comm.message("请输入整数~")
+                $(obj).val("")
+                return
+            }
+            if (str * 1 > stock * 1) {
+                Comm.message("超出最大库存~");
+                $(obj).val("")
+                return;
+            }
+            model.editCollArr(skuid, str, 1);
+        },
+        inputNum: function (obj, type, price) { //判断输入数字
+            var str = $(obj).val();
+            console.info(str)
+            if (str <= 0) {
+                Comm.message("请输入大于0的值~")
+                $(obj).val("")
+                return
+            }
+            if (type == "1") {
+                if (str.indexOf(".") != "-1") {
+                    Comm.message("请输入整数~")
+                    $(obj).val("")
+                    return
+                }
+            } else if (type == "2") {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val("")
+                        return
+                    }
+                }
+            } else if (type == '9') {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val("")
+                        return
+                    }
+                }
+                if (str * 1 > 100) {
+                    Comm.message("超过最大百分比，请重输~")
+                    $(obj).val("")
+                    return
+                }
+            }
+            if (price) {
+                if (str * 1 >= price * 1) {
+                    Comm.message("活动价大于原价，请重输~")
+                    $(obj).val("")
+                    return
+                }
+            }
+        },
+        inputNum_P: function (obj, type, skuid, price) { //判断输入数字
+            var str = $(obj).val();
+            if (str <= 0) {
+                Comm.message("请输入大于0的值~")
+                $(obj).val("")
+                return
+            }
+            if (type == "1") {
+                if (str.indexOf(".") != "-1") {
+                    Comm.message("请输入整数~")
+                    $(obj).val("")
+                    return
+                }
+            } else if (type == "2") {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val("")
+                        return
+                    }
+                }
+            }
+            if (price) {
+                if (str * 1 >= price * 1) {
+                    Comm.message("活动价大于原价，请重输~")
+                    $(obj).val("")
+                    return
+                }
+            }
+            model.editCollArr(skuid, str, 2);
+        },
+        inputNum_xg: function (obj, type, skuid) { //判断输入数字
+            var str = $(obj).val();
+            if (str <= 0) {
+                Comm.message("请输入大于0的值~")
+                $(obj).val("")
+                return
+            }
+            if (type == "1") {
+                if (str.indexOf(".") != "-1") {
+                    Comm.message("请输入整数~")
+                    $(obj).val("")
+                    return
+                }
+            } else if (type == "2") {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val("")
+                        return
+                    }
+                }
+            }
+            model.editCollArr(skuid, str, 4);
+        },
+        qkaddsubWin: function (a) { //确认输入
+            var num = Number($("#WTDBOX #num").val()); //输入数量
+            if (num > 0) {
+                Comm.showWindow(false);
+                if (model._callNum * 1 < num * 1) {
+                    Comm.message("超出库存最大限制~");
+                    return;
+                }
+                $(this.divnum).html(num);
+                $(this.divnum).next().val(num)
+            }
+        },
+        uploadPic: function (lb) { //上传图片初始化
+            var bannerloader = new imgUploader("bannerImg", lb, "banner");
+            bannerloader.success = function () {
+                if (this.imgList.length > 0) {
+                    $.each(this.imgList, function (i, v) {
+                        $("#bannerImg").prepend(
+                            template("imgTpl", {
+                                src: v
+                            })
+                        );
+                        Comm.iosInput();
+                        bannerI++;
+                    });
+                    this.imgList = [];
+                }
+                if (bannerI == 5) {
+                    $("#bannerUmp").hide();
+                } else {
+                    $("#bannerUmp")
+                        .show()
+                        .find(".moxie-shim")
+                        .width(80)
+                        .height(80);
+                }
+                var pics = [];
+                $("#bannerImg .upimg").each(function (i, e) {
+                    pics.push($(e).attr("data"));
+                });
+                $("#bannerImg")
+                    .siblings("[name=pics]")
+                    .val(pics.join(",")); //轮播图
+                model.uploadPic(5 - bannerI);
+            };
+        },
+        upzengImg: function () {
+            var upzengImg = new imgUploader("zengPic");
+            upzengImg.success = function () {
+                var cimgUrl =
+                    this.imgList.length > 0 ? this.imgList[0] : "img/error.png";
+                var ossUrl = Comm.OSS.getImgUrl(cimgUrl);
+                $(this.dom).removeClass("paddt10");
+                $(this.dom)
+                    .find("input")
+                    .addClass("hide");
+                $(this.dom)
+                    .find("img")
+                    .removeClass("hide");
+                $(this.dom)
+                    .find("input")
+                    .attr("data", cimgUrl)
+                    .val(cimgUrl);
+            }
+        },
+        removeimg: function (a) { //移除图片
+            var idelm = $(a)
+                .parent()
+                .parent()
+                .attr("id");
+            if (idelm == "bannerImg") {
+                $("#bannerUmp")
+                    .show()
+                    .find(".moxie-shim")
+                    .width(80)
+                    .height(80);
+                bannerI--;
+                if (bannerI != 5) {
+                    $("#bannerUmp").removeClass("hide");
+                }
+                if (bannerI == 0) {
+                    $("input[name=pics]").attr("data-reg", "empty");
+                }
+            } else if (idelm == "detailMapImg") {
+                $("#detailMapUpm")
+                    .show()
+                    .find(".moxie-shim")
+                    .width(80)
+                    .height(80);
+                detailMapI--;
+                if (detailMapI != 5) {
+                    $("#detailMapUpm").removeClass("hide");
+                }
+                if (detailMapI == 0) {
+                    $("input[name=dpics]").attr("data-reg", "empty");
+                }
+            }
+            $(a)
+                .parent()
+                .remove();
+            model.uploadPic(5 - bannerI);
+        },
+        newGoods: function () { //添加商品
+            model.cleanDB()
+            Comm.go('addMerchandise.html?type=' + 5 + "&f=" + model.type)
+        },
+        cleanDB: function () {
+            Comm.db("category", null);
+            Comm.db("categoryId", null);
+            Comm.db("ifFlower", null);
+        },
+        choiceGoods: function () { //选择分类商品
+            Comm.go("activitylist.html?f=" + model.type)
+        },
+        opt: [], //添加商品的id集
+        data: [], //获取的添加商品数据
+        sku: [], //库存商品数量
+        cllocationArr: [],
+        init: function () { //初始化添加活动商品
+            model.opt = Comm.db('acGoodsId') ? JSON.parse(Comm.db("acGoodsId")) : [];
+            if (model.opt && model.opt.length != '0') {
+                $.each(model.opt, function (i, v) {
+                    if (v.descript != '') {
+                        try {
+                            v.descript = JSON.parse(v.descript)
+                        } catch (error) {
+                            this.$delete(object, key).descript = {}
+                        }
+                    }
+                    if (model.type == '1') {
+                        v.dj = model.dj
+                        v.ptdj = model.ptdj
+                    }
+                    $.each(v.skus, function (n, m) { //循环规格
+                        if (!m.wtd_goodsStock) m.wtd_goodsStock = '1';
+                        v.yuanPrice = m.price[0].price;
+                        m.yuanPrice = m.price[0].price;
+                    })
+                    v.type = model.type;
+
+                })
+                console.info(model.opt)
+                $("#goodsList").html(template('goodTpl', model.opt));
+                model.calccCllocation();
+            } else {
+                var str = '<div class="mescroll-empty"><img class="empty-icon" src="../img/wjg.png"><p class="paddb10 empty-tip">您还未添加活动商品~</p></div>'
+                $("#goodsList").html(str);
+            }
+            model.resnum();
+
+
+        },
+        calccCllocation: function () {//计算搭配 的套餐价格
+            var arr = [];
+            var allPrice = 0;
+            var xgNum = [];
+            $.each(model.opt, function (i, v) {
+                $.each(v.skus, function (n, m) {
+                    allPrice += (m.wtd_goodsStock * 1) * (m.yuanPrice * 1);
+                    var _t = Math.floor((m.stock * 1) / (m.wtd_goodsStock * 1));
+                    xgNum.push(_t)
+                })
+            })
+            console.info(allPrice, xgNum);
+            $("#collocationPrice").find("input").val(allPrice);
+            $("#collocationNum").find(".num").html(Math.min.apply(null, xgNum));
+            $("#collocationNum").find("[name=num]").val(Math.min.apply(null, xgNum));
+            model._callNum = Math.min.apply(null, xgNum);
+        },
+        editCollArr: function (id, num, t) { //修改并计算
+            // t 1 搭配数量修改 2 修改活动价 3 是否开启限购 4 限购数量 5 竞拍描述 6 发货时间
+            $.each(model.opt, function (n, m) {
+                if (t == '3' || t == '4' || t == '5' || t == '6') {
+                    if (m.goodsId == id) {
+                        t == '3' ? m.isxg = num : t == '4' ? m.xianNum = num : t == '5' ? m.jinDesc = num : t == '6' ? m.faTime = num : '';
+                    }
+                }
+
+                $.each(m.skus, function (i, v) {
+                    if (v.goodsSkuId == id) {
+                        if (t == '1') {
+                            v.wtd_goodsStock = num;//修改套配数量
+                        } else if (t == '2') {
+                            v.wtd_price = num;//修改活动价
+                        }
+                    }
+                })
+            })
+            Comm.db("acGoodsId", JSON.stringify(model.opt))
+            model.calccCllocation();
+        },
+        deleteSku: function (elm, goodsId) { //删除活动商品（规格）
+            var e = $(elm).parents("[name=sku]");
+            console.info(e)
+            //最少有一个规格商品参加活动
+            if ($(e).find("[name=skulist]").length > 1) {
+                $(elm).parents("[name=skulist]").remove();
+                var _i = $(elm).parents("[name=skulist]").attr("data");
+                $.each(model.opt, function (i, v) {
+                    if (v.goodsId == goodsId) {
+                        v.goodsskus = $.grep(v.goodsskus, function (n, m) {
+                            console.info(n)
+                            return n.goodsSkuId != _i;
+                        })
+                    }
+                });
+                Comm.db("acGoodsId", JSON.stringify(model.opt))
+            } else {
+                Comm.message("最少保留一个规格参加活动~")
+            }
+
+        },
+        deleteGoods: function (elm, id) { //删除活动商品（整个商品）
+
+            Comm.Mess.confirm("是否删除该商品？", Comm.setcb(function (a) {
+                if (a == 1) {
+                    model.opt = $.grep(model.opt, function (v, i) {
+                        return v.goodsId != id;
+                    })
+                    Comm.db("acGoodsId", JSON.stringify(model.opt))
+                    $(elm).parents('[name=listinfo]').remove();
+                    var num = $("#goodsList").find("[name=listinfo]").length;
+                    if (num == "0") {
+                        model.init()
+                    } else {
+                        model.resnum()
+                    }
+                    Comm.message("删除成功~")
+                }
+            }))
+
+        },
+        resnum: function () { //刷新商品数量
+            var num = $("#goodsList").find("[name=listinfo]").length;
+            $("#goodsNum").html("活动商品&nbsp;(" + num + ")")
+        },
+        choiceGroup: function () { //初始化团购模式
+            var data = [{
+                "i": '1',
+                "text": "普通团"
+            }, {
+                "i": '2',
+                'text': "自主拼团"
+            }]
+            model.choiceGroupType = new Commpicker('请选择参团模式', [data], function (obj, name, sid) {
+                $('[name=groupType]').val(name).attr("data", sid)
+                if (sid == '1') {
+                    $('[name=groupNum]').attr("placeholder", "请输入参团数").parent().find("div").html("参团数")
+                } else if (sid == "2") {
+                    $('[name=groupNum]').attr("placeholder", "请输入拼团人数").parent().find("div").html("参团人数")
+                }
+            })
+
+        },
+        faTime: function (elm) { //发货时间选择
+            model.elm = elm;
+            faTimePicker.show()
+        },
+        choiceMai: function () { //买赠选择
+            model.choiceMaiType.show();
+        },
+        setMjfree: function (elm, t) { //设置满减下的  包装费 运费减免
+            // t 1 包装费 2 运费
+            var f = $(elm).attr("data");
+            if (f == "0") {
+                $(elm).attr("src", './img/kqjfdk.png').toggleClass("ro180").attr("data", '1')
+            } else {
+                $(elm).attr("src", './img/gbjfdk.png').toggleClass("ro180").attr("data", '0')
+            }
+            var f = $(elm).attr("data");
+            if (t == '1') {
+                if (f == "1") {
+                    $("[name=packingFee]").parent().parent().hide();
+                    $("[name=packingFee]").val("-2")
+                } else {
+                    $("[name=packingFee]").parent().parent().show();
+                    $("[name=packingFee]").val("")
+                }
+            } else if (t == '2') {
+                if (f == "1") {
+                    $("[name=zaiFee]").parent().parent().hide()
+                    $("[name=zaiFee]").val("-2")
+                } else {
+                    $("[name=zaiFee]").parent().parent().show()
+                    $("[name=zaiFee]").val("")
+                }
+            }
+
+        },
+        getDj: function () { //获取订金
+            Comm.loading(true);
+            var url = '/bussiness/bussiness/getbili'
+            opt = {
+
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    model.dj = res.data;
+
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        getPtdj: function () { //平台订金
+            AJAX.POST('/api/config/bykeys', {
+                keys: "ding_bi"
+            }, function (res) {
+                if (res.code == 1) {
+                    model.ptdj = res.data[0].value;
+                }
+            })
+        },
+        ifTime: function (data) { //判断时间是否过期
+            var now = new Date();
+            var f = false;
+            if (model.type == '2') {
+                var cc = data.changci.split("-");
+                data.startTime = data.startTime.split(" ")[0] + " " + cc[0]
+                data.endTime = data.startTime.split(" ")[0] + " " + cc[1]
+                model.ends = (hhmmss.todate(data.endTime).getTime() - now.getTime()) / 1000;
+                model.starts = (hhmmss.todate(data.startTime).getTime() - now.getTime()) / 1000;
+            } else {
+                if (data.startTime) { //时间判断
+                    model.starts = (hhmmss.todate(data.startTime).getTime() - now.getTime()) / 1000;
+                    if (data.endTime) {
+                        model.ends = (hhmmss.todate(data.endTime).getTime() - now.getTime()) / 1000;
+                    }
+                }
+            }
+            if (model.starts && model.starts < 0) {
+                if (model.type == '2') {
+                    Comm.message("竞拍场次已开始~")
+                } else {
+                    Comm.message("开始时间已结束~")
+                }
+                f = true;
+            }
+            if (model.ends && model.ends < 0 && model.type != '2') {
+                Comm.message("结束时间已结束~")
+                f = true;
+
+            }
+            if (model.starts && model.ends && model.starts >= model.ends) {
+                if (model.type == '2') {
+                    Comm.message("竞拍场次已结束~")
+                } else {
+                    Comm.message("结束时间小于或等于开始时间~")
+                }
+                f = true;
+
+            }
+            return f
+        },
+        if_time: function (name) {//选择时间提示
+            var _s_time = $("[name=startTime]").val();
+            var _e_time = $("[name=endTime]").val();
+            if(!_s_time){
+                Comm.message("请先选择开始时间~");
+                $("[name="+name+"]").val("");
+                return
+            }
+            var ftime = model.ifTime({
+                startTime:_s_time,
+                endTime:_e_time
+            });//时间判断
+            if (ftime) {
+                Comm.loading(false);
+                $("[name="+name+"]").val("");
+                return
+            }
+        },
+        save: function () { //提交活动
+            // 1 预定 2 竞拍  4 搭配销售 8 团购 16 店铺买赠 32 满减 64 预售 128 秒杀 256 积分
+            Comm.loading(true)
+            var flag = 0;
+            var data = Check.submit("POST");
+            var yuanPrice = 0;
+            if (!data) {
+                Comm.loading(false)
+                return
+            }
+            if (model.type == '4') {
+                if (data.num * 1 < data.xianNum * 1) {
+                    Comm.message("限购个数超出最大库存~");
+                    Comm.loading(false);
+                    return;
+                }
+            }
+            var ftime = model.ifTime(data);//时间判断
+            if (ftime) {
+                Comm.loading(false)
+                return
+            }
+            data.type = model.type;
+            switch (model.type) {
+                case '2':
+                    data.changci = $("[name=changci]").attr("data")
+                    break;
+                case '8':
+                    data.groupType = $("[name=groupType]").attr("data")
+                    break;
+                case '16':
+                    data.maiType = $("[name=maiType]").attr("data")
+                    break;
+                case '1':
+                    data.bili = model.dj;
+                    break;
+                // case '4': 
+            }
+            if (model.type == '32') {
+                if (data.jianPrice == '' || data.jianPrice.length == '0') {
+                    // Comm.message("请输入满减金额~");
+                    data.jianPrice = '0';
+                    // Comm.loading(false)
+                    // return
+                }
+                if (data.manprice * 1 <= data.jianPrice * 1) {
+                    Comm.message("满减金额大于或等于商品金额~");
+                    Comm.loading(false)
+                    return
+                }
+                // if (data.packingFee == "" && data.packingFee.length == '0') {
+                //     Comm.message("请输入包装费减免百分比~");
+                //     Comm.loading(false)
+                //     return
+                // }
+                // if (data.zaiFee == "" && data.zaiFee.length == '0') {
+                //     Comm.message("请输入运费减免百分比~");
+                //     Comm.loading(false)
+                //     return
+                // }
+            }
+            if (model.type != "16" && model.type != '32') {
+                var _list = $("#goodsList").find("[name=listinfo]");
+                var otherParamters = [];
+                if (_list.length > 0) {
+                    $.each(_list, function (i, v) { //商品循环
+                        if (model.type != '4') {
+                            var obj = {
+                                goodsId: $(v).attr("data"),
+                                goodsskus: [],
+                                xianNum: $(v).find('[name=xianNum]').val()
+                            };
+                            if (model.type == '64') {
+                                obj.faTime = $(v).find('[name=faTime]').html();
+                                if (!obj.faTime) flag = '2';
+                            }
+                            if (model.type == '2') obj.jinDesc = $(v).find('[name=jinDesc]').val(); //预定  原价即活动价
+                            otherParamters.push(obj);
+                        }
+
+                        var _l = $(v).find("[name=skulist]")
+                        $.each(_l, function (n, m) { //规格循环
+                            if (model.type != '4') {
+                                var _t = $(m).find('[name=price] input').val();
+                                if (_t == '0' || _t == '') flag = 1;
+                                var obj = {
+                                    goodsskuId: $(m).attr("data"),
+                                    stock: $(m).find("[name=stock]").attr("data"),
+                                    price: _t
+                                };
+
+                                if (model.type == '1') obj.price = $(m).find("[name=yuanPrice]").attr("yuanPrice"); //预定  原价即活动价
+
+                                otherParamters[i].goodsskus.push(obj)
+                            } else {
+                                var obj = {
+                                    goodsskuId: $(m).attr("data"),
+                                    goodsStock: $(m).find('[name=goodsStock]').val(),
+                                }
+                                if (model.type == '4') {
+                                    yuanPrice += $(m).find("[name=yuanPrice]").attr("yuanPrice") * 1 * obj.goodsStock * 1000; //搭配销售 
+
+                                }
+                                otherParamters.push(obj)
+                            }
+                        })
+                    })
+                } else {
+                    Comm.message("最少有一个商品参加活动~");
+                    Comm.loading(false)
+                    return;
+                }
+                if (flag == "1") {
+                    Comm.message("请输入活动价~");
+                    Comm.loading(false);
+                    return;
+                }
+                if (flag == "2") {
+                    Comm.message("请输入发货时间~");
+                    Comm.loading(false);
+                    return;
+                }
+                if (model.type == '4') {
+                    yuanPrice /= 1000;
+                    if (yuanPrice * 1 < data.price * 1) {
+                        Comm.message("活动价大于商品总价~");
+                        Comm.loading(false);
+                        return;
+                    }
+
+                }
+                data.otherParamters = JSON.stringify(otherParamters)
+            }
+            if (model.type == '16' || model.type == '32') {
+                model.getmzList(data, model.type);
+                return;
+            }
+            console.info(data)
+
+            model.postData(data)
+        },
+        postData: function (data) {//
+            var url = '/bussiness/activity/add';
+            AJAX.POST(url, data, function (res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("添加成功");
+                    Comm.close()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        choicexg: function (elm) {//限购操作
+            var a = $(elm);
+            var i = $(a).parent().next().find("input");
+            var f = $(a).is(":checked");
+            var sku = $(a).parents('[name=listinfo]').attr("data");
+            if (f) {
+                $(a).attr("data", '1');
+                $(i).attr({ 'onchange': "model.inputNum_xg(this,'1'," + sku + ")", "data-reg": 'empty' }).removeAttr('readonly onclick');
+            } else {
+                $(a).attr("data", '0');
+                $(i).attr({ 'onclick': 'Comm.message(\'请先勾选~\')', 'readonly': 'readonly' }).removeAttr("data-reg onchange");
+            }
+            model.editCollArr(sku, $(elm).attr("data"), 3);
+        },
+        jindesc: function (elm, skuId) {// 竞拍描述说明修改
+            var str = $(elm).val();
+            model.editCollArr(skuId, str, 5);
+        },
+
+    }
+</script>
+<!-- 上传图片 -->
+<script id="imgTpl" type="text/html">
+    <div class="left marr10 marb10" style="position:relative;">
+        <img src="./img/close.png" width="20" class="closeimg" onclick="model.removeimg(this)" />
+        <img class="upimg" src="{{OSS(src)}}" width="80" height="80" data="{{src}}" />
+    </div>
+</script>
+<!-- 商品列表 -->
+<style>
+    .goodimg {
+        width: 90px;
+        height: 90px;
+        border-radius: 5px;
+    }
+
+    .listinfo {
+        height: 90px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .flex>span {
+        display: inline-block;
+    }
+
+    .c333333 {
+        color: #333333;
+    }
+
+    .c212121 {
+        color: #212121;
+    }
+</style>
+<script id="goodTpl" type="text/html">
+    {{each $data v k }}
+    <div class="clearfix pad10 marb5 bg_white" name="listinfo" data="{{v.goodsId}}" style="padding-right:0px">
+        <div style="" class="verticalP">
+            <!-- <div class='quan decir inblock left' style="margin-top:55px" onclick="model.checked(this)"></div> -->
+            <div class="fl center marr5  clearFloat" style=";position:relative">
+                <img src="{{OSS(v.img)}}" class="goodimg" onerror="app.errorimg(this)">
+            </div>
+            <div class="listinfo clearFloat">
+                <p class="wordW f16" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')" style="width: calc(100% - 30px);">
+                    <span class="f16 bold c333333">{{v.goodsName}}&nbsp;{{v.versionNumber}}</span>
+                </p>
+                <p class="lh20 wordW2" style="min-height: 40px;" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                    {{if(v.grade&&v.grade!='-1')}}
+                    <span class="color999 f12 inblock">等级:{{getItemName(v.grade)}}</span> {{/if}} {{if(v.maturity&&v.maturity!='-1')}}
+                    <span class="color999 f12 inblock">成熟度:{{getItemName(v.maturity)}}</span> {{/if}} {{if(v.color&&v.color!='-1')}}
+                    <span class="color999 f12 inblock">颜色:{{getItemName(v.color)}}</span> {{/if}} {{if(v.speci*1>0)}}
+
+                    <span class="color999 f12 inblock">规格:{{(v.speci)}}/{{v.company}}</span> {{/if}} {{if(v.weight>0)}}
+                    <span class="color999 f12 inblock">重量:{{(v.weight)}}g</span> {{/if}} {{if(v.keyValue)}}
+                    <span class="color999 f12 inblock">规格:{{(v.keyValue)}}</span> {{/if}}
+                </p>
+                <p class="lh20 wordW2 " _style="width:calc(100% - 40% - 5px)">
+                    {{if v.descript.length!='0'}}
+                    <span class=" inblock wordW" style="width:calc(100%)">
+                    {{each v.descript as m n}}
+                    <span class="color999 f12">{{m.keyName}}:{{m.value}}</span> {{/each}}
+                    </span>
+                    {{/if}}
+                </p>
+                <p class="hide" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                    <span class="f12 colorred borred">团</span>
+                    <span class="f12 colorred borred">秒杀</span>
+                    <span class="f12 colorred borred">预售</span>
+                </p>
+                <!-- <div class="" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                    <span class="color999 f12">价格:</span> <span class="f12">&yen;{{v.price}}</span>
+                    <span class="color999 f12">库存:</span> <span class="f12">{{v.stock}}</span>
+                    <span class="color999 f12 linethrough hide">￥18.90</span>
+                </div> -->
+            </div>
+            <!-- 商品规格 -->
+            <div name="sku">
+                {{each v.skus as m n}}
+                <div name="skulist" class="paddt10 paddb10 bottomBorder verticalP" data="{{m.goodsSkuId}}">
+                    {{if m.keyValue}}
+                    <img src="./img/deleteh.png" alt="" onclick="model.deleteSku(this,'{{m.goodsId}}')" style="width:12px;display:inline-block" class="">
+                    <span class="f12">规格：{{m.keyValue}}</span> {{/if}}
+                    <p class=" mart5 flex-between paddr15">
+                        <span class=" t-a-l f12 c212121" style="width:30%" name="yuanPrice" yuanPrice='{{v.yuanPrice}}'>原价：&yen;{{m.price[0].price}}</span> {{if v.type=='1'}}
+                        <!-- 是否预定 -->
+                        <span class=" t-a-l f12 c212121 " style="width:40%" name='bili'>订金比例：{{v.ifFlowerSuper=='1'?v.ptdj:v.dj}}%</span> {{else if v.type=='4'}}
+                        <!-- 是否搭配销售 -->
+                        <span class="inblock"> 
+                                <span class="f12 marl5 c21">数量：</span>
+                        <img src="img/cart-jian.png" width="12" style="" onclick="model.addNum_s(this,'-1',{{m.goodsSkuId}},{{m.stock}})">
+                        <input type="number" class="input t-a-c" name="goodsStock" id="" style="height:17px;width:35px;background:#F2F2F2;padding-right:0px;vertical-align: bottom;" class="inblock t-a-c" placeholder="请输入套餐购买数量~" value="{{m.wtd_goodsStock||''}}" data-reg="empty" onchange="model.collNum(this,'{{m.goodsSkuId}}','{{m.stock}}')">
+                        <img src="img/cart-jia.png" width="12" style="" onclick="model.addNum_s(this,'1',{{m.goodsSkuId}},{{m.stock}})">
+                        </span>
+                        {{else}}
+                        <!-- 团购没有活动价 -->
+                        {{if v.type!='2'}}
+                        <span class=" t-a-l f12 c212121 t-a-c" style="width:40%" name='price'>活动价：<input type="number"  name="" id="" value="{{m.wtd_price}}" placeholder="{{m.wtd_price||''}}" onchange="model.inputNum_P(this,'2','{{m.goodsSkuId}}','{{m.yuanPrice}}')" class="f12 c212121"></span> {{else}}
+                        <span class=" t-a-l f12 c212121 t-a-c" style="width:40%" name='price'>起拍价：<input type="number" name="" id="" value="{{m.wtd_price}}" placeholder="{{m.wtd_price||''}}" onchange="model.inputNum_P(this,'2','{{m.goodsSkuId}}','{{m.yuanPrice}}')" class="f12 c212121"></span> {{/if}} {{/if}}
+                        {{if v.type!='4'}}
+                        <span class=" t-a-l f12 c212121 t-a-r" style="width:30%" name='stock' data="{{m.stock}}">库存：{{m.stock}}</span> {{/if}}
+                    </p>
+                </div>
+                {{/each}}
+            </div>
+            {{if v.type=='64'}}
+            <!-- 预售 发货时间 -->
+            <p class="mart5">
+                <span class="f12">发货时间:</span>
+                <span style="background: url(./img/xzrili.png) no-repeat 150px;
+                    background-size: 10px;width:165px;height:20px;border:1px solid #E5E5E5;" class="inblock marl10 f12" name="faTime" onclick="model.faTime(this)">{{v.faTime||''}}</span>
+                <!-- <input type="text" style="background: url(./img/xzrili.png) no-repeat 150px;
+                    background-size: 10px;width:165px;height:20px;border:1px solid #E5E5E5;" class="inblock marl10"  readonly onclick="model.faTime(this)" /> -->
+            </p>
+            {{/if}}
+            <img src="./img/deleteh.png" alt="" style="width:15px;top:8px;right:10px;" class="vertical " onclick="model.deleteGoods(this,'{{v.goodsId}}')">
+        </div>
+        <div>
+                {{if v.wtd&&v.wtd.length!='0'}}
+                {{each v.wtd as n m}}
+                <!-- 1 活动价   2 商品数量  3 限制 4 发货日期 5 描述 -->
+                {{if n=='3'}}
+                <p class="flex mart5 flex-between">
+                    <span class="inline-block">
+                        <label for="isxg" class="f12 v-a-b" style=''>是否限购</label>
+                        {{if v.isxg=='0'}}
+                        <input type="checkbox" class='v-a-b' data='{{v.isxg}}' name="" style='width: 20px;-webkit-appearance: checkbox;height:15px' onclick='model.choicexg(this,{{v.goodsId}})'>
+                        {{else}}
+                        <input type="checkbox" class='v-a-b' data='{{v.isxg}}' checked name="" style='width: 20px;-webkit-appearance: checkbox;height:15px' onclick='model.choicexg(this,{{v.goodsId}})'>
+                        {{/if}}
+                    </span>
+                    <span class="inline-block t-a-r paddr15">
+                        <label for="isxgnum" class="f12 v-a-b" style=''>每个ID限购：</label>
+                        {{if v.isxg=='0'}}
+                        <input type="number"  name="xianNum" id="" readonly value="{{v.xianNum}}"  placeholder="请设置限购数量~" onclick="Comm.message('请先勾选~')" class="f12 c212121">
+                        {{else}}
+                        <input type="number"  name="xianNum" id=""  value="{{v.xianNum||''}}" data-reg='empty' placeholder="请设置限购数量~" onchange="model.inputNum_xg(this,'1',{{v.goodsId}})" class="f12 c212121">
+                        {{/if}}
+                    </span>
+                </p>
+                {{/if}}
+                {{if n=='5'}}
+                <div class="white bottomBorder">
+                    <p class='f12 mart5 marb5'>竞拍描述：</p>
+                    <textarea name="jinDesc" id="" onchange="model.jindesc(this,'{{v.goodsId}}')" data-reg='empty' class="f12" style="max-height:40px;border:0px;width:100%;border-radius: 3px;" placeholder="请输入竞拍描述...">{{v.jinDesc||''}}</textarea>
+                </div>
+                {{/if}}
+                {{/each}}
+                {{/if}}
+        </div>
+    </div>
+    {{/each}}
+</script>
+
+
+<!-- 搭配销售 -->
+<script type="text/html" id="collocationTpl">
+    <div class="paddl10 bg_white ">
+        <div class="cellContent  _indicator bottomBorder ">
+            <div class="label f16 icon_pre  ">套餐标题</div>
+            <input type="text" name="activityName" placeholder="请输入套餐标题" data="" value="" data-reg='empty' />
+        </div>
+    </div>
+    <div class="paddl10 bg_white " id='collocationPrice'>
+        <div class="cellContent  _indicator bottomBorder ">
+            <div class="label f16 icon_pre  ">套餐价格</div>
+            <input type="number" name="price" placeholder="请输入套餐价格" data="" value="" data-reg='empty' onchange="model.inputNum(this,2)" />
+        </div>
+    </div>
+    <div class="paddl10 bg_white " onclick="" id='collocationNum'>
+        <div class="cellContent   bottomBorder ">
+            <div class="label f16 icon_pre  ">套餐库存</div>
+            <div class="fr dflex lh25 border">
+                <div onclick="model.addNum_kc(this,-1)" class="paddl5 paddr5">
+                    <img src="img/cart-jian.png" width="12" style="margin-top: 12px;">
+                </div>
+                <div class="num input" onclick="model.addsub(this,'3')" >
+                    0
+                </div>
+                <input type="text" class="hide" disabled="" readonly="" name="num" placeholder="请输入商品库存" data-reg="empty" value="">
+                <div onclick="model.addNum_kc(this,1)" class="paddl5 paddr5">
+                    <img src="img/cart-jia.png" width="12" style="margin-top: 7px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="paddl10 bg_white ">
+            <div class="cellContent  _indicator bottomBorder ">
+                <div class="label f16 icon_pre  ">限购个数</div>
+                <input type="number" name="xianNum" placeholder="请输入限购个数" data="" value="" data-reg='' onchange="model.inputNum(this,1)" />
+            </div>
+        </div>
+    <!-- 搭配销售轮播图 -->
+    <div class="paddl10 bg_white paddt15 paddb15">
+        <span class="bold f16">商品轮播图</span>
+        <div class="clearfix  paddt10" id="bannerImg">
+            <div class="left marr10 marb10" id="bannerUmp">
+                <img src="./img/xztp.png" width="80" height="80" id="banner" />
+            </div>
+        </div>
+        <input type="text" class="hide" name="pics" placeholder="请上传轮播图片" data="" value="" data-reg='empty' />
+    </div>
+</script>
+<!-- 团购 -->
+<script type="text/html" id="groupTpl">
+    <div class="paddl10 bg_white " onclick="model.choiceGroupType.show()">
+        <div class="cellContent  indicator bottomBorder ">
+            <div class="label f16 icon_pre  ">参团模式</div>
+            <input type="text" name="groupType" placeholder="请选择参团模式" data="" value="" data-reg='empty' readonly />
+        </div>
+    </div>
+    <div class="paddl10 bg_white ">
+        <div class="cellContent  _indicator bottomBorder ">
+            <div class="label f16 icon_pre  ">参团人数</div>
+            <input type="number" name="groupNum" placeholder="请输入参团人数" data="" value="" data-reg='empty' onchange="model.inputNum(this,1)" />
+        </div>
+    </div>
+</script>
+
+<!-- 时间选择 开始  截至 -->
+<script type="text/html" id="startEndTimeTpl">
+    <div class="paddl10 bg_white ">
+        <div class="cellContent  _indicator bottomBorder verticalP" onclick="datePickerstart.show()">
+            <div class="label f16 icon_pre  ">开始时间</div>
+            <input type="text" name="startTime" class="startTime" placeholder="请选择开始时间" data="" value="" data-reg='empty' readonly />
+            <img src="./img/rili.png" alt="" class="rili right vertical " data="0" name="">
+            <div class='start'></div>
+        </div>
+    </div>
+    <div class="paddl10 bg_white ">
+        <div class="cellContent  _indicator bottomBorder verticalP" onclick="datePickerend.show()">
+            <div class="label f16 icon_pre  ">截止时间</div>
+            <input type="text" name="endTime" class="endTime" placeholder="请选择截至时间" data="" value="" data-reg='empty' readonly />
+            <img src="./img/rili.png" alt="" class="rili right vertical " data="0" name="">
+            <div class='end'></div>
+        </div>
+    </div>
+</script>
+<!-- 时间选择 开始  场次 -->
+<script type="text/html" id="jpTimeTpl">
+    <div class="paddl10 bg_white ">
+        <div class="cellContent  _indicator bottomBorder verticalP" onclick="datePickerstart.show()">
+            <div class="label f16 icon_pre  ">开始时间</div>
+            <input type="text" name="startTime" class="startTime" placeholder="请选择开始时间" data="" value="" data-reg='empty' readonly />
+            <img src="./img/rili.png" alt="" class="rili right vertical " data="0" name="">
+            <div class='start'></div>
+        </div>
+    </div>
+    <div class="paddl10 bg_white ">
+        <div class="cellContent  indicator _bottomBorder verticalP" style="padding-right:0px" onclick="model.jpcc.show()">
+            <div class="label f16 icon_pre  ">竞拍场次</div>
+            <input type="text" name="changci" class="changci" placeholder="请选择竞拍场次" data="" value="" data-reg='empty' readonly />
+            <div class='start'></div>
+        </div>
+    </div>
+</script>
+<!-- 买赠 -->
+<script type='text/html' id="mzTpl">
+    <div class="paddl10 bg_white ">
+        <div class="cellContent  indicator bottomBorder verticalP" onclick="model.choiceMai()" style="padding-right:0px">
+            <div class="label f16 icon_pre  ">买赠方式</div>
+            <input type="text" name="maiType" class="maiType" placeholder="请选择买赠方式" data="" value="" data-reg='empty' readonly />
+            <div class='start'></div>
+        </div>
+    </div>
+    <div class="paddl10 bg_white ">
+        <div class="cellContent  _indicator bottomBorder verticalP" style="padding-right:15px">
+            <div class="label f16 icon_pre  ">买</div>
+            <input type="number" name="mainum" class="mainum" placeholder="" data="" value="" data-reg='empty' onchange="model.inputNum(this,1)" />
+        </div>
+    </div>
+    <div class="paddl10 bg_white ">
+        <div class="cellContent  _indicator bottomBorder verticalP" style="padding-right:15px">
+            <div class="label f16 icon_pre  ">赠</div>
+            <input type="text" name="zeng" class="zeng" placeholder="" data="" value="" data-reg='empty'  />
+        </div>
+    </div>
+    <!-- 赠品图片 -->
+    <div class="paddl10 bg_white">
+        <div class="cellContent  indicator bottomBorder " id="zengPic">
+            <div class="label f14 icon_pre  ">赠品照片</div>
+            <img src="" alt="" class="{{zengPic?false:'hide'}}" onerror="app.herrorimg(this)" style="width:40px;height:40px">
+            <input type="text" readonly disabled id="zengPic" name="zengPic" placeholder="请上传赠品照片" data="{{zengPic||''}}" value="{{zengPic||''}}" 
+            data-reg='empty' class="{{zengPic?'hide':''}}"/>
+        </div>
+    </div>
+    <div class="paddl10 paddt15 paddb15 paddr15   white">
+        <span class=" f16  ">赠品描述</span>
+        <textarea name="jinDesc" id="" cols="30" rows="10" data-reg='empty' class="bg_hui mart5" style="border:0px;width:100%;border-radius: 3px" placeholder="请填写活动说明..."></textarea>
+    </div>
+</script>
+<!-- 满减 -->
+<script type='text/html' id="mjTpl">
+    <div class="paddl10 bg_white ">
+        <div class="cellContent  _indicator bottomBorder verticalP" style="padding-right:15px">
+            <div class="label f16 icon_pre  ">购买商品满</div>
+            <input type="number" name="manprice" class="manprice" placeholder="请输入金额" data="" value="" data-reg='empty' onchange="model.inputNum(this,'2')" />
+        </div>
+    </div>
+    <div class="paddl10 bg_white ">
+        <div class="cellContent  _indicator bottomBorder verticalP" style="padding-right:15px">
+            <div class="label f16 icon_pre  ">商品金额减</div>
+            <input type="number" name="jianPrice" class="jianPrice" placeholder="请输入金额" data="" value="" _data-reg='empty' onchange="model.inputNum(this,'2')" />
+        </div>
+    </div>
+    <div class="paddl15 bg_white ">
+        <div class="cellContent  bottomBorder verticalP ">
+            <div class="label f16  indicator icon_pre icon_name ">包装费减</div>
+            <span class='vertical' style="right:60px">全免</span>
+            <img src="./img/gbjfdk.png" alt="" class="isInvoice" data="0" onclick="model.setMjfree(this,1)">
+        </div>
+    </div>
+    <div class="paddl15 bg_white ">
+        <div class="cellContent  bottomBorder " _style="justify-content: flex-end;">
+            <div class="label f16  indicator icon_pre icon_name ">包装费减(%)：</div>
+            <input type="number" maxlength="11" name="packingFee" _data-reg='empty' placeholder="请输入百分比金额" id="" value="" class=""  onchange="model.inputNum(this,'9')">
+        </div>
+    </div>
+    <div class="paddl15 bg_white ">
+        <div class="cellContent  bottomBorder verticalP">
+            <div class="label f16  indicator icon_pre icon_name ">运费减</div>
+            <span class='vertical' style="right:60px">全免</span>
+            <img src="./img/gbjfdk.png" alt="" class="isInvoice" data="0" onclick="model.setMjfree(this,2)">
+        </div>
+    </div>
+    <div class="paddl15 bg_white ">
+        <div class="cellContent  bottomBorder " _style="justify-content: flex-end;">
+            <div class="label f16  indicator icon_pre icon_name ">运费减(%)：</div>
+            <input type="number" maxlength="11" name="zaiFee" _data-reg='empty' placeholder="请输入百分比金额" id="" value="" class="" onchange="model.inputNum(this,'9')">
+
+        </div>
+    </div>
+
+    
+    
+</script>
+<!-- 竞拍描述 买赠描述 -->
+<script type="text/html" id="desTpl">
+    <div class="paddl10 paddt15 paddb15 paddr15 bold  white">
+        <textarea name="jinDesc" id="" cols="30" rows="10" data-reg='empty' class="bg_hui" style="border:0px;width:100%;border-radius: 3px;padding:10px" placeholder="请填写活动说明..."></textarea>
+    </div>
+</script>
+
+</html>

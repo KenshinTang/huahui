@@ -1,0 +1,677 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        .cellContent {
+            /* height: 50px; */
+            /* justify-content: normal; */
+        }
+        
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+        }
+        
+        .cellContent input:disabled {
+            background: none;
+        }
+        
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+        /* color */
+        
+        .c21 {
+            color: #212121;
+        }
+        
+        .c1a {
+            color: #1A1A1A;
+        }
+        /* 客户信息 */
+        
+        [name='khinfo'] span {
+            display: inline-block;
+            min-height: 30px;
+            max-height: 60px;
+            line-height: 30px;
+        }
+        
+        [name='khinfo'] input {
+            display: inline-block;
+            min-height: 30px;
+            max-height: 60px;
+            line-height: 30px;
+            vertical-align: bottom;
+        }
+        
+        textarea {
+            border: 0px;
+            /* padding-top: 4px; */
+        }
+        
+        .sl {
+            width: 80px;
+        }
+        
+        .khimg {
+            width: 25px;
+            right: 0px;
+        }
+        /* orderinfo */
+        
+        [name='orderinfo'] {}
+        
+        .list {
+            padding: 10px 0px;
+            height: 60px;
+            ;
+        }
+        
+        .list img {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .list span {
+            height: 40px;
+            line-height: 40px;
+        }
+        /* price */
+        
+        [name='sp'],
+        [name='mj'],
+        [name='bz'] {
+            height: 30px;
+        }
+        
+        [name='sp'] span,
+        [name='mj'] span,
+        [name='bz'] span {
+            display: block;
+            line-height: 30px;
+        }
+        
+        [name='countPrice'] span {
+            height: 23px;
+            line-height: 23px;
+        }
+        
+        [name='countPrice'] input {
+            height: 23px;
+            width: 70px;
+            border: 1px solid #E5E5E5;
+            vertical-align: bottom;
+        }
+        
+        .c333 {
+            color: #333333;
+        }
+        
+        .boldb {
+            border-bottom: 1px solid #eee;
+            line-height: 50px;
+            width: 100%;
+        }
+        
+        .boldb span {
+            width: 24%;
+            display: inline-block;
+        }
+        
+        .boldb img,
+        .boldb span {
+            vertical-align: middle;
+        }
+        
+        .boldb img.right {
+            margin-top: 19px;
+        }
+        
+        .boldb input {
+            text-align: left;
+            font-size: 15px;
+            height: 30px;
+            width: 65%;
+        }
+        
+        .boldb input[type=button] {
+            color: #CCCCCC;
+            background-color: white;
+            margin-right: 15px;
+            margin-top: 10px;
+            float: right;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>确认订单</div>
+        </div>
+    </header>
+
+    <section class='bg_hui paddt15 paddb15 paddl15 paddr15' id=''>
+
+        <!-- 商品信息 -->
+        <!-- <div id='orderInfo' class="mart10">
+
+        </div> -->
+
+
+    </section>
+    <footer>
+        <div class="left verticalP" style="width:70%;line-height: 44px;">
+            <span class="colordd f16 bold" style="padding-left: 15px;" id='cartPrice'>合计：0</span>
+        </div>
+        <div class="right" style="width:30%">
+            <button style="width: 100%;border:0px;border-radius: 0px;" onclick="model.save()">提交订单</button>
+        </div>
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src="../inc/area.js"></script>
+<script src='../inc/art-template.js'></script>
+<script src="../inc/picker.min.js"></script>
+<script src="../inc/dict.js"></script>
+<script>
+    var userinfo = Comm.db("userinfo");
+    var deliveryAddressId = Comm.query('deliveryAddressId');
+    var address = Comm.db("loc_addAddress");
+    var ifDefault, cityID;
+
+    function pageload() {
+        Area.init();
+        GDict.init(function() {
+            model.zffs = [];
+            $.each(GDict.get("zffs"), function(i, v) {
+                //鲜花颜色
+                model.zffs.push({
+                    text: v.dictname,
+                    i: v.dictid
+                });
+                model.pay();
+            });
+            model.getShopName();
+        })
+
+    }
+
+    function pageresume() {
+        var khid = Comm.db("choice_newOrder");
+        if (khid) {
+            model.getkh(khid);
+        } else {
+
+            address = Comm.db("loc_addAddress");
+            loc_aadd = Comm.db("loc_aadd");
+            if (loc_aadd) {
+                if (loc_aadd.userName) {
+                    $('#userName').val(loc_aadd.userName)
+                }
+                if (loc_aadd.phone) {
+                    $('#phone').val(loc_aadd.phone)
+                }
+            }
+
+            if (!address) return false;
+            filterCity(_area, address);
+
+            var info = Area.getFullName(cityID)
+                //重新赋值地区数据
+            $("#regionCn").val(info).attr('data', cityID)
+            $("#address").val(address.detail).attr('data', address.lng + ',' + address.lat);
+        }
+
+
+
+    }
+    //返回选中地区城市code
+    function filterCity(arr, address) {
+
+        if (arr && arr.length > 0) {
+            for (var i = 0; i < arr.length; i++) {
+                var item = arr[i]
+                if (item.f.indexOf(address.pro.replace('省', '').replace('市', '')) >= 0 && (item.s == address.dis || item.n == address.dis)) {
+                    cityID = item.i;
+                    break;
+                } else {
+                    filterCity(item.c, address)
+                }
+            }
+        }
+    }
+    var model = {
+        cartList: Comm.db("cartGoodsId"),
+        userinfo: Comm.db("userinfo"),
+        sid: 2,
+        d: {
+            data: Comm.db("cartGoodsId"),
+            countPrice: 0,
+        },
+        init: function() {
+
+            // console.info(d)
+            if (model.zffs && model.zffs.length > 0) {
+                model.d._zffsText = model.zffs[0].text;
+                model.d._zffsI = model.zffs[0].i;
+            }
+            $("section").html(template('mainTpl', model.d)); // 初始化界面
+            model.calcPrice(2)
+            model.wl(); //初始化物流选择
+
+            if (!Comm.w9()) {
+                pageresume()
+            }
+        },
+        getkh: function(id) {
+            if (id) {
+                Comm.loading(true);
+                var url = '/common/address/getAddressByid'
+                opt = {
+                    deliveryAddressId: id,
+                };
+                AJAX.POST(url, opt, function(res) {
+                    Comm.loading(false);
+                    if (res.code == 1) {
+                        // Comm.message()
+                        if (res.data && res.data.length > 0) {
+                            $("[name=khinfo]").html(template('khTpl', res.data[0]))
+                            $("#regionCn").val(res.data[0].regionCn).attr('data', res.data[0].region)
+                            $("#address").val(res.data[0].address).attr('data', res.data[0].coordinate);
+                        }
+
+                    } else {
+                        Comm.message(res.msg)
+                    }
+                })
+            } else {
+                Comm.go("customer.html?t=1")
+            }
+        },
+        selmap: function() {
+            Comm.db("choice_newOrder", null)
+            Comm.db('loc_aadd', {
+                userName: $('#userName').val(),
+                phone: $('#phone').val()
+            })
+            Comm.go('map.html?soursePage=addAddress')
+        },
+        wl: function() { //运输方式选择
+            var data = [{
+                "i": '1',
+                "text": "物流"
+            }, {
+                "i": '2',
+                'text': "自提"
+            }]
+            model.choiceWl = new Commpicker('选择运输方式', [data], function(obj, name, sid) {
+                $('[name=logistType]').val(name).attr("data", sid)
+                model.sid = sid;
+                if (sid == '1') {
+                    $("[name=bz]").removeClass("hide")
+                    model.calcPrice(1)
+                } else {
+                    $("[name=bz]").addClass("hide");
+                    $("[name=countPrice]").attr("data", model.d.countPrice);
+                    model.calcPrice(2)
+                }
+            })
+        },
+        pay: function() { //运输方式选择
+
+            model.choicePay = new Commpicker('选择支付方式', [model.zffs], function(obj, name, sid) {
+                $('[name=payType]').val(name).attr("data", sid)
+            })
+        },
+        calcPrice: function(t) { //计算合计
+
+            var goodsCount = 0;
+            var cartPrice = 0;
+            $.each(model.cartList, function(i, v) {
+                goodsCount += v.price * v.num;
+            })
+            model.d.countPrice = goodsCount;
+            model.mjcom();
+
+            $("[name=sp]").find(".sp").html("&yen;" + goodsCount)
+            if (t == 1) { //物流 计算
+                $("[name=bz]").removeClass("hide");
+                cartPrice = ((goodsCount * 1000 - model.d.mjPrice * 1000 + model.d.bzf * 1000) / 1000).toFixed(2);
+
+            } else if (t == '2') { //自提 计算
+                $("[name=bz]").addClass("hide");
+                cartPrice = ((goodsCount * 1000 - model.d.mjPrice * 1000) / 1000).toFixed(2);
+            }
+
+            $('#cartPrice').html("合计：" + cartPrice);
+            if (model.d.mjPrice * 1 > 0) {
+                $("div[name=mj]").removeClass('hide');
+                $("div[name=mj] .right").html('-¥' + model.d.mjPrice);
+            } else {
+                $("div[name=mj]").addClass('hide');
+            }
+            $("[name=countPrice]").attr("data", cartPrice)
+            $("[name=countPrice]").find("span").html("合计：" + cartPrice)
+        },
+        getShopName: function() { //获取供应商名字 计算总价 包装费 满减
+            Comm.loading(true);
+            var url = '/admin/bussiness/detail'
+            opt = {
+                bussinessId: model.userinfo.bussinessId,
+            };
+            AJAX.POST(url, opt, function(res) { //获取店铺名字
+                if (res.code == 1) {
+                    model.d.shopName = res.data.shopAbbr; //店铺名字
+                    var url = '/bussiness/order/addOrderGetFee';
+                    var opt = {
+                        goodss: [],
+                    }
+
+                    $.each((model.cartList), function(i, v) {
+                        opt.goodss.push({
+                            goodsSkuId: v.goodsSkuId,
+                            num: v.num,
+                            price: v.price
+                        })
+                        model.d.countPrice += (Number(v.price) * 1000 * Number(v.num))
+                    })
+                    model.d.countPrice /= 1000; //计算商品总价
+                    opt.goodss = JSON.stringify(opt.goodss)
+                    AJAX.POST(url, opt, function(res) {
+                        Comm.loading(false)
+                        if (res.code == 1) {
+                            model.d.bzf = res.data.baoFee; //包装费
+                            var url = '/bussiness/order/manjianList';
+                            var opt = {
+                                bussinessId: model.userinfo.bussinessId
+                            }
+
+                            AJAX.POST(url, opt, function(res) {
+                                if (res.code == 1) {
+                                    model.mjData = res.data;
+                                    model.mjcom();
+                                    model.d.calcCountPrice = ((model.d.countPrice * 1000 - model.d.mjPrice * 1000 + model.d.bzf * 1000) / 1000).toFixed(2);
+                                    model.init()
+                                } else {
+                                    Comm.message(res.msg)
+                                }
+                            })
+
+
+                        } else {
+                            Comm.message(res.msg)
+                        }
+                    })
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        mjcom: function() {
+            var arr = [];
+            model.d.mjPrice = 0
+            $.each(model.mjData, function(i, v) { //计算满减
+                if (v.manprice <= model.d.countPrice) {
+                    // model.d.mjPrice = v.jianPrice;
+                    arr.push(v.jianPrice)
+                }
+            });
+            if (arr.length > '0') {
+                model.d.mjPrice = Math.max.apply(null, arr);
+            } else {
+                model.d.mjPrice = '0'
+            }
+        },
+        inputNum: function(obj, type, price) { //判断输入数字
+            var str = $(obj).val().trim();
+            var goodsSkuId = $(obj).parents(".list").attr("data");
+            //console.info(str)
+            if (str == '') str = '0'
+            if (str <= 0) {
+                Comm.message("请输入大于0的值~")
+                $(obj).val(price);
+                return
+            }
+            if (type == "1") {
+                if (str.indexOf(".") != "-1") {
+                    Comm.message("请输入整数~")
+                    $(obj).val(price);
+                    return
+                }
+            } else if (type == "2") {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val(price);
+                        return
+                    }
+                }
+            }
+            model.editGoodsList(goodsSkuId, str);
+        },
+        editGoodsList: function(goodsSkuId, price) { //修改商品价格
+            $.each(model.cartList, function(i, v) {
+                if (v.goodsSkuId == goodsSkuId) {
+                    v.price = price;
+                    model.jianor(v)
+                }
+            })
+            Comm.db("cartGoodsId", model.cartList);
+            model.calcPrice(model.sid)
+        },
+        jianor: function(opt, t) { //刷新线上库存
+            var _opt = JSON.parse(JSON.stringify(opt));
+            Comm.loading(true);
+            var url = '/bussiness/order/jianor';
+            if (t) {
+                _opt.num = 0;
+            }
+            console.info(_opt)
+            var des = JSON.stringify(_opt);
+            _opt.des = des;
+            AJAX.POST(url, _opt, function(res) {
+                Comm.loading(false);
+                if (res.code == 1) {} else {}
+            })
+        },
+        save: function() { //提交订单
+
+            // Comm.confirm("提示", function (a) {
+            Comm.Mess.confirm("提示", Comm.setcb(function(a) {
+                if (a == 1) {
+                    var _d = Check.submit("POST");
+                    if (!_d) {
+                        return
+                    }
+                    _d.logistType = model.sid
+                    Comm.loading(true);
+                    var url = '/bussiness/order/addOrder'
+                    opt = {
+                        deliveryAddressId: Comm.db("choice_newOrder"),
+                        allCash: $("[name=countPrice]").attr("data"),
+                        allNum: 0,
+                        yunFee: 0,
+                        goodes: [],
+                        baoFee: model.d.bzf,
+                        logistType: model.sid,
+                        jianNum: model.d.mjPrice
+                    };
+                    $.each(model.cartList, function(i, v) { //
+                        opt.allNum += v.num * 1;
+                        opt.goodes.push({
+                            goodsSkuId: v.goodsSkuId,
+                            num: v.num,
+                            price: v.price
+                        })
+                    })
+                    opt.goodes = JSON.stringify(opt.goodes)
+                    if (model.sid == '2') {
+                        opt.baoFee = 0;
+                    }
+                    $.extend(opt, _d);
+                    opt.region = $("#regionCn").attr('data');
+                    opt.coordinate = $("#address").attr('data');
+                    opt.payType = $('[name=payType]').attr('data')
+                    console.info(opt);
+                    // 
+                    AJAX.POST(url, opt, function(res) {
+                        Comm.loading(false);
+                        if (res.code == 1) {
+                            Comm.db("choice_newOrder", null);
+                            Comm.db("cartGoodsId", null);
+                            Comm.message("提交成功~");
+                            Comm.go("./newOrderList.html")
+                        } else {
+                            Comm.message(res.msg)
+                        }
+                    })
+                }
+            }))
+            if ($("#MessgeBox").find('[name=s]')) {
+                $("#MessgeBox").find('[name=s]').remove()
+            }
+            $("#MessgeBoxContent").css({
+                "width": "100%",
+                "display": "block",
+                "text-align": 'center',
+                "height": "40px"
+            })
+            var str = "<div class='t-a-c' name='s' style='height:50px'><p class='c333 f14'>请确认收到货款后再提交订单</p>" +
+                "<p class='c333 mart5 f14'>订单提交表示\"交易完成\"</p></div>"
+            $("#MessgeBoxContent").after(str)
+            $(".mbuttonr").html("继续提交")
+
+        }
+    }
+    template.defaults.imports.resetNum = function(v) {
+        if (!v) {
+            return ""
+        }
+        return Number(v);
+    };
+</script>
+
+<script type='text/html' id="khTpl">
+    <div class="paddt10 paddb10 paddl15 paddr15 white">
+        <div class="verticalP bottomBorder paddb10">
+            <p>
+                <span class="sl c21 f14">收货人</span>
+                <input type="text" value="{{userName}}" id="userName" name="userName" class="sr c21 f14" placeholder="请填写收货人" data-reg='empty'>
+            </p>
+            <p>
+                <span class="sl c21 f14">联系电话</span>
+                <input type="tel" maxlength='11' value="{{phone}}" id="phone" name="phone" class="sr c21 f14" placeholder="请填写收货人手机号" data-reg='m' />
+            </p>
+            <img src="./img/shren.png" alt="" class="khimg vertical" onclick="model.getkh()">
+        </div>
+        <div class="paddt10 block wordW2 verticalP" style="min-height:30px" onclick="model.selmap()">
+            <span class=" sl c21 f14" style='vertical-align:top'>收货地址</span>
+            <input type="text" id='regionCn' name='regionCn' readonly value="{{regionCn}}" data="{{region?region:''}}" class="sr c21 f14 right t-a-r paddr10" placeholder="请填写收货人地址" data-reg='empty'>
+            <img class=" vertical" src="../img/r.png" height="12" style="top:25px;right:0px">
+        </div>
+        <div class="paddt10 block " style="height:50px">
+            <span class=" sl c21 f14" style='vertical-align:top;'>详细地址</span>
+            <textarea data-reg='empty' placeholder="请填写详细地址" value="{{address}}" name="address" id="address" class="f14  c21 t-a-r" placeholder="" data="{{coordinate?coordinate:''}}" style="padding-top:4px;float:right;width: 70%;height: 40px;box-sizing: border-box; ">
+                    {{address?address:''}}
+                </textarea>
+        </div>
+    </div>
+</script>
+<script type='text/html' id="mainTpl">
+    <!-- 客户信息 -->
+    <div name='khinfo' style="border-radius:5px;">
+        <div class="paddt10 paddb10 paddl15 paddr15 white">
+            <div class="verticalP bottomBorder paddb10">
+                <p>
+                    <span class="sl c21 f14">收货人</span>
+                    <input type="text" value="{{userName||''}}" id="userName" name="userName" class="sr c21 f14" placeholder="请填写收货人" data-reg='empty'>
+                </p>
+                <p>
+                    <span class="sl c21 f14">联系电话</span>
+                    <input type="tel" maxlength='11' value="{{phone||''}}" id="phone" name="phone" class="sr c21 f14" placeholder="请填写收货人手机号" data-reg='m' />
+                </p>
+                <img src="./img/shren.png" alt="" class="khimg vertical" onclick="model.getkh()">
+            </div>
+            <div class="paddt10 block wordW2 verticalP" style="min-height:30px" onclick="model.selmap()">
+                <span class=" sl c21 f14" style='vertical-align:top'>收货地址</span>
+                <input type="text" id='regionCn' name='regionCn' readonly value="{{regionCn||''}}" data="{{region?region:''}}" class="sr c21 f14 right t-a-r paddr10" placeholder="请选择收货人地址" data-reg='empty'>
+                <img class=" vertical" src="../img/r.png" height="12" style="top:25px;right:0px">
+            </div>
+            <div class="paddt10 block " style="height:50px">
+                <span class=" sl c21 f14" style='vertical-align:top;'>详细地址</span>
+                <textarea data-reg='empty' placeholder="请填写详细地址" value="{{address}}" name="address" id="address" class="f14  c21 t-a-r" placeholder="" data="{{coordinate?coordinate:''}}" style="padding-top:4px;float:right;width: 70%;height: 40px;box-sizing: border-box; ">
+                    {{address?address:''}}
+                </textarea>
+            </div>
+        </div>
+    </div>
+    <!-- 物流方式 -->
+    <div class="paddl15 bg_white mart10" onclick="model.choiceWl.show()" style="border-radius:5px;">
+        <div class="cellContent  indicator  ">
+            <div class="label f14 c21 icon_pre  ">运输方式</div>
+            <input type="text" name="logistType" placeholder="请选择运输方式" data="2" value="自提" data-reg='empty' readonly class="f14 c21" />
+        </div>
+    </div>
+    <!-- 支付方式 -->
+    <div class="paddl15 bg_white mart10" onclick="model.choicePay.show()" style="border-radius:5px;">
+        <div class="cellContent  indicator  ">
+            <div class="label f14 c21 icon_pre  ">支付方式</div>
+            <input type="text" name="payType" placeholder="请选择支付方式" data="{{_zffsI||''}}" value="{{_zffsText||''}}" data-reg='empty' readonly class="f14 c21" />
+        </div>
+    </div>
+    <div class="paddt15 paddb15 paddl15 paddr15 white mart10" name='orderinfo' style="border-radius:5px;">
+        <span class="f16 bold c21 bottomBorder paddb15 block">{{shopName}}</span>
+        <div class='bottomBorder' style="height: auto;">
+            {{each data as v k}}
+            <p class="list " data='{{v.goodsSkuId}}'>
+                <img src="{{OSS(v.img)}}" alt="" onerror="app.errorimg(this)" class="marr10 left">
+                <span class="f14 c1a left wordW" style="width:35%">{{v.goodsName}}{{if v.keyValue}}({{v.keyValue||''}}){{/if}}</span>
+                <span class="f16 bold right t-a-r" style="width:35%">
+                    <span class="f12">&yen;</span>
+                <input type="number" name="" id="" class="f16 t-a-l inline-block" value='{{v.price}}' onchange="model.inputNum(this,2,'{{v.price}}')" style="width:calc(100% - 40px);border:1px solid #e2e2e2">
+                </span>
+                <span class="right " style="font-size: 9px;color:#666666;">X{{v.num}}</span>
+            </p>
+            {{/each}}
+        </div>
+    </div>
+    <!-- 价格信息 -->
+    <div class=" paddb10 paddl15 paddr15 white bottomBorder">
+        <div name="sp" class="block">
+            <span class="f14 c21 left">商品总计</span>
+            <span class="f14 c21 right sp">&yen;{{countPrice|resetNum}}</span>
+        </div>
+        <div name="mj" class="block">
+            <span class="f14 c21 left">店铺满减</span>
+            <span class="f14 c21 right">-&yen;{{mjPrice|resetNum}}</span>
+        </div>
+        <div name="bz" class="block">
+            <span class="f14 c21 left">包装费</span>
+            <span class="f14 c21 right">+&yen;{{bzf|resetNum}}</span>
+        </div>
+    </div>
+    <!-- 合计 -->
+    <div class="paddt10 paddb10  paddl15 paddr15 white bottomBorder t-a-r" name="countPrice" data="{{calcCountPrice}}">
+        <span class="c21 f14 bold inblock">合计：{{calcCountPrice}}</span>
+        <!-- <input type="number" name="" id="" class="t-a-r" value='{{countPrice*1 - mjPrice*1  + bzf*1}}' onchange="model.inputNum(this,2)"> -->
+    </div>
+</script>
+
+</html>

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>申请详情</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        section {
+            background-color: #fff;
+        }
+
+        .bgF4F4F4 {
+            background-color: #F4F4F4;
+        }
+
+        .navItemIcon {
+            background-image: inherit;
+        }
+
+        .goodimg {
+            border-radius: 5px;
+        }
+
+        .border {
+            border: 1px solid #EBEBEB;
+            border-radius: 20px;
+            width: 90px;
+        }
+
+        .cellContent {
+            padding: 0px;
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+            /* color: #999; */
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .cellContent input[type=button] {
+            background-color: white;
+            margin-right: 5px;
+        }
+
+        .wh80 {
+            width: 80px;
+            height: 80px;
+            background-image: url('img/after/scpz.png');
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            float: left;
+            position: relative;
+        }
+
+        button.mybtn {
+            background: inherit;
+            border: 1px solid #ebebeb;
+            border-radius: 20px;
+            color: #222;
+            width: 80px;
+            height: auto;
+            line-height: 20px;
+            font-size: 12px;
+            padding: 5px 8px;
+            margin-bottom: 10px;
+        }
+
+        .subbutton {
+            border: 1px solid #ebebeb;
+            border-radius: 5px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 75px;
+            border: 1px solid #e2e2e2;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 头部 -->
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navItemIcon marl5 marr10"></div>
+            <div class="nav-title block ">申请详情</div>
+        </div>
+    </header>
+    <section>
+        <div id="main">
+
+        </div>
+    </section>
+    <div id="sinbox" wtd="WinTemp">
+        <div>
+            <div class="center lh30 f18" id="tkTitle"></div>
+            <input type="text" class="lh40 border mart10 marb20 center f18" id="num" style="width: auto;" number />
+            <div>
+                <button
+                    style="line-height: 50px;border: 1px solid #e2e2e2;width: 130px;background: #fff;color:black;border-radius: 15px"
+                    onclick="Comm.showWindow()">取消</button>
+                <button style="line-height: 50px;border: 0px;width: 130px;border-radius: 15px"
+                    onclick="model.save(this)" name="tk">确定</button>
+            </div>
+        </div>
+    </div>
+    <div id="sinbox" wtd="CancleTemp">
+        <div>
+            <div class="center lh30 f18" id="tkTitle">拒绝说明</div>
+            <textarea maxlength="255" placeholder="请输入拒绝原因..." class="mart5"></textarea>
+            <div>
+                <button
+                    style="line-height: 50px;border: 1px solid #e2e2e2;width: 130px;background: #fff;color:black;border-radius: 15px"
+                    onclick="Comm.showWindow()">取消</button>
+                <button style="line-height: 50px;border: 0px;width: 130px;border-radius: 15px"
+                    onclick="model.cancel(this)" name="save">确定</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/art-template.js"></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<script>
+    function pageload() {
+        GDict.init(function () {
+            AJAX.GET('/api/config/all', function (d) {
+                if (d.code == 1) {
+                    for (var i = 0; i < d.data.length; i++) {
+                        if (d.data[i].key == "aftersale_time") {
+                            model.aftersale_time = d.data[i].value;
+                        }
+                    }
+                    model.init();
+                }
+            })
+        })
+
+
+    }
+
+    function pageresume() {
+        model.init();
+    }
+
+    var model = {
+        type: Comm.query("type"),
+        id: Comm.query('id'),
+        user: Comm.db('userinfo'),
+        resetTitle: function () {
+
+        },
+        close: function () {
+            var s = Comm.query('close');
+            if (s) {
+                Comm.close(s * 1);
+            } else {
+                Comm.close();
+            }
+        },
+        init: function () {
+            AJAX.GET('/purchase/afterSale/afterSaleDetail?afterSaleId=' + model.id, function (d) {
+                if (d.code == 1) {
+                    d.data.img = d.data.img.split(',')
+                    d.data.type = model.type;
+                    model.data = d.data;
+                    if (model.data.dealType == "1") {
+                        $(".nav-title").html("售后详情")
+                    } else if (model.data.dealType == "2") {
+                        $(".nav-title").html("退货详情")
+                    } else if (model.data.dealType == "3") {
+                        $(".nav-title").html("换货详情")
+                    }
+                    $("#main").html(template("mainTpl", d.data))
+                    //console.log(d.data)
+
+                    //处理时间
+                    var ind = setInterval(function () {
+                        var num = 0;
+                        $(".ttime").each(function (i, e) {
+                            var id = $(e).attr('data');
+                            var result = $(e).attr('ttime');
+                            if (result > 0) {
+                                result = result - 1;
+                                var day = Math.floor(result / 60 / 60 / 24);//天
+                                var hour = Math.floor(result / 60 / 60 % 24);//小时
+                                var minite = Math.floor(result / 60 % 60); //分
+                                var second = Math.floor(result % 60); // 秒
+                                if (second < 10) second = "0" + second;
+                                if (minite < 10) minite = "0" + minite;
+                                if (day) day = String(day) + "天";
+                                else day = '';
+                                if (hour) hour = String(hour) + "时";
+                                else hour = '';
+                                if (minite && minite != "00") minite = String(minite) + "分";
+                                else minite = '';
+                                if (second) second = String(second) + "秒";
+                                else second = '';
+                                $('#ttime' + id).html("剩余" + day + hour + minite + second).attr('ttime', result);
+                            } else {
+                                num++;
+                                $('#ttime' + id).html("已超时,平台自动审核完成").attr('ttime', result);
+                                // model.init()
+                            }
+                        })
+                        if (num == $(".ttime").length) {
+
+                            clearInterval(ind)
+                        }
+                    }, 1000)
+
+                }
+            })
+        },
+        cancelinfo: function () {
+            Comm.showWindow('CancleTemp', true)
+        },
+        cancel: function (afterSaleId) {
+            // if(mdoel.dealType=="1"){
+            //     var message = "已拒绝用户售后申请"
+            // }
+            var refuseMsg = $("#WTDBOXTD").find("textarea").val().trim();
+            if (refuseMsg.length == '0') {
+                Comm.message("请输入拒绝原因~")
+                return
+            }
+            Comm.showWindow()
+            Comm.loading(true)
+            var opt = {
+                afterSaleId: model.data.afterSaleId,
+                refuseMsg: refuseMsg
+            }
+            console.info(opt)
+            AJAX.POST("/purchase/afterSale/refuse", opt, function (res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("已拒绝~")
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+
+        },
+        compensate: function (afterSaleId) {//同意售后补偿
+            Comm.showWindow('WinTemp', true)
+            $("#WTDBOXTD #tkTitle").html("请输入补偿金额")
+            $("#WTDBOXTD").find("input").attr("type", "number")
+            $("#WTDBOXTD").find("input").val(model.data.applyPrice)
+            model.opt = {
+                afterSaleId: afterSaleId
+            }
+        },
+        agree: function (afterSaleId) {
+            model.opt = {
+                afterSaleId: afterSaleId
+            }
+            Comm.loading(true)
+            if (model.type == "2") {//退货流程
+                if (model.data.dealState == "1") { //退货同意
+                    AJAX.POST("/purchase/afterSale/handleTHH", model.opt, function (res) {
+                        Comm.loading(false)
+                        if (res.code == 1) {
+                            Comm.message("已同意退货申请~")
+                            model.init();
+                        } else {
+                            Comm.message(res.msg)
+                        }
+                    })
+                }
+                if (model.data.dealState == "5") { //退货退款
+                    Comm.showWindow('WinTemp', true);
+                    $("#WTDBOXTD #tkTitle").html("请输入退款金额");
+                    $("#WTDBOXTD").find("input").attr("type", "number");
+                    $("#WTDBOXTD").find("input").val(model.data.applyPrice);
+                    $("#WTDBOXTD").find("[name=tk]").attr("onclick", 'model.tk(this)');
+
+                    model.opt = {
+                        afterSaleId: afterSaleId
+                    }
+
+                }
+            }
+            if (model.type == "3") { //换货流程
+                if (model.data.dealState == "1") { //换货同意
+                    AJAX.POST("/purchase/afterSale/handleTHH", model.opt, function (res) {
+                        Comm.loading(false)
+                        if (res.code == 1) {
+                            Comm.message("已同意换货申请~")
+                            model.init();
+                        } else {
+                            Comm.message(res.msg)
+                        }
+                    })
+                }
+                if (model.data.dealState == "401") { //换货发货
+                    var logisticsNum = $("#logisticsNum").val();
+                    var logistCompany = $("#logistCompany").val();
+                    if (!logisticsNum) {
+                        Comm.loading(false)
+                        Comm.message('请录入快递单号');
+                        return
+                    }
+                    if (!logistCompany) {
+                        Comm.loading(false)
+                        Comm.message('请录入物流公司')
+                        return
+                    }
+                    model.opt.logisticsNum = logisticsNum;
+                    model.opt.logistCompany = logistCompany;
+                    AJAX.POST("/purchase/afterSale/handleHHorder", model.opt, function (res) {
+                        Comm.loading(false)
+                        if (res.code == 1) {
+                            Comm.message("已发货~")
+                            model.init();
+                        } else {
+                            Comm.message(res.msg)
+                        }
+                    })
+                }
+            }
+
+        },
+        tk: function () {
+            var num = $("#WTDBOXTD").find("#num").val().trim();
+            Comm.showWindow()
+            if (Number(num) == '0' || Number(num) < 0) {
+                Comm.message("请输入正确退款金额~");
+                Comm.loading(false)
+                return
+            }
+            if (Number(num) > Number((model.data.singlePrice * model.data.num))) {
+                Comm.message("输入金额大于申请总金额,请重新输入~")
+                Comm.loading(false)
+                return
+            }
+            model.opt.price = num;
+            if (num < (model.data.singlePrice * model.data.num)) {
+
+                Comm.confirm('退款金额小于用户申请金额，请填写说明?', function (r) {
+                    Comm.showWindow()
+                    if (r) {
+                        Comm.showWindow('CancleTemp', true);
+                        $("#WTDBOXTD #tkTitle").html("请填写说明");
+                        $("#WTDBOXTD").find("[name=save]").attr('onclick', 'model.tkinfo()');
+                    }
+                })
+            } else {
+                model.tkinfo(1)
+            }
+        },
+        tkinfo: function (t) {
+            if (!t) {
+                var refuseMsg = $("#WTDBOXTD").find("textarea").val().trim();
+                model.opt.refuseMsg = refuseMsg;
+                if (!refuseMsg) {
+                    Comm.message("请填写说明");
+                    return
+                }
+            }
+            Comm.showWindow();
+            Comm.loading(true);
+            AJAX.POST("/purchase/afterSale/handleTK", model.opt, function (res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("已完成退款~")
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        save: function () {
+            var num = $("#WTDBOXTD").find("#num").val();
+            num?num=num.trim():num=num;
+            Comm.showWindow()
+            if (Number(num) == '0' || Number(num) < 0) {
+                Comm.message("请输入正确售后金额~")
+                Comm.loading(false)
+                return
+            }
+            if (Number(num) > Number(model.data.applyPrice*1)) {
+                Comm.message("输入金额大于申请总金额,请重新输入~")
+                Comm.loading(false)
+                return
+            }
+            model.opt.price = num;
+            if (num*1 < (model.data.applyPrice*1)) {
+                Comm.confirm('售后金额小于用户申请金额，请填写说明?', function (r) {
+                    Comm.showWindow()
+                    if (r) {
+                        Comm.showWindow('CancleTemp', true);
+                        $("#WTDBOXTD #tkTitle").html("请填写说明");
+                        $("#WTDBOXTD").find("[name=save]").attr('onclick', 'model.saveinfo()');
+                    }
+                })
+            } else {
+                model.saveinfo(1)
+            }
+
+
+        },
+        saveinfo: function (t) {
+            if (!t) {
+                var refuseMsg = $("#WTDBOXTD").find("textarea").val().trim();
+                model.opt.refuseMsg = refuseMsg;
+                if (!refuseMsg) {
+                    Comm.message("请填写说明");
+                    return
+                }
+            }
+            Comm.showWindow();
+            Comm.loading(true);
+            AJAX.POST('/purchase/afterSale/compensate', model.opt, function (res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("已同意售后申请~")
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+
+    }
+    template.defaults.imports.restate = function (dealState, platform) {
+        var str = "";
+        // dealState 1处理中 2已处理 3已撤销 4同意退货填写运单号 5收到退货商品待退款 6拒绝 
+        // model.type 1 售后 2 退货 3 换货 4 完成
+        if (dealState == "1") {
+            var a = model.type == "1" ? "售后" : model.type == "2" ? '退货' : model.type == "3" ? '换货' : '';
+            str = "客户已提交" + a + "申请，请尽快处理";
+        }
+        if (dealState == "2") {
+            var a = model.data.dealType == "1" ? "退款" : model.data.dealType == "2" ? '退款' : model.data.dealType == "3" ? '退款' : '';
+            str = "已完成" + a;
+            if (platform == '2') str = "平台已完成" + a;
+        }
+        if (dealState == "3") {
+            var a = model.type == "1" ? "售后" : model.type == "2" ? '退货' : model.type == "3" ? '换货' : '';
+            str = "用户已撤销" + a + "申请";
+        }
+        if (dealState == "4") {
+            var a = model.type == "1" ? "售后" : model.type == "2" ? '退货' : model.type == "3" ? '换货' : '';
+            var b = model.type == "1" ? "售后" : model.type == "2" ? '退货' : model.type == "3" ? '换货' : '';
+            str = "已同意用户" + a + "申请，等待用户寄回商品";
+        }
+        if (dealState == "401" || dealState == "5") {
+            str = "物品已寄回，等待收货";
+        }
+        if (dealState == "402") {
+            str = "已完成换货，等待用户收货";
+        }
+        if (dealState == "6") {
+            var a = model.data.dealType == "1" ? "售后" : model.data.dealType == "2" ? '退货' : model.data.dealType == "3" ? '换货' : '';
+            str = "已拒绝用户" + a + "申请";
+            if (platform == '3') str = "平台已拒绝用户" + a + "申请";
+        }
+
+        return str;
+    };
+    template.defaults.imports.timeMinutes = function (addtime) {
+        addtime = addtime.replace(/-/g, "/").replace(/\.0/g, "")
+        var now = new Date();
+        var end = new Date(addtime).getTime() + (model.aftersale_time * 24 * 60 * 60 * 1000);
+        var result = Math.floor((end - now) / 1000);
+        console.info("result", result)
+        return result
+    }
+</script>
+
+<script id="mainTpl" type="text/html">
+    {{set ttime=timeMinutes(addTime)}} 
+    <div class="pad10" style="background-color:#F7F7F7;">
+        <div class="">
+            <p class="colorred bold f16">{{restate(dealState,platform)}}</p>
+           {{if dealState=='1'}}
+            <p class="color77 f12 mart5 ttime" id="ttime{{afterSaleId}}" ttime="{{ttime}}" data="{{afterSaleId}}" name="ttime{{afterSaleId}}">剩余0天0时0分0秒</p>
+            {{/if}}
+            
+            {{if dealType=="3"&&dealState=="2"}}
+            {{if hnormarOrder}}
+            <div class="color999 mart5">换货订单号：{{hnormarOrder?hnormarOrder.orderNum:''}}</div>
+            {{/if}}
+            {{/if}}
+            {{if(successTime)}}
+            <div class="color999 mart5">{{formatDate(successTime,'Y-m-d H:m:s')}}</div>
+           
+            {{/if}} 
+            {{if dealState == "5"||dealState=="401"}}
+            <!-- <p class="color77 f12 mart5">物流公司：{{logistCompany}}</p> -->
+            <p class="color77 f12 mart5">{{returnCompany}}：{{returnNum}}</p>
+            {{/if}}
+        </div>
+    </div>
+    
+            <div class="tright paddr10 bg_white  bottomBorder">
+               
+                    <a class="inblock mart10 {{dealState=='6'?'hide':''}} {{dealState=='2'?'hide':''}} {{dealState=='3'?'hide':''}}" style="width:auto" href="tel:{{purPhone||''}}" data="{{purPhone}}" style="display:block"><button class="mybtn " >与客户协商</button></a>
+                    <!-- // dealState 1处理中 2已处理 3已撤销 4同意退货填写运单号 5收到退货商品待退款 6拒绝 
+                    // model.type 1 售后 2 退货 3 换货 4 完成 -->
+                    {{if type=="1"}}
+                    <!-- 售后流程 -->
+                        {{if dealState=="1"}}
+                            <button class="mybtn  " onclick="model.cancelinfo({{afterSaleId}})">拒绝补偿</button>
+                            <button class="mybtn " onclick="model.compensate({{afterSaleId}})">同意补偿</button>
+                        {{/if}}
+                    {{else if type=="2"}}
+                    <!-- 退货流程 -->
+                        {{if dealState=="1"}}
+                        <!-- 1 处理中 -->
+                            <button class="mybtn " onclick="model.cancelinfo({{afterSaleId}})">拒绝退货</button>
+                            <button class="mybtn " onclick="model.agree({{afterSaleId}})">同意退货</button>
+                        {{/if}}
+                        {{if dealState=="5"}}
+                        <!-- 5 待退款 -->
+                            <button class="mybtn " onclick="model.cancelinfo({{afterSaleId}})">拒绝收货</button>
+                            <button class="mybtn " onclick="model.agree({{afterSaleId}})">退款</button>
+                        {{/if}}
+                    {{else if type=="3"}}
+                    <!-- 换货流程 -->
+                        {{if dealState=="1"}}
+                        <!-- 1 处理中 -->
+                            <button class="mybtn " onclick="model.cancelinfo({{afterSaleId}})">拒绝换货</button>
+                            <button class="mybtn " onclick="model.agree({{afterSaleId}})">同意换货</button>
+                        {{/if}}
+                        {{if dealState=="401"}}
+                        <!-- 401 换货中 -->
+                            <button class="mybtn " onclick="model.cancelinfo({{afterSaleId}})">拒绝收货</button>
+                            <button class="mybtn " onclick="model.agree({{afterSaleId}})">发货</button>
+                        {{/if}}
+                    {{/if}} 
+                
+               
+            </div>
+            {{if dealState=='2'&&price&&dealType!='3'}}
+    <div class="paddl10 bg_white mart5">
+        <span>退款金额：</span>
+        <span class="colorred bold">&yen;{{price}}</span>
+        <p class="color999 paddt10 paddb10 bg_hui">商品金额已退回至客户账户余额</p>
+    </div>
+    {{/if}}
+            {{if(dealState=="401")}}
+            <div class="paddl10 bg_white">
+                <div class="cellContent bottomBorder lh50">
+                    <div class="label f16 icon_pre icon_card ">
+                        <span>物流公司：</span>
+                    </div>
+                    <input class="paddr10" type="text" id="logistCompany" placeholder="请录入物流公司">
+                </div>
+            </div>
+            <div class="paddl10 bg_white">
+                <div class="cellContent bottomBorder lh50">
+                    <div class="label f16 icon_pre icon_card ">
+                        <span>填写单号：</span>
+                    </div>
+                    <input class="paddr10" type="text" id="logisticsNum" placeholder="请录入快递单号">
+                </div>
+            </div>
+            <div class="linebod" style="height:5px;"></div>
+            <div id="myadderss">
+
+            </div>
+            {{/if}}
+    <div class="paddl10 bg_white paddt10 paddb10">
+        <div class="cellContent ">
+            <div class="label f16 icon_pre icon_card ">
+               
+                    {{dealType=='1'?'<span>售后信息</span>':dealType=='2'?'<span>退货信息</span>':'<span>换货信息</span>'}}
+            </div>
+        </div>
+    </div>
+    <div class="linebod" style="height:5px;"></div>
+    <div class="clearfix pad10 ">
+        <div class="fl center" style="width: 35%;">
+            <img src="{{OSS(img)}}" height="80" width="80" class="goodimg" onerror="app.errorimg(this)">
+        </div>
+        <div class="">
+            <p class="wordW f16 marb5">{{goodsName}}</p>
+            <p class="lh20 wordW2" style="max-height: 40px;">
+                {{if(color&&color!="-1")}}
+                <span class="color999 f12 inblock">颜色：{{getItemName(color)}}</span> {{/if}} {{if(grade&&grade!="-1")}}
+                <span class="color999 f12 inblock">等级：{{getItemName(grade)}}</span> {{/if}} {{if(maturity&&maturity!="-1")}}
+                <span class="color999 f12 inblock">成熟度：{{getItemName(maturity)}}</span> {{/if}} {{if(speci>0)}}
+                <span class="color999 f12 inblock">规格：{{(speci)}}/{{company}}</span> {{/if}} {{if(weight>0)}}
+                <span class="color999 f12 inblock">重量：{{weight}}g</span> {{/if}} {{if(skuName)}}
+                <span class="color999 f12 inblock">规格：{{skuName}}</span> {{/if}} {{if(descript&&descript!='[]')}}
+                <span class="color999 f12 inblock">{{descript}}</span> {{/if}}
+            </p>
+            <div class="mart5">
+                <span class="color999">价格：</span><span class="">￥{{priceTp(singlePrice)}}</span>&nbsp;&nbsp;
+                <span class="color999">购买数量：</span><span class="">{{buyNum}}</span>
+                {{if dealType==1||dealType=='2'}}
+                <span class="color999 block">{{dealType=='1'?'售后金额':dealType=='2'?'退款金额':''}}：<span class="black">&yen;{{applyPrice}}</span></span>
+                {{/if}}
+            </div>
+           
+        </div>
+    </div>
+    <div class="linebod" style="height:5px;"></div>
+
+    <div class="paddl10 bg_white">
+        <div class="cellContent ">
+            <div class="label icon_pre icon_card ">
+                <span>{{dealType =='1'?'售后编号':dealType=='2'?'退货编号':'换货编号'}}：{{afterSaleNum}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="paddl10 bg_white">
+        <div class="cellContent ">
+            <div class="label icon_pre icon_card ">
+                <span>申请时间：{{formatDate(addTime)}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="paddl10 bg_white">
+        <div class="cellContent ">
+            <div class="label icon_pre icon_card ">
+                <span>退款原因：{{getItemName(reason)}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="paddl10 bg_white">
+        <div class="cellContent ">
+            <div class="label icon_pre icon_card ">
+                <span>问题描述：{{description}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="paddl10 bg_white">
+        <div class="cellContent " style="height:auto;">
+            <div class="label icon_pre icon_card clearfix">
+                {{each imagelist v k}}
+                <div class="inblock marr10 wh80">
+                    <img width="100%" height="100%" src="{{OSS(v.url)}}" class="imgs" data="{{v}}" />
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+    {{if(replaceNum)}}
+    <div class="paddl10 bg_white">
+        <div class="cellContent ">
+            <div class="label f16 icon_pre icon_card ">
+                <span>换货编号：{{replaceNum}}</span>
+            </div>
+        </div>
+    </div>
+    {{/if}}
+     <!-- {{if(returnNum)}}
+    <div class="paddl10 bg_white">
+        <div class="cellContent ">
+            <div class="label f16 icon_pre icon_card ">
+                <span>退货编号：{{returnNum}}</span>
+            </div>
+        </div>
+    </div>
+    {{/if}} -->
+</script>
+
+<script id="defailTpl" type="text/html">
+    <div class="addr clearfix pad10 bg_white" onclick="Comm.go('myAddress.html?t={{deliveryAddressId}}')">
+        <div class="fl lh50 marr10">
+            <img class="" src="img/addr.png" height="20" />
+        </div>
+        <div class="fr lh50 marl10">
+            <img class="" src="../img/arrowRight.png" height="12" />
+        </div>
+        <div class="">
+            <p class="lh25">
+                <span>{{userName}}</span>
+                <span class="fr">{{phone}}</span>
+            </p>
+            <p class="f12 lh25 color999">
+                {{getFullName(region)}} {{address}}
+            </p>
+        </div>
+    </div>
+</script>
+
+<script id="defailnullTpl" type="text/html">
+    <div class="addr clearfix pad10 bg_white" onclick="Comm.go('myAddress.html?t=-1')">
+        <div class="fl lh50 marr10">
+            <img class="" src="img/addr.png" height="20" />
+        </div>
+        <div class="fr lh50 marl10">
+            <img class="" src="../img/arrowRight.png" height="12" />
+        </div>
+        <div class="">
+            <p class="lh50 color999">
+                请选择收货地址
+            </p>
+        </div>
+    </div>
+</script>
+
+</html>

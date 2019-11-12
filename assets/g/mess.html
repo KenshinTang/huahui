@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+
+    <title>消息</title>
+
+    <link rel="stylesheet" href="../css/g.css">
+    <link rel="stylesheet" href="../css/comm.css">
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <link rel="stylesheet" href="../inc/mescroll/swiper.min.css">
+    <style>
+        section {
+            background-color: #F7F7F7;
+        }
+
+
+        .read {
+            width: 8px;
+            height: 8px;
+            border-radius: 8px;
+            background-color: red;
+            margin: 4px 3px 0 0px !important;
+            padding: 0px !important;
+            display: inline-block;
+        }
+    </style>
+
+</head>
+
+<!--******************************************************************************-->
+
+<body>
+
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle" onclick="model.readAll()">
+                <span>消息</span>
+                <img src="../img/qcmsg.png" height="17" />
+            </div>
+        </div>
+    </header>
+    <!--******************************************************************************-->
+    <section class="mescroll" id="box">
+        <div id="list" class="main">
+
+        </div>
+    </section>
+    <!--******************************************************************************-->
+    <footer></footer>
+</body>
+<script src="../inc/z.js"></script>
+<script src="../inc/g.js"></script>
+<script src="../inc/comm.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+
+<script>
+
+    function pageload() {
+        model.showMain();
+    }
+
+    function pageresume() {
+        $("#list").html('')
+        model.showMain();
+    }
+    var model = {
+        showMain: function () {
+            AJAX.GET("/api/mess/newInfo?userType=1", function (d) {
+                if (d.code == 1) {
+                    if (d.data.orderMes) {
+                        $("#list").append(template('orderTpl', d.data.orderMes))
+                    } else {
+                        $("#list").append(template('OmessTpl', {}))
+                    }
+                    if (d.data.sysMes) {
+                        $("#list").append(template('sysTpl', d.data.sysMes))
+                    } else {
+                        $("#list").append(template('SysmessTpl', {}))
+                    }
+
+                    if (!d.data.orderMes && !d.data.sysMes) {
+                        $("#list").append(template('emptyTpl', {}))
+                    }
+                }
+            })
+        },
+        readAll: function () {
+            AJAX.POST('/api/mess/readall', { userType: 2 }, function (d) {
+                if (d.code == 1) {
+                    $('.read').remove();
+                    Comm.message('已清空')
+                    $("#list").html('')
+                    $("#list").append(template('messTpl', {}))
+                    $("#list").append(template('emptyTpl', {}))
+                    model.showMain();
+                }
+            })
+        }
+    }
+
+</script>
+
+<script id="orderTpl" type="text/html">
+    <div class="bg_white pad10" onclick="Comm.go('message.html?t=2')">
+        <img src="../img/ordermsg.png" class="fl" height="44" />
+        <div class="borderb paddb20" style="margin-left: 55px;">
+            <p class="f16">
+                {{if(isread=="0")}}
+                <span class="read"></span>
+                {{/if}}
+                <span>订单消息</span>
+            </p>
+            {{if(content)}}
+            <p class="wordW mart5 color999">{{content}}</p>
+            {{/if}}
+            <p class=" mart5 color999">{{formatDate(addTime,'Y-m-d H:i')}}</p>
+        </div>
+    </div>
+</script>
+
+<script id="sysTpl" type="text/html">
+    <div class="bg_white pad10" onclick="Comm.go('message.html?t=1')">
+        <img src="../img/xtxxmsg.png" class="fl" height="44" />
+        <div class="paddb10" style="margin-left: 55px;">
+            <p class="f16">
+                {{if(isread=="0")}}
+                <span class="read"></span>
+                {{/if}}
+                <span>系统消息</span>
+            </p>
+            {{if(content)}}
+            <p class="wordW mart5 color999">{{content}}</p>
+            {{/if}}
+            <p class="mart5 color999">{{formatDate(addTime,'Y-m-d H:i')}}</p>
+        </div>
+    </div>
+</script>
+
+<script id="OmessTpl" type="text/html">
+    <div class="bg_white pad10 clearfix" onclick="Comm.go('message.html?t=2')">
+        <img src="../img/ordermsg.png" class="fl" height="44" />
+        <div class="borderb paddb20" style="margin-left: 55px;">
+            <p class="f16 lh40">
+                <span>订单消息</span>
+            </p>
+        </div>
+    </div>
+</script>
+<script id="SysmessTpl" type="text/html">
+    <div class="bg_white pad10 clearfix" onclick="Comm.go('message.html?t=1')">
+        <img src="../img/xtxxmsg.png" class="fl" height="44" />
+        <div class="paddb10" style="margin-left: 55px;">
+            <p class="f16 lh40">
+                <span>系统消息</span>
+            </p>
+        </div>
+    </div>
+</script>
+
+<script id="emptyTpl" type="text/html">
+    <div class="mescroll-empty">
+        <img class="empty-icon" src="../img/wjg.png">
+        <p class="empty-tip">暂无消息~</p>
+    </div>
+</script>
+
+</html>

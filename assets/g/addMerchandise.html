@@ -1,0 +1,2273 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>添加商品</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        /* header */
+        .navTitle {
+            font-weight: normal;
+        }
+
+        /* section */
+        /* 选择项样式 */
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+            /* color: #999; */
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .cellContent input[type="button"] {
+            /* color: #CCCCCC; */
+            background-color: white;
+            margin-right: 5px;
+        }
+
+        /* 商品详情 */
+        #details {
+            width: 100%;
+            height: 70px;
+            border: 0px;
+        }
+
+        /* 阶梯价 */
+        .ladder>div {
+            display: flex;
+            /* flex: 1; */
+        }
+
+        .ladderList>span {
+            min-width: 33%;
+            flex: 1;
+        }
+
+        .ladderList>span>span {}
+
+        .ladderTitle span {
+            width: 33%;
+            flex: 1;
+            text-align: center;
+        }
+
+        .delete {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            background: url("./img/delete.png") no-repeat center;
+            background-size: contain;
+        }
+
+        .add {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            background: url("./img/tjguige.png") no-repeat center;
+            background-size: contain;
+        }
+
+        .img {
+            width: 45px;
+            height: 45px;
+        }
+
+        /* 添加商品按钮 */
+        .deleteSpecifications {
+            background-color: #dd166929;
+            padding: 5px 10px;
+        }
+
+        .addSpecifications {
+            width: 95%;
+            height: 35px;
+            line-height: 35px;
+            margin: 5px auto;
+            border-radius: 5px;
+        }
+
+        .addSpecificationsImg {
+            width: 15px;
+            height: 15px;
+            display: inline-block;
+            background: url("./img/tjguige.png") no-repeat center;
+            background-size: contain;
+        }
+
+        /* footer */
+        .sumbit {
+            height: 45px;
+            line-height: 45px;
+            border-radius: 5px;
+        }
+
+        /* 遮罩 */
+        #mask {
+            position: absolute;
+            z-index: 1000;
+            background-color: rgba(0, 0, 0, 0.3);
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .border {
+            border: 1px solid #ebebeb;
+            border-radius: 20px;
+            min-width: 90px;
+        }
+
+        #numberBox {
+            border-radius: 5px;
+            background-color: #fff;
+            padding: 20px;
+            position: relative;
+        }
+
+        .closeimg {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+        }
+
+        .upDoorPhoto img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .ifFlower {
+            -webkit-appearance: checkbox;
+            width: 15px;
+        }
+
+        .ifFlower[disabled="true"] {
+            color: #000;
+            opacity: 1;
+        }
+
+        input[type="text"] {
+            padding-right: 3px;
+        }
+
+        .noborder {
+            border: 0px solid white !important;
+        }
+
+        .laddernum {
+            display: inline-block;
+            width: 46%;
+            height: 22px;
+            border: 1px solid #e6e6e6;
+        }
+
+        .sborder {
+            border: 1px solid #e6e6e6;
+        }
+
+        .ladderprice {
+            display: inline-block;
+            min-width: 10px;
+            height: 100%;
+        }
+
+        /* 包装费说明 */
+        /* .help::after{
+            content:"";
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-left: 3px;
+            border-radius: 50%;
+            background: url("./img/w.png") no-repeat ; 
+            background-size:contain;
+            position:absolute;
+            top:50%;
+        } */
+
+        .help {
+            margin-top: 1px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <header style="position:relative">
+        <div class="navBar bottomShadow" style="position:relative">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">添加商品</div>
+            <!-- <div id="calendar"></div> -->
+        </div>
+    </header>
+    <section id="" class="bg_hui" style="position:relative"></section>
+    <footer class="shared paddl15 paddt5 paddb5 paddr15">
+        <div class="bgdd-ef sumbit center colorfff f16" onclick="model.submit()">
+            确认发布
+        </div>
+    </footer>
+    <!-- 数量输入框 -->
+    <div id="numberBox" wtd="addNumber" class="bottomShadow">
+        <div>
+            <div class="center lh30 f18" id="tkTitle"></div>
+            <input type="number" class="lh40 border mart10 marb20 center f18" id="num" style="width: auto;" number />
+            <div>
+                <button style="border: 0px;width: 150px;" onclick="qkaddsubWin(this)">
+                    确定
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/picker.min.js"></script>
+<script src="../inc/dict.js"></script>
+<script src="../inc/upimg/upload.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo"), //用户信息
+        isAdjp = Comm.query("f"),//是否竞拍活动
+        bannerI = 0, //轮播数量
+        detailMapI = 0; //详情图数量
+
+    String.prototype.trim = function () {
+        return this.replace(/(^\s*)|(\s*$)/g, '');
+    };
+    function pageload() {
+        if (model.goodsId) Comm.loading(true);
+        //   字典获取
+        model.gdict();
+        // 切换定价方式
+        model.djqh();
+        //切换标题
+        if (model.goodsId) {
+            $(".navTitle").html("编辑商品");
+            $(".sumbit").html("修改商品");
+        }
+    }
+
+    function pageresume() {
+        model.tempifFlower = model.ifFlower;
+        model.isFirst = Comm.db("isFirst");
+        if (model.isFirst) { //改动 添加isfrist判断
+            model.categoryTitle = Comm.db("category"); //三级标题名
+            model.ifFlower = Comm.db("ifFlower"); //是否是鲜花 1 是 0 否
+            model.categoryId = Comm.db("categoryId"); //类别id
+            $("[name=goodsName]").attr("data", "").val("");
+        }
+        $("input[name=categoryId]")
+            .val(model.categoryTitle)
+            .attr("data", model.categoryId);
+        if (model.isFirst) { model.getvaluequery(); model.getLastSku() }
+        else {
+
+        }
+
+    }
+    //移除凭证
+    function removeimg(a) {
+        var idelm = $(a)
+            .parent()
+            .parent()
+            .attr("id");
+        if (idelm == "bannerImg") {
+            $("#bannerUmp")
+                .show()
+                .find(".moxie-shim")
+                .width(80)
+                .height(80);
+            bannerI--;
+            if (bannerI != 5) {
+                $("#bannerUmp").removeClass("hide");
+            }
+            if (bannerI == 0) {
+                $("input[name=pics]").attr("data-reg", "empty");
+            }
+        } else if (idelm == "detailMapImg") {
+            $("#detailMapUpm")
+                .show()
+                .find(".moxie-shim")
+                .width(80)
+                .height(80);
+            detailMapI--;
+            if (detailMapI != 5) {
+                $("#detailMapUpm").removeClass("hide");
+            }
+            if (detailMapI == 0) {
+                $("input[name=dpics]").attr("data-reg", "empty");
+            }
+        }
+        $(a)
+            .parent()
+            .remove();
+        model.banner_F(5 - bannerI, 5 - detailMapI);
+    }
+
+    // 商品分类
+    function choosingType() {
+        model.idNum = 0;
+        Comm.db("isFirst", true);
+        if (isAdjp) {
+            Comm.go("class.html?type=1&f=" + isAdjp);
+        } else {
+            Comm.go("class.html?type=1");
+        }
+
+    }
+    // 弹出数量输入框
+    function addsub(a, v, index) {
+        model.index = index;
+        this.divnum = a;
+
+        if (v != "2") {
+            var num = $(a).text().trim() || "";
+        } else {
+            var num = $(a).text().slice(1).trim() || "";
+        }
+        if (num == "0") {
+            num = null;
+        }
+        Comm.showWindow("addNumber", true);
+        $("#WTDBOX #num").val(num);
+        v == "1" ?
+            $("#WTDBOX #tkTitle").html("输入数量") :
+            v == "2" ?
+                $("#WTDBOX #tkTitle").html("输入价格") :
+                $("#WTDBOX #tkTitle").html("输入库存");
+        if (v != "2") {
+            $("#WTDBOXTD").find("#num").attr("onBlur", "model.inputNum(this,1)")
+        } else {
+            $("#WTDBOXTD").find("#num").attr("onBlur", "model.inputNum(this)")
+        }
+        model.ladderElm = $(a).parent().parent()
+    }
+
+    function qkaddsubWin(a) {
+
+        var flag =
+            $("#WTDBOX  #tkTitle").html() == "输入数量" ?
+                1 :
+                $("#WTDBOX  #tkTitle").html() == "输入价格" ?
+                    2 :
+                    3;
+        var num = Number($("#WTDBOX #num").val()); //输入数量
+        if (flag == "1" && String(num).length > 5) {
+            Comm.message("输入长度超过5位~请重新输入")
+            Comm.showWindow(false);
+            return
+        }
+        if (num > 0) {
+            Comm.showWindow(false);
+            var _id = $(model.ladderElm).attr("name");
+            var index = _id == "ladder01" ? '1' : _id == "ladder02" ? '2' : '3';
+            if (flag == "1") {
+                var ladder01Num = $(model.ladderElm).parent().find("[name=ladder01]").find(".laddernum").html().trim();
+                if (index == "2" && ladder01Num >= num) {
+                    Comm.message("输入数量小于阶梯价1的数量~")
+                    return
+                }
+            }
+            flag == "1" ?
+                $(this.divnum).html(num) :
+                flag == "2" ?
+                    $(this.divnum).html("&yen;" + num) :
+                    $(this.divnum).html(num);
+            if (index == "1" && flag == "1") {
+                model.ladder01 = num;
+            }
+            if (flag == "3") {
+                $(model.ladderElm).find("[name=stock]").val(num)
+            }
+            model.autoFill(this.divnum, num, flag);
+        }
+    }
+    // 加减框
+    function addNum(a, i) {
+        //加减
+        var num =
+            $(a)
+                .parent()
+                .find("div.num")
+                .html() *
+            1 +
+            i;
+        if (num >= 0) {
+            $(a)
+                .parent()
+                .find("div.num")
+                .html(num);
+            $(a).parent().find("[name=stock]").val(num)
+        }
+    }
+
+    var model = {
+        acGoodsId: Comm.db("acGoodsId"),//活动商品列表
+        ifFlower: "", //默认非鲜花
+        priceType: "2", //默认一口价模版
+        _pricingMethod: [{
+            i: "2",
+            text: "一口价"
+        },
+        {
+            i: "1",
+            text: "阶梯价"
+        }
+        ], //定价方式
+        url: "/bussiness/goods/add", //默认添加商品
+        str: "添加成功",
+        idNum: 0,
+        skus: [], //价格数据
+        gdictList: {
+            color: [],
+            grade: [],
+            maturity: [],
+            goodsYun: []
+        },
+        type: Comm.query("type"),
+        getByhe: function (goodsName) {//得到商品
+            Comm.loading(true);
+            var url = '/bussiness/goods/getByHe',
+                opt = {
+                    categoryId: model.categoryId,
+                    goodsName: goodsName
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1&&res.data) {
+                    Comm.Mess.confirm("是否应用该商品模版？", Comm.setcb(function (a) {
+                        if (a == "1") {
+                            model.ishe = '1';
+                            model.resHe(res);
+                        }
+                    }))
+                } else {
+                }
+            })
+        },
+        resetPrice: function (ifFlower, ispricetype) {
+            if (ispricetype == 1) {
+                if (ifFlower == "1") {
+                    $("#priceTypeBox").html(
+                        template("addladderListTpl", {
+                            ifFlower: model.ifFlower
+                        })
+                    );
+                } else {
+                    $.each($(".otherPrice"), function (i, v) {
+                        $(v).html(
+                            template("addladderListTpl", {
+                                ifFlower: model.ifFlower
+                            })
+                        );
+                    });
+                }
+            } else if (ispricetype == 2) {
+                if (ifFlower == "1") {
+                    $("#priceTypeBox").html(
+                        template("addonePTpl", {
+                            ifFlower: model.ifFlower, skupacking: model.skupacking
+                        })
+                    );
+                } else {
+                    $.each($(".otherPrice"), function (i, v) {
+                        $(v).html(
+                            template("addonePTpl", {
+                                ifFlower: model.ifFlower, skupacking: model.skupacking
+                            })
+                        );
+                    });
+                }
+            }
+            Comm.iosInput();
+        },
+        backFun: function () {//回调执行函数  
+            if (model.ifFlower == "0") {
+                model.hide(1);
+                if (model.isFirst) {
+                    $("#priceTypeBox").html(
+                        template("addotherTpl", {
+                            id: "0",
+                            priceType: model.priceType,
+                            skupacking: model.skupacking
+                        })
+                    );
+                    Comm.iosInput();
+                    model.uploadImg(0);
+                    Comm.db("isFirst", null);
+                    if (Comm.query("type") == '3') {
+                        $("[name=goodsName]").val("").attr("data", "0")
+                    }
+                }
+                if (model.tempifFlower != model.ifFlower) {
+                    model.resetPrice(model.ifFlower, model.priceType);
+                }
+            }
+            if (model.ifFlower == "1") {
+                model.hide(2);
+                model.getModel();
+                if (model.tempifFlower != model.ifFlower) {
+                    model.resetPrice(model.ifFlower, model.priceType);
+                }
+                if (model.isFirst) {
+                    Comm.db("isFirst", null);
+                    if (Comm.query("type") == '3') {
+                        $("[name=goodsName]").val("").attr("data", "0")
+                    }
+                }
+            }
+        },
+        //获取keyValue
+        getvaluequery: function () {
+            var opt = {
+                categoryId: model.categoryId,
+            };
+            AJAX.POST("/admin/category/valuequery", opt, function (res) {
+                if (res.code == 1) {
+                    model.valuequery = res.data;
+                    if (model.goodsDetail) {
+                        $.each(model.valuequery, function (i, v) {
+                            $.each(JSON.parse(model.goodsDetail.descript), function (n, m) {
+                                if (v.categoryValueId == m.key) {
+                                    v.text = m.value;
+                                    return
+                                }
+                            })
+                        })
+                    }
+                    $("#keyValue").html(template('getkeyValueTpl', model.valuequery));
+
+                }
+            })
+        },
+        //渲染keyValue
+        keyValue: function () {
+            // if(model.)
+        },
+        // 隐藏
+        hide: function (flag) {
+            if (flag == "1") { //其他商品
+                $("#ifFlower").hide();
+                $("#ifFlower")
+                    .find("input")
+                    .attr("data-reg", "");
+                $("[name=goodsName]")
+                    .parent()
+                    .removeClass("indicator");
+                $("[name=goodsName]").parent().parent().removeAttr("onclick");
+                $("[name=goodsName]")
+                    .removeAttr("onclick")
+                    .removeAttr("readonly")
+                    .attr("onchange", "model.getHeValue(this)");
+            }
+            if (flag == "2") { //鲜花
+                $("#ifFlower").show();
+                // $("#ifFlower").find("input").attr("data-reg", "empty")
+                $("[name=goodsName]")
+                    .parent()
+                    .addClass("indicator");
+                $("[name=goodsName]").parent().parent().attr("onclick", "model.choiceTitle()");
+                $("[name=goodsName]")
+                    .attr("readonly", "readonly")
+                    .attr("disabled");
+            }
+        },
+        getHeValue: function (elm) {// 获得其他商品的商品
+            var f = $("[name=categoryId]").attr("data");
+            if (f && model.type == '4') {
+                var str = $(elm).val();
+                str ? str = str.trim() : str = str;
+                model.getByhe(str);
+            }
+
+
+        },
+        // //字典查询
+        gdict: function () {
+            GDict.init(function () {
+                $.each(GDict.get("flowercolor"), function (i, v) {
+                    //鲜花颜色
+                    model.gdictList.color.push({
+                        text: v.dictname,
+                        i: v.dictid
+                    });
+                });
+                $.each(GDict.get("flowerGrade"), function (i, v) {
+                    //鲜花等级
+                    model.gdictList.grade.push({
+                        text: v.dictname,
+                        i: v.dictid
+                    });
+                });
+                $.each(GDict.get("flowerMaturity"), function (i, v) {
+                    //鲜花成熟度
+                    model.gdictList.maturity.push({
+                        text: v.dictname,
+                        i: v.dictid
+                    });
+                });
+                $.each(GDict.get("goodsYun"), function (i, v) {
+                    //运费
+                    model.gdictList.goodsYun.push({
+                        text: v.dictname,
+                        i: v.dictid
+                    });
+                });
+                model.Color = new Commpicker(
+                    "选择颜色",
+                    [model.gdictList.color],
+                    function (obj, name, sid) {
+                        $("[name=color]")
+                            .val(name)
+                            .attr("data", sid);
+                    }
+                );
+                model.Grade = new Commpicker(
+                    "选择等级",
+                    [model.gdictList.grade],
+                    function (obj, name, sid) {
+                        $("[name=grade]")
+                            .val(name)
+                            .attr("data", sid);
+                    }
+                );
+                model.Maturity = new Commpicker(
+                    "选择成熟度",
+                    [model.gdictList.maturity],
+                    function (obj, name, sid) {
+                        $("[name=maturity]")
+                            .val(name)
+                            .attr("data", sid);
+                    }
+                );
+                model.GoodsYun = new Commpicker(
+                    "设置运费",
+                    [model.gdictList.goodsYun],
+                    function (obj, name, sid) {
+                        $("[name=logistics]")
+                            .val(name)
+                            .attr("data", sid);
+                    }
+                );
+                //初始化
+                if (model.goodsId) {
+                    model.getGoodsDetail();
+                } else {
+                    model.resetGoods();
+                }
+            });
+        },
+        //价格类型切换
+        changePricing: function () {
+            model._Pricing.show();
+        },
+        //添加阶梯价规则
+
+        addLadderRule: function (a) {
+            var par = $(a).parents(".ladder");
+            $(a).attr("name", "delete")
+                .removeClass("add").addClass("delete")
+                .attr("onclick", "model.deleteLadderRule(this)");
+            $(par).find("[name=ladder02]").removeClass("hide")
+            if (model.ladder01) {
+                $(par).find("[name=ladder02]").find("[name=before]").html(model.ladder01 + "-")
+            }
+            Comm.iosInput();
+        },
+        //删除阶梯价规则
+        deleteLadderRule: function (a) {
+            var par = $(a).parents(".ladder");
+            $(a).attr("name", "add")
+                .removeClass("delete").addClass("add")
+                .attr("onclick", "model.addLadderRule(this)");
+            $(par).find("[name=ladder02]").addClass("hide");
+            $(par).find("[name=ladder02]").find(".laddernum").html("");
+            $(par).find("[name=ladder02]").find(".ladderprice").html("&yen;");
+            var num = $(par).find("[name=ladder01]").find(".laddernum").html().trim();
+            $(par).find("[name=ladder03]").find(".laddernum").html(num + "以上")
+
+        },
+        //定价切换
+        djqh: function () {
+            model._Pricing = new Commpicker(
+                "选择定价方式",
+                [model._pricingMethod],
+                function (obj, name, sid) {
+                    $("[name=priceType]")
+                        .val(name)
+                        .attr("data", sid);
+
+                    model.priceType = sid;
+                    model.resetPrice(model.ifFlower, model.priceType);
+                }
+            );
+        },
+        //获取颜色
+        choosingColor: function () {
+            model.Color.show();
+        },
+        //获取鲜花等级
+        choosingGrade: function () {
+            model.Grade.show();
+        },
+        // 获取成熟度
+        choosingMaturity: function () {
+            model.Maturity.show();
+        },
+        // 获取运费设置
+        choosingGoodsYun: function () {
+            model.GoodsYun.show();
+        },
+        //
+        // 自动填入阶梯数量
+
+        autoFill: function (elm, num, f, t) { // 节点  输入数量  标志  
+            console.info(elm)
+            var _elm = $(elm).parents(".ladder");
+            var flag = $(_elm).find("[name=ladder02]").hasClass("hide"); // true 二级阶梯价 false 三级阶梯价
+            console.info(_elm)
+            var _id = $(elm).parent().parent().attr("name");
+            var index = _id == "ladder01" ? '1' : _id == "ladder02" ? '2' : '3';
+
+            if (f == "1") {
+                if (flag) {
+                    $(_elm).find("[name=pthree]").html(num + "以上")
+                }
+                if (!flag) {
+                    if (index == "1") {
+                        var num = $(_elm).find("[name=ladder01]").find(".laddernum").html().trim();
+                        $(_elm).find("[name=ladder02]").find("[name=before]").html(num + "-")
+                    }
+                    if (index == "2") {
+                        var num = $(_elm).find("[name=ladder02]").find(".laddernum").html().trim();
+                        $(_elm).find("[name=ladder03]").find(".laddernum").html(num + "以上")
+                    }
+                }
+            }
+
+        },
+        // 添加其他商品规格
+        addSpecifications: function (a, b) {
+            model.idNum++;
+            $(a).append(
+                template("addSpecificationsList", {
+                    id: model.idNum,
+                    priceType: model.priceType,
+                    skupacking: model.skupacking
+
+                })
+            );
+            Comm.iosInput();
+
+            model.uploadImg(model.idNum);
+            model.guigenum();
+        },
+        // 删除其他商品规格
+        deleteSpecifications: function (a) {
+            $(a)
+                .parent()
+                .parent()
+                .parent()
+                .remove();
+
+            model.guigenum();
+        },
+        // 其他商品上传图片
+        uploadImg: function (v) {
+            var str = "img" + v;
+            var str = new imgUploader(str);
+            str.success = function (d) {
+                var cimgUrl =
+                    this.imgList.length > 0 ? this.imgList[0] : "img/error.png";
+                var ossUrl = Comm.OSS.getImgUrl(cimgUrl);
+                $(this.dom).removeClass("paddt10");
+                $(this.dom)
+                    .find("input")
+                    .addClass("hide");
+                $(this.dom)
+                    .find("img")
+                    .removeClass("hide");
+                $(this.dom)
+                    .find("input")
+                    .attr("data", cimgUrl)
+                    .val(cimgUrl);
+            };
+        },
+        skupacking: {
+            packing: "",
+            minPacking: "",
+            maxPacking: "",
+        },
+        getLastSku: function () {//
+            Comm.loading(true);
+            var url = '/bussiness/goods/listThreeCategory'
+            opt = {
+                categoryId: model.categoryId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1 && res.data) {
+                    model.skupacking = {
+                        packing: Number(res.data.packing),
+                        minPacking: Number(res.data.minPacking),
+                        maxPacking: Number(res.data.maxPacking),
+                    }
+
+                }
+                model.backFun()
+            })
+        },
+        // 发布商品
+        submit: function () {
+            var f = false;
+            Comm.loading(true);
+            var data = Check.submit("POST");
+            if (!data) {
+                Comm.loading(false);
+                return;
+            }
+            // var data={}
+            data.goodsModelId = $("[name=goodsName]").attr("data"); //goodsModelId
+            data.bussinessId = userinfo.bussinessId; //bussinessId
+            data.color = $("[name=color]").attr("data"); //color 颜色
+            data.grade = $("[name=grade]").attr("data"); //grade 等级
+            data.maturity = $("[name=maturity]").attr("data"); //maturity 成熟度
+            data.categoryId = $("[name=categoryId]").attr("data"); //categoryId 类别
+            data.priceType = $("[name=priceType]").attr("data"); //priceType 价格类型
+            data.logistics = $("[name=logistics]").attr("data") || "0"; //logistics 运费设置
+            data.ifFlower = $("[name=ifFlower]").attr("data"); //是否走鲜花质检
+            data.type = model.type; //
+            data.descript = [];
+            //简介
+            $.each(model.valuequery, function (i, v) {
+                var key = "[keyid=id" + v.categoryValueId + "]";
+                data.descript.push({
+                    key: $("#keyValue").find(key).attr("key"),
+                    keyName: $("#keyValue").find(key).attr("name"),
+                    value: $("#keyValue").find(key).val(),
+                })
+            })
+            data.descript = JSON.stringify(data.descript)
+
+            //轮播图
+            var pics = [];
+            $("#bannerImg .upimg").each(function (i, e) {
+                pics.push($(e).attr("data"));
+            });
+            data.pics = pics.join(","); //轮播图
+            //详情图
+            var dpics = [];
+            $("#detailMapImg .upimg").each(function (i, e) {
+                dpics.push($(e).attr("data"));
+            });
+            data.dpics = dpics.join(","); //详情图
+            data.yuSkuId = $("[name=yuSkuId]").attr("yuSkuId");
+            // data.goodsSkuId = $("[name=yuSkuId]").attr("goodsSkuId");
+            if (model.ifFlower == "1" && data.priceType == "1") {
+                var prices = [];
+                $.each($(".ladderList").not(".hide"), function (i, v) {
+                    if (!f) {
+                        var laddernum = parseInt($(v)
+                            .find(".laddernum")
+                            .text());
+                        var ladderprice = $(v)
+                            .find(".ladderprice")
+                            .text().slice(1);
+                        console.info(laddernum.length, ladderprice.length);
+                        if (!laddernum) {
+                            Comm.message("请输入阶梯" + (i + 1) + "的阶梯数量");
+                            f = true;
+                        } else if (!ladderprice) {
+                            Comm.message("请输入阶梯" + (i + 1) + "的阶梯价");
+                            f = true;
+                        } else {
+                            prices.push({
+                                num: laddernum,
+                                price: ladderprice,
+                                goodsSkuId: $(v).attr("data"),
+                            });
+                        }
+                    }
+                });
+                data.prices = JSON.stringify(prices);
+            }
+            if (model.ifFlower == "1" && data.priceType == "2") {
+                var prices = [];
+                prices.push({
+                    num: "0",
+                    price: data.onePrice,
+                    goodsSkuId: $("#priceTypeBox").find("[name=goodsSkuId]").attr("data"),
+                });
+                data.prices = JSON.stringify(prices);
+            }
+            if (model.ifFlower != "1") {
+                var skus = [];
+                if (data.priceType == "2") {
+                    $.each($(".SpecificationsList"), function (i, v) {
+                        var goodsPrices = [];
+                        goodsPrices.push({
+                            num: "0",
+                            price: $(v)
+                                .find("[name=onePrice]")
+                                .val()
+                        });
+                        console.info(v)
+                        skus.push({
+                            keyName: "",
+                            keyValue: $(v)
+                                .find("[name=keyValue]")
+                                .val(),
+                            packing: $(v)
+                                .find("[name=packing]")
+                                .val(),
+                            stock: $(v)
+                                .find("[name=stock]")
+                                .val(),
+                            warningStock: $(v)
+                                .find("[name=warningStock]")
+                                .val(),
+                            pics: $(v)
+                                .find("[name=otherpics]")
+                                .attr("data"),
+                            minpacking: $(v).find("[name=minpacking]").val(),
+                            maxpacking: $(v).find("[name=maxpacking]").val(),
+                            goodsSkuId: $(v).attr("data"),
+                            priceType: data.priceType,
+                            goodsPrices: goodsPrices,
+                            yuSkuId:$(v).attr("yuSkuId")
+
+                        });
+                    });
+                    data.skus = JSON.stringify(skus);
+                } else {
+                    $.each($(".SpecificationsList"), function (i, v) {
+                        var goodsPrices = [];
+                        $.each(
+                            $(v)
+                                .find(".ladderList")
+                                .not(".hide"),
+                            function (i, v) {
+                                if (!f) {
+                                    var laddernum = parseInt($(v)
+                                        .find(".laddernum")
+                                        .text());
+                                    var ladderprice = $(v)
+                                        .find(".ladderprice")
+                                        .text().slice(1);
+                                    if (!laddernum) {
+                                        Comm.message("请输入阶梯" + (i + 1) + "的阶梯数量");
+                                        f = true;
+                                    } else if (!ladderprice) {
+                                        Comm.message("请输入阶梯" + (i + 1) + "的阶梯价");
+                                        f = true;
+                                    } else {
+                                        goodsPrices.push({
+                                            num: laddernum,
+                                            price: ladderprice
+                                        });
+                                    }
+                                }
+                            }
+                        );
+                        skus.push({
+                            keyName: "",
+                            keyValue: $(v)
+                                .find("[name=keyValue]")
+                                .val(),
+                            packing: $(v)
+                                .find("[name=packing]")
+                                .val(),
+                            stock: $(v)
+                                .find("[name=stock]")
+                                .val(),
+                            warningStock: $(v)
+                                .find("[name=warningStock]")
+                                .val(),
+                            pics: $(v)
+                                .find("[name=otherpics]")
+                                .attr("data"),
+                            minpacking: $(v).find("[name=minpacking]").val(),
+                            maxpacking: $(v).find("[name=maxpacking]").val(),
+                            goodsSkuId: $(v).attr("data"),
+                            priceType: data.priceType,
+                            goodsPrices: goodsPrices,
+                            yuSkuId:$(v).attr("yuSkuId")
+                        });
+                    });
+                }
+                data.skus = JSON.stringify(skus);
+            }
+            console.info(data);
+            if (!f) {
+                model.addGoods(data);
+            } else {
+                Comm.loading(false);
+            }
+        },
+        addGoods: function (data) {
+            if (model.goodsId) {
+                //1 编辑 2 上架 3 上新 4 新增 5 活动添加
+                if (model.type == "1" || model.type == "2") {
+                    model.url = "/bussiness/goods/update";
+                    data.goodsId = model.goodsId;
+                }
+                model.type == "1" ?
+                    (model.str = "修改成功") :
+                    model.type == "2" ?
+                        (model.str = "上架成功") :
+                        model.type == "3" ?
+                            (model.str = "上新成功") :
+                            "";
+            }
+            if (Comm.query("f") == '1') {
+                data.state = "2";//2 预定 下架
+            }
+            if (Comm.query("isxia") == "1") {
+                data.goodsId = model.goodsId;
+            }
+            AJAX.POST(model.url, data, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message(model.str);
+                    Comm.db("category", null);
+                    Comm.db("categoryId", null);
+                    Comm.db("ifFlower", null);
+                    if (model.type == "5") {//添加活动商品
+                        Comm.loading(true);
+                        var url = '/purchase/activityGoods/list'
+                        opt = {
+                            goodsIds: res.data
+                        };
+                        AJAX.POST(url, opt, function (res) {
+                            Comm.loading(false);
+                            if (res.code == 1) {
+                                var arr = [];
+                                if (model.acGoodsId) {
+                                    arr = JSON.parse(model.acGoodsId)
+                                }
+                                res.data[0].isxg = '0';
+                                res.data[0].xianNum = '';
+                                switch (Comm.query("f")) {
+                                    case "1": res.data[0].wtd = []; break; //预定
+                                    case '128': res.data[0].wtd = ["1", '3']; break;//秒杀
+                                    case '2': res.data[0].wtd = ['1', '5']; break;//竞拍
+                                    case '64': res.data[0].wtd = ['1', '4']; break;//竞拍
+                                    case '8': res.data[0].wtd = ['1', '3']; break;//团购
+                                    case '4': res.data[0].wtd = ['2']; break;//搭配
+                                }
+                                res.data[0].actype = Comm.query("f");
+                                arr = arr.concat(res.data)
+                                model.acGoodsId = JSON.stringify(arr)
+                                Comm.db("acGoodsId", model.acGoodsId);
+                                Comm.close()
+                            } else {
+                                Comm.message(res.msg)
+                            }
+                        })
+                    } else {
+                        Comm.close();
+                    }
+                }else{
+                    res.msg?Comm.message(res.msg):'';
+                }
+            });
+        },
+        //获取商品id
+        goodsId: Comm.query("goodsId"),
+        //鲜花是否走质检
+        isflower: function (el, v) {
+            event.stopPropagation();
+            if (v == "1") {
+                var tempEl = $(el).find("input"),
+                    flag = $(tempEl).attr("data");
+            } else {
+                var tempEl = $(el),
+                    flag = $(el).attr("data");
+            }
+            if (flag == "1") {
+                $(tempEl)
+                    .attr("data", "0")
+                    .removeAttr("checked")
+                    .val("0");
+            } else {
+                $(tempEl)
+                    .attr("data", "1")
+                    .attr("checked", true)
+                    .val("1");
+            }
+        },
+        //判断是否是鲜花供应商
+        isF: function () {
+            AJAX.POST(
+                "/bussiness/bussiness/ifFlower", {
+                    bussinessId: userinfo.bussinessId
+                },
+                function (res) {
+                    if (res.code == 1) {
+                        if (res.data.ifFlower != "1") {
+                            $("[name=isF]").addClass("hide");
+                            model._isF = res.data.ifFlower;
+                        } else {
+                            model._isF = res.data.ifFlower;
+                        }
+                    }
+                }
+            );
+        },
+        //图片上传
+        banner_F: function (lb, xq) {
+            if (!lb && !xq) {
+                lb = 5;
+                xq = 5;
+            }
+            // 商品轮播图
+            var bannerloader = new imgUploader("bannerImg", lb, "banner");
+            bannerloader.success = function () {
+                if (this.imgList.length > 0) {
+                    $.each(this.imgList, function (i, v) {
+                        $("#bannerImg").prepend(
+                            template("imgTpl", {
+                                src: v
+                            })
+                        );
+                        Comm.iosInput();
+                        bannerI++;
+                    });
+                    this.imgList = [];
+                }
+                if (bannerI == 5) {
+                    $("#bannerUmp").hide();
+                } else {
+                    $("#bannerUmp")
+                        .show()
+                        .find(".moxie-shim")
+                        .width(80)
+                        .height(80);
+                }
+                var pics = [];
+                $("#bannerImg .upimg").each(function (i, e) {
+                    pics.push($(e).attr("data"));
+                });
+                $("#bannerImg")
+                    .siblings("[name=pics]")
+                    .val(pics.join(",")); //轮播图
+                model.banner_F(5 - bannerI, 5 - detailMapI);
+            };
+            // 商品详情上传图片
+            var detailMaploader = new imgUploader("detailMapImg", xq, "detailMap");
+            detailMaploader.success = function () {
+                if (this.imgList.length > 0) {
+                    $.each(this.imgList, function (i, v) {
+                        $("#detailMapImg").prepend(
+                            template("imgTpl", {
+                                src: v
+                            })
+                        );
+                        Comm.iosInput();
+                        detailMapI++;
+                    });
+                    this.imgList = [];
+                }
+                if (detailMapI == 5) {
+                    $("#detailMapUpm").hide();
+                } else {
+                    $("#detailMapUpm")
+                        .show()
+                        .find(".moxie-shim")
+                        .width(80)
+                        .height(80);
+                }
+                var dpics = [];
+                $("#detailMapImg .upimg").each(function (i, e) {
+                    dpics.push($(e).attr("data"));
+                });
+                $("#detailMapImg")
+                    .siblings("[name=dpics]")
+                    .val(dpics.join(",")); //详情图
+                model.banner_F(5 - bannerI, 5 - detailMapI);
+            };
+        },
+        //获得商品标题名
+        getModel: function () {
+            var opt = {
+                categoryId: model.categoryId || model.goodsDetail.categoryId
+            };
+            AJAX.POST("/bussiness/goods/getModel", opt, function (res) {
+                if (res.code == 1) {
+                    model._title = [];
+                    $.each(res.data, function (i, v) {
+                        model._title.push({
+                            i: v.goodsModelId,
+                            text: v.goodsModelName
+                        });
+                    });
+                    model.title = new Commpicker("选择标题", [model._title], function (
+                        obj,
+                        name,
+                        sid
+                    ) {
+                        $("[name=goodsName]")
+                            .val(name)
+                            .attr("data", sid);
+                        model.getByhe(name);
+                    });
+                }
+            });
+        },
+        //鲜花标题名字选择
+        choiceTitle: function () {
+            var f = $("[name=categoryId]").attr("data");
+            // if (f && (model.type == "4"||model.type=="5")) {
+
+            // } else {
+            //     Comm.message("请先选择商品分类~");
+            //     return;
+            // }
+            if(model.type=='1'){
+                return
+            }else{
+                if (f) {
+                // if(model.type == "4"||model.type=="5"||model.type=="3"||model.type=="2")
+                } else {
+                    Comm.message("请先选择商品分类~");
+                    return;
+                }
+            }
+            if (model.ifFlower == "1") {
+                model.title.show();
+            }
+        },
+        //获取商品详情
+        getGoodsDetail: function () {
+            var opt = {
+                goodsId: model.goodsId || ""
+            };
+            AJAX.POST("/bussiness/goods/getById", opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) { //改的 屏蔽下面三个
+                    // Comm.db("category", res.data.categoryName); //三级标题名
+                    // Comm.db("ifFlower", res.data.ifFlowerCategory); //是否是鲜花 1 是 0 否
+                    // Comm.db("categoryId", res.data.categoryId); //类别id
+
+                    model.categoryTitle = res.data.categoryName; //三级标题名
+                    model.ifFlower = res.data.ifFlowerCategory; //是否是鲜花
+                    model.categoryId = res.data.categoryId; //类别id
+
+                    model.goodsDetail = res.data; //商品详情
+                    model.skus = res.data.skus; //价格详情
+                    model.priceType = res.data.skus[0].priceType; //价格类型
+
+
+                    model.goodsDetail.priceType = model.priceType;
+                    model.idNum = res.data.skus.length;
+                    model.resetGoods();
+                } else {
+                    model.resetGoods();
+                    // model.isF();
+                }
+            });
+        },
+        resHe: function (res) {//
+        if(model.ishe!='1'){
+            return;
+        }
+            if (res.code == 1) { //改的 屏蔽下面三个
+                // Comm.db("category", res.data.categoryName); //三级标题名
+                // Comm.db("ifFlower", res.data.ifFlowerCategory); //是否是鲜花 1 是 0 否
+                // Comm.db("categoryId", res.data.categoryId); //类别id
+
+                model.categoryTitle = res.data.categoryName; //三级标题名
+                model.ifFlower = res.data.ifFlowerCategory; //是否是鲜花
+                model.categoryId = res.data.categoryId; //类别id
+
+                model.goodsDetail = res.data; //商品详情
+                model.skus = res.data.skus; //价格详情
+                model.priceType = res.data.skus[0].priceType; //价格类型
+
+
+                model.goodsDetail.priceType = model.priceType;
+                model.idNum = res.data.skus.length;
+
+                model.resetGoods();
+            } else {
+                model.resetGoods();
+                // model.isF();
+            }
+        },
+        //界面初始化
+        resetGoods: function () {
+            console.info(model.goodsDetail)
+            $("section").html(template("mainTpl", model.goodsDetail));
+            if (model.ifFlower == "1"){ model.getvaluequery();}
+           
+            Comm.iosInput();
+
+            if (model.type == "1") {
+                $("input[name=priceType]")
+                    .parent()
+                    .parent()
+                    .attr("onclick", "")
+                    .addClass("hide");
+            }
+            // 轮播数量和详情数量
+            if (model.goodsDetail) {
+                var lb = model.goodsDetail.pics.length;
+                var xq = model.goodsDetail.dpics.length;
+                model.banner_F(5 - lb, 5 - xq); //图片上传功能初始化
+            } else {
+                model.banner_F(); //图片上传功能初始化
+            }
+
+            model.picsimg(); //修改图片初始化
+            model.showFlower(); //鲜花头部模板初始化
+            model.showPrice(); //价格模板那初始化
+            //pageresume回调
+            if (!Comm.w9()) {
+                pageresume();
+            }
+            if (model.ifFlower == '1') return
+            for (var i = 0; i < model.idNum; i++) {
+                model.uploadImg(i);
+            }
+
+            // $("#priceTypeBox").html(template("onePTpl", { ifFlower: model.ifFlower })) //一口价模板
+        },
+        //鲜花头部模板 和 非鲜花头部模板
+        showFlower: function () {
+            if (model.ifFlower == "1") {
+                $("#ifFlower").html(template("ifFlowerTpl", model.goodsDetail));
+                Comm.iosInput();
+
+                model.getModel();
+                $("[name=goodsName]")
+                    .attr("readonly", "readonly")
+                    .parent()
+                    .addClass("indicator");
+            } else {
+                if (model.goodsId) model.hide(1);
+                if(model.ishe=='1')model.hide(1)
+            }
+            model.isF();
+        },
+        //价格模板
+        showPrice: function () {
+            if (model.goodsId || model.ishe == "1") {
+                if (model.ifFlower == "1") {
+                    if (model.priceType == "1") {
+                        //阶梯价
+                        model.ladder01 = model.skus[0].price[0].num;
+                        if (model.skus[0].price.length == "2") {
+                            model.skus[0].price.splice(1, 0, {
+                                ishide: '0'
+                            })
+                            model.skus[0].price[2].isladder = "1"; //1 展示添加按钮  2 展示删除按钮
+                        }
+                        model.skus[0].price[1].before = model.skus[0].price[0].num
+                        var opt = {
+                            skus: model.skus[0],
+                            data: model.skus[0].price,
+                            ifFlower: model.ifFlower,
+                            goodsSkuId: model.skus[0].goodsSkuId,
+                        };
+                        $("#priceTypeBox").html(template("fladderListTpl", opt));
+                    } else {
+                        //一口价
+                        var tp = model.skus[0].price;
+                        tp[0].ifFlower = model.ifFlower;
+                        // tp[0].w = {
+                        //     stock: model.skus[0].stock,
+                        //     warningStock: model.skus[0].warningStock,
+                        //     packing: model.skus[0].packing,
+                        //     minPacking :model
+                        // };
+                        tp[0].w = model.skus[0];
+                        // $("#priceTypeBox").html(template("onePTpl", model.skus[0].price));
+                        $("#priceTypeBox").html(template("onePTpl", tp));
+                    }
+                } else {
+                    if (model.priceType == "1") {
+                        //阶梯价
+                        $.each(model.goodsDetail.skus, function (i, v) {
+                            if (v.price.length == "2") {
+                                v.price.splice(1, 0, {
+                                    ishide: 0
+                                })
+                                tempnum = v.num
+                                v.price[2].isladder = "1"; //1 展示添加按钮  2 展示删除按钮
+                            }
+                            v.price[1].before = v.price[0].num
+                        })
+
+                        $("#priceTypeBox").html(
+                            template("otherTpl", {
+                                id: model.idNum,
+                                priceType: model.priceType,
+                                data: model.goodsDetail
+                            })
+                        );
+                    } else {
+                        //一口价
+                        $("#priceTypeBox").html(
+                            template("otherTpl", {
+                                id: model.idNum,
+                                priceType: model.priceType,
+                                data: model.goodsDetail
+                            })
+                        );
+                        //  model.uploadImg("0")
+                    }
+                }
+                if (model.type == "1") {
+                    $("input[name=onePrice]").attr("readonly", "readonly");
+                    $("[name=categoryId]")
+                        .parent()
+                        .parent()
+                        .attr("onclick", "");
+                    $("[name=goodsName]")
+                        .parent()
+                        .parent()
+                    // 判断编辑是否可修改标题
+                    // .attr("onclick", "") 
+                    // .attr("readonly", true);
+
+                    // if (model.priceType == "1") {
+                    //     $.each($("#priceTypeBox").find(".ladderprice"), function (i, v) {
+                    //         $(v).attr("onclick", "");
+                    //     });
+                    //     $("#priceTypeBox")
+                    //         .find(".add")
+                    //         .attr("onclick", "");
+                    //     $("#priceTypeBox")
+                    //         .find(".delete")
+                    //         .attr("onclick", "");
+                    // }
+                }
+            } else {
+                $("#priceTypeBox").html(template("addonePTpl", { ifFlower: '1' }))
+            }
+            Comm.iosInput();
+
+            Comm.loading(false);
+        },
+        //修改图片
+        picsimg: function () {
+            //轮播
+            if (model.goodsDetail && model.goodsDetail.pics.length > 0) {
+                $.each(model.goodsDetail.pics, function (i, v) {
+                    if (v.url.length != "0") {
+                        $("#bannerImg").prepend(
+                            template("imgTpl", {
+                                src: v.url
+                            })
+                        );
+                        Comm.iosInput();
+
+                        bannerI++;
+                    }
+                });
+                var pics = [];
+                $("#bannerImg .upimg").each(function (i, e) {
+                    pics.push($(e).attr("data"));
+                    if (i >= 4) {
+                        $("#bannerUmp").addClass("hide");
+                    }
+                });
+                // $("#bannerImg").siblings("[name=pics]").val(pics.join(","))//轮播图
+                $("input[name=pics]").attr("data-reg", "");
+            }
+            if (model.goodsDetail && model.goodsDetail.dpics.length > 0) {
+                $.each(model.goodsDetail.dpics, function (i, v) {
+                    if (v.url.length != "0") {
+                        $("#detailMapImg").prepend(
+                            template("imgTpl", {
+                                src: v.url
+                            })
+                        );
+                        Comm.iosInput();
+
+                        detailMapI++;
+                    }
+                });
+                var dpics = [];
+                $("#detailMapImg .upimg").each(function (i, e) {
+                    dpics.push($(e).attr("data"));
+                    if (i >= 4) {
+                        $("#detailMapUpm").addClass("hide");
+                    }
+                });
+                $("input[name=dpics]").attr("data-reg", "");
+            }
+        },
+        //价格只能输入两位数字
+        inputNum: function (obj, type) {
+            var str = $(obj).val();
+            console.info(str)
+            if (str == "" && str.length == "0") {
+                Comm.message("输入错误,请重新输入~")
+                $(obj).val("")
+                return
+            }
+            if (str <= 0) {
+                Comm.message("请输入大于0的值~")
+                $(obj).val("")
+                return
+            }
+            if (type) {
+                if (str.indexOf(".") != "-1") {
+                    Comm.message("请输入整数~")
+                    $(obj).val("")
+                    return
+                }
+            } else {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val("")
+                        return
+                    }
+                }
+            }
+        },
+        onkeyup: function (el) {
+            var reg = /^\d+$/;
+            var flag = reg.test(el.value);
+            if (!flag) {
+                Comm.message("请输入正整数~");
+                el.value = el.value.slice(0, el.value.length - 1);
+            }
+        },
+        iscateid: function () {//判断是否已选择商品分类
+            var f = $("[name=categoryId]").attr("data");
+            if (f && model.type == "4") {
+
+            } else {
+                Comm.message("请先选择商品分类~");
+                return;
+            }
+        },
+        guigenum: function () {
+            $.each($("[name=guigeNum]"), function (i, v) {
+                var num = Math.floor(i + 1);
+                $(v).html("规格" + num);
+            });
+        }
+    };
+    template.defaults.imports.resetNum = function (v) {
+        if (!v) {
+            return ""
+        }
+        return Number(v);
+    };
+</script>
+<!-- 主界面 -->
+<script type="text/html" id="mainTpl">
+    <div class="mart5"></div>
+    <!-- 商品基本信息 -->
+    <!-- 商品分类 -->
+    <div class="paddl15 bg_white " onclick="choosingType()">
+        <div class="cellContent  indicator bottomBorder ">
+            <div class="label f14 icon_pre  ">商品分类</div>
+            <input type="text" name="categoryId" readonly disabled placeholder="请选择商品分类" data="{{categoryId||''}}"
+                value="{{categoryName||''}}" data-reg='empty' />
+        </div>
+    </div>
+    <!-- 商品标题 -->
+    <div class="paddl15 bg_white " onclick="model.choiceTitle()">
+        <div class="cellContent indicator  bottomBorder ">
+            <div class="label f14 icon_pre  ">商品标题</div>
+            <input type="text" name="goodsName"  readonly placeholder="请输入商品标题" data="{{goodsModelId||''}}"
+                value="{{goodsName||''}}" data-reg='empty'/>
+        </div>
+    </div>
+    <!-- 鲜花判断 -->
+    <div id="ifFlower">
+        <!-- 颜色 -->
+        <div class="paddl15 bg_white " onclick="model.choosingColor()">
+            <div class="cellContent  indicator bottomBorder ">
+                <div class="label f14 icon_pre  ">颜色</div>
+                <input type="text" name="color" disabled readonly placeholder="请选择颜色" data="{{color||''}}"
+                    value="{{getItemName(color)}}" data-reg='empty' />
+            </div>
+        </div>
+        <!-- 等级 -->
+        <div class="paddl15 bg_white " onclick="model.choosingGrade()">
+            <div class="cellContent  indicator bottomBorder ">
+                <div class="label f14 icon_pre  ">等级</div>
+                <input type="text" name="grade" disabled readonly placeholder="请选择等级" data="{{grade||''}}"
+                    value="{{grade|getItemName}}" data-reg='empty' />
+            </div>
+        </div>
+        <!-- 成熟度 -->
+        <div class="paddl15 bg_white " onclick="model.choosingMaturity()">
+            <div class="cellContent  indicator bottomBorder ">
+                <div class="label f14 icon_pre  ">成熟度</div>
+                <input type="text" name="maturity" disabled readonly placeholder="请选择成熟度" data="{{maturity||''}}"
+                    value="{{maturity|getItemName}}" data-reg='empty' />
+            </div>
+        </div>
+        <!-- 规格(扎) -->
+        <div class="paddl15 bg_white " onclick="">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f14 icon_pre  ">规格(扎)</div>
+                <input type="type" name="speci" onBlur="model.inputNum(this,1)" placeholder="请输入规格" data=""
+                    value="{{speci||''}}" data-reg='empty' />
+            </div>
+        </div>
+        <!-- 重量 -->
+        <!-- <div class="paddl15 bg_white " _onclick="choosingMaturity()">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f14 icon_pre  ">重量(g)</div>
+                <input type="number" name="weight" onBlur="model.inputNum(this)" placeholder="请输入商品重量" data=""
+                    value="{{weight||''}}" data-reg='empty' />
+            </div>
+        </div> -->
+        <!-- 是否走鲜花质检 -->
+        <div class="paddl15 bg_white " name="isF" _onclick="model.isflower(this,'1')">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f14 icon_pre  ">是否走鲜花质检</div>
+                <input type="checkbox" class="ifFlower" name="ifFlower" onclick="model.isflower(this,'2')"
+                    {{ifFlowerSuper=='1'?'checked':''}} placeholder="" data="{{ifFlowerSuper||'0'}}"
+                    value="{{ifFlowerSuper||''}}" data-reg='' />
+            </div>
+        </div>
+    </div>
+    <!-- 重量 -->
+    <div class="paddl15 bg_white " _onclick="choosingMaturity()">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">重量(g)</div>
+            <input type="number" name="weight" onBlur="model.inputNum(this)" placeholder="请输入商品重量" data=""
+                value="{{weight||''}}" data-reg='empty' />
+        </div>
+    </div>
+    <!-- 单位 -->
+    <div class="paddl15 bg_white ">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">单位</div>
+            <input type="text" name="company" placeholder="请输入商品单位" data="{{company||''}}" value="{{company||''}}"
+                data-reg='empty' />
+        </div>
+    </div>
+    <!-- 商品简介 -->
+    <div class="" onclick="" id="keyValue">
+       
+    </div>
+    <!-- 商品轮播图 -->
+    <div class="mart5"></div>
+    <div class="paddl15 bg_white paddt15 paddb15">
+        <span class="">商品轮播图<span class="color999 f12">(比例：1:1)</span></span>
+        <div class="clearfix  paddt10" id="bannerImg">
+            <div class="left marr10 marb10" id="bannerUmp">
+                <img src="./img/xztp.png" width="80" height="80" id="banner" />
+            </div>
+        </div>
+        <input type="text" class="hide" name="pics" placeholder="请上传轮播图片" data="" value="" data-reg='empty' />
+    </div>
+    <!-- 商品详情 -->
+    <div class="mart5"></div>
+    <div class="paddl15 bg_white paddt15 paddb15">
+        <div class="label f14 icon_pre  ">详情描述</div>
+        <textarea name="details" id="details" class="details f14 mart10 " placeholder="请输入详情..."
+            data-reg='empty'>{{details||''}}</textarea>
+        <div class="clearfix  paddt10" id="detailMapImg">
+            <div class="left marr10 marb10" id="detailMapUpm">
+                <img src="./img/xztp.png" width="80" height="80" id="detailMap" />
+            </div>
+        </div>
+        <input type="text" class="hide" name="dpics" placeholder="请上传详情图片" data="" value="" data-reg='empty' />
+    </div>
+    <!-- 定价方式 -->
+    <div class="paddl15 bg_white mart5" onclick="model.changePricing()">
+        <div class="cellContent indicator  bottomBorder ">
+            <div class="label f14 icon_pre  ">定价方式</div>
+            <input type="button" class="wordW" readonly name="priceType" placeholder="" data="{{priceType||'2'}}"
+                value="{{priceType=='1'?'阶梯价':'一口价'}}" data-reg='empty' />
+        </div>
+    </div>
+    <div id="priceTypeBox" class="">
+    </div>
+</script>
+<!-- 鲜花阶梯价规格 -->
+<script id="fladderListTpl" type="text/html">
+    <div class="ladder bottomBorder" >
+        <div class="ladderTitle bg_hui center paddt10 paddb10 paddl15 paddr15">
+            <span style="text-align:left">阶梯数量</span>
+            <span>阶梯价格</span>
+            <span>操作</span>
+        </div>
+        <!-- 声明阶梯价数量 -->
+        {{each data as v i}}
+        <div class="ladderList  bg_white center paddt10 paddb10 paddl15 paddr15 {{v.ishide?'hide':''}}"
+        name="ladder0{{i+1}}" data="{{v.goodsSkuId||''}}" >
+            {{if i!='2'}}
+            <span class="t-a-l">
+                <span name="before" class="t-a-r">{{i=='0'?'0-':i=='1'?v.before+'-':v.num}}</span>
+                <span name="{{i=='0'?'pone':i=='1'?'ptwo':'pthree'}}" class="laddernum"
+                    onclick="addsub(this,'1',{{i==0?'1':i=='1'?'2':'3'}})">{{v.num||''}}</span>
+            </span>
+            {{else}}
+            <span class="t-a-l">
+
+                <span name="pthree" class="laddernum noborder" onclick="addsub(this,'1','1')">{{v.num}}以上</span>
+            </span>
+            {{/if}}
+            <span class="center ">
+                <span class="ladderprice sborder inblock t-a-l paddl5 wordW"
+                    style="width:80%;height:100%;padding-right:0px"
+                    onclick="addsub(this,'2')">&yen;{{v.price||''|resetNum}}</span>
+            </span>
+            {{if v.isladder}}
+                    <span name="{{v.isladder=='1'?'add':'dalete'}}" class="{{v.isladder=='1'?'add':'dalete'}}" onclick="{{v.isladder=='1'?'model.addLadderRule(this)':'deleteLadderRule(this)'}}"></span>
+            {{else}}
+                <span name="{{i=='2'?'delete':''}}" class="{{i=='2'?'delete':''}}" onclick="{{i=='2'?'model.deleteLadderRule(this)':''}}"></span>
+            {{/if}}
+        </div>
+        {{/each}}
+    </div>
+    {{if ifFlower=="1"}}
+    {{include "stockTpl" skus}}
+    {{/if}}
+</script>
+<!-- 阶梯价规格 -->
+<script id="ladderListTpl" type="text/html">
+    <div class="ladder bottomBorder">
+            <div class="ladderTitle bg_hui center paddt10 paddb10 paddl15 paddr15">
+                <span style="text-align:left">阶梯数量</span>
+                <span>阶梯价格</span>
+                <span>操作</span>
+            </div>
+            <!-- 声明阶梯价数量 -->
+            {{each $data as v i}}
+            <div class="ladderList  bg_white center paddt10 paddb10 paddl15 paddr15 {{v.ishide=='0'?'hide':''}}"
+                name="ladder0{{i+1}}" data="{{v.goodsSkuId||''}}">
+                {{if i!='2'}}
+                <span class="t-a-l">
+                    <span name="before" class="t-a-r">{{i=='0'?'0-':i=='1'?v.before+'-':v.num}}</span>
+                    <span name="{{i=='0'?'pone':i=='1'?'ptwo':'pthree'}}" class="laddernum"
+                        onclick="addsub(this,'1',{{i==0?'1':i=='1'?'2':'3'}})">{{v.num||''}}</span>
+                </span>
+                {{else}}
+                <span class="t-a-l">
+    
+                    <span name="pthree" class="laddernum noborder" onclick="addsub(this,'1','1')">{{v.num}}以上</span>
+                </span>
+                {{/if}}
+                <span class="center">
+                    <span class="ladderprice sborder inblock t-a-l paddl5 wordW"
+                        style="width:80%;height:100%;padding-right:0px"
+                        onclick="addsub(this,'2')">&yen;{{v.price||''|resetNum}}</span>
+                </span>
+                {{if v.isladder}}
+                        <span name="{{v.isladder=='1'?'add':'dalete'}}" class="{{v.isladder=='1'?'add':'dalete'}}" onclick="{{v.isladder=='1'?'model.addLadderRule(this)':'deleteLadderRule(this)'}}"></span>
+                {{else}}
+                    <span name="{{i=='2'?'delete':''}}" class="{{i=='2'?'delete':''}}" onclick="{{i=='2'?'model.deleteLadderRule(this)':''}}"></span>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+    {{if ifFlower=="1"}}
+    {{include "stockTpl" skus}}
+    {{/if}}
+</script>
+<!-- 无数据阶梯价模板 -->
+<script id="addladderListTpl" type="text/html">
+    <div class="ladder bottomBorder">
+        <div class="ladderTitle bg_hui center paddt10 paddb10 paddl15 paddr15">
+            <span style="text-align:left">阶梯数量</span>
+            <span>阶梯价格</span>
+            <span>操作</span>
+        </div>
+        <!-- 价1 -->
+        <div class="ladderList  bg_white center paddt10 paddb10 paddl15 paddr15" name="ladder01" data="">
+            <span class="t-a-l">
+                <span name="before" class="t-a-r">0-</span>
+                <span name="pone" class="laddernum" onclick="addsub(this,'1','1')"></span>
+            </span>
+            <span class="center">
+                <span class="ladderprice sborder inblock t-a-l paddl5 wordW"
+                    style="width:80%;;height:100%;padding-right:0px"
+                    onclick="addsub(this,'2')">{{list?list[0].price:'&yen;'}}</span>
+            </span>
+            <span name="add" class="" onclick=""></span>
+        </div>
+        <!-- 价2 -->
+        <div class="ladderList  bg_white center paddt10 paddb10 paddl15 paddr15 hide" name="ladder02" data="">
+            <span class="t-a-l">
+                <span name="before" class="t-a-r">0-</span>
+                <span name="ptwo" class="laddernum" onclick="addsub(this,'1','1')" _disabled="true"></span>
+            </span>
+            <span class="center">
+                <span class="ladderprice sborder inblock t-a-l paddl5 wordW"
+                    style="width:80%;;height:100%;padding-right:0px" onclick="addsub(this,'2')"
+                    _disabled="true">{{list?list[0].price:'&yen;'}}</span>
+            </span>
+            <span name="" class="" _onclick="model.addLadderRule(this)"></span>
+        </div>
+        <!-- 价3 -->
+        <div class="ladderList  bg_white center paddt10 paddb10 paddl15 paddr15" name="ladder03"  data="">
+            <span class="t-a-l">
+                <span name="pthree" class="laddernum noborder wordW" onclick="addsub(this,'1','1')" style="width:100%">0以上</span>
+            </span>
+            <span class="center">
+                <span class="ladderprice sborder inblock t-a-l paddl5 wordW"
+                    style="width:80%;;height:100%;padding-right:0px" onclick="addsub(this,'2')"
+                    _disabled="true">{{list?list[0].price:'&yen;'}}</span>
+            </span>
+            <span name="add" class="add" onclick="model.addLadderRule(this)"></span>
+        </div>
+    </div>
+    {{if ifFlower=="1"}}
+    {{include "stockTpl" skus}}
+    {{/if}}
+</script>
+<!-- 阶梯价规则 -->
+<script type="text/html" id="addLadderRuleTpl">
+    <div class="ladderList  bg_white center paddt10 paddb10 paddl15 paddr15">
+        <span>
+            <=<span name="ptwo" class="laddernum" onclick="addsub(this,'1','2')">
+        </span></span>
+        <span>&yen;<span class="ladderprice" onclick="addsub(this,'2')"></span></span>
+        <span name="delete" class="delete" onclick="model.deleteLadderRule(this)"></span>
+    </div>
+</script>
+<!-- 一口价规格 -->
+<script type="text/html" id="addonePTpl">
+    <!-- 价格  -->
+    <div class="paddl15 bg_white oneP" onclick="" data="" name="goodsSkuId">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">价格</div>
+            <input type="number" class="" name="onePrice" onBlur="model.inputNum(this)" placeholder="请输入商品一口价" data=""
+                value="" data-reg='empty' />
+        </div>
+    </div>
+    {{if ifFlower=="1"}}
+    {{include "stockTpl" skupacking}}
+    {{/if}}
+</script>
+<!-- 一口价规格 -->
+<script type="text/html" id="onePTpl">
+    <!-- 价格  -->
+
+    {{each $data as n m}}
+    <div class="paddl15 bg_white oneP" onclick="" data={{n.goodsSkuId||''}} name="goodsSkuId">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">价格</div>
+            <input type="number" class="" name="onePrice" onBlur="model.inputNum(this)" placeholder="请输入商品一口价"
+                data="{{n.price||''}}" value="{{n.price||''}}" data-reg='empty' />
+        </div>
+    </div>
+
+
+    {{if n.ifFlower=="1"}}
+    {{include "stockTpl" n.w}}
+    {{/if}}
+    {{/each}}
+</script>
+<script type="text/html" id="onepriceTpl">
+    <div class="paddl15 bg_white oneP" onclick="">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">价格</div>
+            <input type="number" class="" name="onePrice" onBlur="model.inputNum(this)" placeholder="请输入商品一口价"
+                data="{{price||''}}" value="{{price||''}}" data-reg='empty' />
+        </div>
+    </div>
+</script>
+<!-- 库存 预警 -->
+<script type="text/html" id="stockTpl">
+    <!-- 商品库存 -->
+    <div class="paddl15 bg_white " yuSkuId="{{yuSkuId}}" name="yuSkuId" goodsSkuId="{{goodsSkuId}}">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">商品库存</div>
+            <div class="fr dflex lh25 border">
+                <div onclick="addNum(this,-1)" class="paddl5 paddr5">
+                    <img src="img/cart-jian.png" width="12">
+                </div>
+                <div class="num" onclick="addsub(this,'3')" class="stock">
+                    {{stock||'0'}}
+                </div>
+                <input type="text" class="hide" disabled readonly name="stock" placeholder="请输入商品库存" data-reg='empty'
+                    value="{{stock||''}}" />
+                <div onclick="addNum(this,1)" class="paddl5 paddr5">
+                    <img src="img/cart-jia.png" width="12">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 库存预警数量 -->
+    <div class="paddl15 bg_white " onclick="">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">库存预警数量</div>
+            <input type="number" name="warningStock" onBlur="model.inputNum(this,1)" placeholder="请设置库存预警" data=""
+                value="{{warningStock||''}}" data-reg='nz' class="colordd" />
+        </div>
+    </div>
+    <!-- 包装费 -->
+    <div class="paddl15 bg_white  mart5" onclick="Comm.go('ab.html?id=93')">
+        <div class="cellContent    bottomBorder">
+            <div class="label f14 icon_pre  " style="position:relative">
+                <span class="inblock" style="padding-right:0px">包装费</span>
+                <img src="./img/w.png" height="15" class="help"/>
+            </div>
+        </div>
+    </div>
+    <!-- 基准值 -->
+    <div class="paddl15 bg_white  " onclick="">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">基准值</div>
+            <input type="number" name="minpacking" onBlur="model.inputNum(this)" placeholder="请输入基准值" data="{{minPacking||''}}" value="{{minPacking|resetNum}}" data-reg='empty' class="" />
+        </div>
+    </div>
+    <!-- 基础费率 -->
+<div class="paddl15 bg_white   " onclick="">
+    <div class="cellContent   bottomBorder ">
+        <div class="label f14 icon_pre  ">基础费率(%)</div>
+        <input type="number" name="packing" onBlur="model.inputNum(this)" placeholder="请输入基础费率" data="{{packing||''}}" value="{{packing|resetNum}}"
+            data-reg='empty' class="" />
+    </div>
+</div>
+<!-- 超出费率 -->
+<div class="paddl15 bg_white " onclick="">
+    <div class="cellContent    ">
+        <div class="label f14 icon_pre  ">超出费率(%)</div>
+        <input type="number" name="maxpacking" onBlur="model.inputNum(this)" placeholder="请输入超出费率" data="{{maxPacking||''}}" value="{{maxPacking|resetNum}}"
+            data-reg='empty' class="" />
+    </div>
+</div>
+</script>
+<!-- 鲜花判断 -->
+
+<script id="getkeyValueTpl" type="text/html">
+    {{each $data as v i}}
+    <div class="paddl15 bg_white " >
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">{{v.keyName}}</div>
+            <input type="text" name="{{v.keyName}}" keyid="id{{v.categoryValueId}}" key="{{v.categoryValueId}}" placeholder="{{v.keyName}}" data="{{v.text||''}}"
+                value="{{v.text||''}}" data-reg='empty' />
+        </div>
+    </div>
+    {{/each}}
+</script>
+<script id="ifFlowerTpl" type="text/html">
+    <!-- 颜色 -->
+    <div class="paddl15 bg_white " onclick="model.choosingColor()">
+        <div class="cellContent  indicator bottomBorder ">
+            <div class="label f14 icon_pre  ">颜色</div>
+            <input type="text" name="color" disabled readonly placeholder="请选择颜色" data="{{color||''}}"
+                value="{{getItemName(color)}}" data-reg='empty' />
+        </div>
+    </div>
+    <!-- 等级 -->
+    <div class="paddl15 bg_white " onclick="model.choosingGrade()">
+        <div class="cellContent  indicator bottomBorder ">
+            <div class="label f14 icon_pre  ">等级</div>
+            <input type="text" name="grade" disabled readonly placeholder="请选择等级" data="{{grade||''}}"
+                value="{{grade|getItemName}}" data-reg='empty' />
+        </div>
+    </div>
+    <!-- 成熟度 -->
+    <div class="paddl15 bg_white " onclick="model.choosingMaturity()">
+        <div class="cellContent  indicator bottomBorder ">
+            <div class="label f14 icon_pre  ">成熟度</div>
+            <input type="text" name="maturity" disabled readonly placeholder="请选择成熟度" data="{{maturity||''}}"
+                value="{{maturity|getItemName}}" data-reg='empty' />
+        </div>
+    </div>
+    <!-- 规格(扎) -->
+    <div class="paddl15 bg_white " onclick="">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">规格(扎)</div>
+            <input type="type" name="speci" onBlur="model.inputNum(this,1)" placeholder="请输入规格" data=""
+                value="{{speci||''}}" data-reg='empty' />
+        </div>
+    </div>
+    <!-- 重量 -->
+    <!-- <div class="paddl15 bg_white " _onclick="choosingMaturity()">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">重量(g)</div>
+            <input type="number" name="weight" onBlur="model.inputNum(this)" placeholder="请输入商品重量" data=""
+                value="{{weight||''}}" data-reg='empty' />
+        </div>
+    </div> -->
+    <!-- 是否走鲜花质检 -->
+    <div class="paddl15 bg_white " name="isF" _onclick="model.isflower(this,'1')">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">是否走鲜花质检</div>
+            <input type="checkbox" class="ifFlower" name="ifFlower" onclick="model.isflower(this,'2')"
+                {{ifFlowerSuper=='1'?'checked':''}} placeholder="" data="{{ifFlowerSuper||'0'}}"
+                value="{{ifFlowerSuper||''}}" data-reg='' />
+        </div>
+    </div>
+</script>
+<!-- 上传图片 -->
+<script id="imgTpl" type="text/html">
+    <div class="left marr10 marb10" style="position:relative;">
+        <img src="./img/close.png" width="20" class="closeimg" onclick="removeimg(this)" />
+        <img class="upimg" src="{{OSS(src)}}" width="80" height="80" data="{{src}}" />
+    </div>
+</script>
+
+<!-- 其他价商品规格 -->
+<script id="addotherTpl" type="text/html">
+    <!-- 运费设置 -->
+    <div class="paddl15 bg_white hide" onclick="model.choosingGoodsYun()">
+        <div class="cellContent indicator   ">
+            <div class="label f14 icon_pre  ">运费设置</div>
+            <input type="button" name="logistics" readonly placeholder="请设置运费方式" data="" value="" data-reg=''
+                class="" />
+        </div>
+    </div>
+    <div class="paddl15 bg_white mart5" onclick="">
+        <div class="cellContent    ">
+            <div class="label f14 icon_pre bold ">商品规格</div>
+        </div>
+    </div>
+    <!-- 商品规格 -->
+    <div id="Specifications">
+        {{include 'addSpecificationsList' $data}}
+    </div>
+    <div class="addSpecifications  marauto bg_white center  " onclick="model.addSpecifications('#Specifications')">
+        <span class="addSpecificationsImg"></span>
+        <span>添加规格</span>
+    </div>
+</script>
+<!-- 其他价商品规格 -->
+<script id="otherTpl" type="text/html">
+    <!-- 运费设置 -->
+    <div class="paddl15 bg_white hide" onclick="model.choosingGoodsYun()">
+        <div class="cellContent indicator   ">
+            <div class="label f14 icon_pre  ">运费设置</div>
+
+            <input type="button" name="logistics" readonly placeholder="请设置运费方式" data="{{data.logistics||''}}"
+                value="{{data.logistics|getItemName}}" data-reg='' class="" />
+        </div>
+    </div>
+    <div class="paddl15 bg_white mart5" onclick="">
+        <div class="cellContent    ">
+            <div class="label f14 icon_pre bold ">商品规格</div>
+        </div>
+    </div>
+    <!-- 商品规格 -->
+    <div id="Specifications">
+        {{include 'SpecificationsListTpl' data.skus}}
+    </div>
+    <div class="addSpecifications  marauto bg_white center  " onclick="model.addSpecifications('#Specifications')">
+        <span class="addSpecificationsImg"></span>
+        <span>添加规格</span>
+    </div>
+</script>
+<script id="SpecificationsListTpl" type="text/html">
+    <!-- 规格列表 -->
+    {{each $data as v i}}
+    <div class="SpecificationsList marb5" data={{v.goodsSkuId||''}} name="goodsSkuId" yuSkuId="{{v.yuSkuId}}">
+        <div class="paddl15 bg_white " onclick="">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f14 icon_pre" name="guigeNum">规格{{i+1}}</div>
+                <div class="deleteSpecifications colordd" onclick="model.deleteSpecifications(this)">删除</div>
+            </div>
+        </div>
+        <!-- 规格参数 -->
+        <div class="paddl15 bg_white ">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f14 icon_pre  ">规格参数</div>
+                <input type="text" name="keyValue" placeholder="请输入规格" data="{{v.keyValue||''}}"
+                    value="{{v.keyValue||''}}" data-reg='empty' class="" />
+            </div>
+        </div>
+        <!-- 价格 -->
+        <div class="otherPrice">
+            {{if v.priceType=="2"}}
+            {{include "onePTpl" v.price}}
+            {{else if v.priceType=="1"}}
+            {{include "ladderListTpl" v.price}}
+            {{/if}}
+
+        </div>
+        <!-- 库存 -->
+        <div class="paddl15 bg_white " onclick="">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f14 icon_pre  ">商品库存</div>
+                <div class="fr dflex lh25 border">
+                    <div onclick="addNum(this,-1)" class="paddl5 paddr5">
+                        <img src="img/cart-jian.png" width="12">
+                    </div>
+                    <div class="num" onclick="addsub(this,'3')" class="">
+                        {{v.stock||''}}
+                    </div>
+                    <input type="text" class="hide" disabled readonly placeholder="请输入规格库存" name="stock"
+                        value="{{v.stock||''}}" data="{{v.stock||''}}" data-reg='empty' />
+                    <div onclick="addNum(this,1)" class="paddl5 paddr5">
+                        <img src="img/cart-jia.png" width="12">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 库存预警数量 -->
+        <div class="paddl15 bg_white " onclick="">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f14 icon_pre  ">库存预警数量</div>
+                <input type="number" name="warningStock" onBlur="model.inputNum(this,1)" placeholder="请设置库存预警" data=""
+                    value="{{v.warningStock||'0'}}" data-reg='nz' class="colordd" />
+            </div>
+        </div>
+        <!-- 图片 -->
+        <div class="paddl15 bg_white">
+            <div class="cellContent  indicator bottomBorder upDoorPhoto" id="{{'img'+i||'img0'}}">
+                <div class="label f14 icon_pre  ">图片</div>
+                <img src="{{OSS(v.pics)}}" alt="" class="">
+                <input type="text" disabled readonly class="hide" name="otherpics" placeholder="请上传图片"
+                    data="{{v.pics||''}}" value="{{v.pics||''}}" data-reg='empty' />
+            </div>
+        </div>
+        <!-- 包装费 -->
+        <div class="paddl15 bg_white  mart5" onclick="Comm.go('ab.html?id=93')">
+            <div class="cellContent    bottomBorder">
+                <div class="label f14 icon_pre  " style="position:relative">
+                    <span>包装费</span> <img src="./img/w.png" height="15" class="help"/></div>
+                   
+            </div>
+        </div>
+        <!-- 基准值 -->
+        <div class="paddl15 bg_white  " onclick="">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f14 icon_pre  ">基准值</div>
+                <input type="number" name="minpacking" onBlur="model.inputNum(this)" placeholder="请输入基准值" data="{{v.minPacking||''}}" value="{{v.minPacking|resetNum}}" data-reg='empty' class="" />
+            </div>
+        </div>
+        <!-- 基础费率 -->
+    <div class="paddl15 bg_white   " onclick="">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">基础费率(%)</div>
+            <input type="number" name="packing" onBlur="model.inputNum(this)" placeholder="请输入基础费率" data="{{v.packing||''}}" value="{{v.packing|resetNum}}"
+                data-reg='empty' class="" />
+        </div>
+    </div>
+    <!-- 超出费率 -->
+    <div class="paddl15 bg_white " onclick="">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">超出费率(%)</div>
+            <input type="number" name="maxpacking" onBlur="model.inputNum(this)" placeholder="请输入超出费率" data="{{v.maxPacking||''}}" value="{{v.maxPacking|resetNum}}"
+                data-reg='empty' class="" />
+        </div>
+    </div>
+        
+    </div>
+    {{/each}}
+</script>
+<!-- //新增商品 其他规格 -->
+<script type="text/html" id="addSpecificationsList">
+    <div class="SpecificationsList marb5" data='' name="goodsSkuId">
+        <div class="paddl15 bg_white " onclick="">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f14 icon_pre" name="guigeNum">规格1</div>
+                <div class="deleteSpecifications colordd" onclick="model.deleteSpecifications(this)">删除</div>
+            </div>
+        </div>
+        <!-- 规格参数 -->
+        <div class="paddl15 bg_white ">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f14 icon_pre  ">规格参数</div>
+                <input type="text" name="keyValue" placeholder="请输入规格" data="" value="" data-reg='empty' class="" />
+            </div>
+        </div>
+        <!-- 价格 -->
+        <div class="otherPrice">
+            {{if priceType=="2"}}
+            {{include "addonePTpl" }}
+            {{else if priceType=="1"}}
+            {{include "addladderListTpl" }}
+            {{/if}}
+
+        </div>
+        <!-- 库存 -->
+        <div class="paddl15 bg_white " onclick="">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f14 icon_pre  ">商品库存</div>
+                <div class="fr dflex lh25 border">
+                    <div onclick="addNum(this,-1)" class="paddl5 paddr5">
+                        <img src="img/cart-jian.png" width="12">
+                    </div>
+                    <div class="num" onclick="addsub(this,'3')" class="">
+                        0
+                    </div>
+                    <input type="text" class="hide" disabled readonly placeholder="请输入规格库存" name="stock" value=""
+                        data="" data-reg='empty' />
+                    <div onclick="addNum(this,1)" class="paddl5 paddr5">
+                        <img src="img/cart-jia.png" width="12">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 库存预警数量 -->
+        <div class="paddl15 bg_white " onclick="">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f14 icon_pre  ">库存预警数量</div>
+                <input type="number" name="warningStock" onBlur="model.inputNum(this,1)" placeholder="请设置库存预警" data=""
+                    value="{{warningStock||'0'}}" data-reg='nz' class="colordd" />
+            </div>
+        </div>
+        <!-- 图片 -->
+        <div class="paddl15 bg_white">
+            <div class="cellContent  indicator bottomBorder upDoorPhoto" id="{{'img'+id||'img0'}}">
+                <div class="label f14 icon_pre  ">图片</div>
+                <img alt="" class="noborder hide">
+                <input type="text" disabled readonly class="" name="otherpics" placeholder="请上传图片" data="" value=""
+                    data-reg='empty' />
+            </div>
+        </div>
+        <!-- 包装费 -->
+    <div class="paddl15 bg_white  mart5" onclick="Comm.go('ab.html?id=93')">
+        <div class="cellContent    bottomBorder">
+            <div class="label f14 icon_pre  " style="position:relative">
+                <span>包装费</span>
+                <img src="./img/w.png" height="15" class="help"/>
+            </div>
+        </div>
+    </div>
+        <!-- 基准值 -->
+        <div class="paddl15 bg_white  " onclick="">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f14 icon_pre  ">基准值</div>
+                <input type="number" name="minpacking" onBlur="model.inputNum(this)" placeholder="请输入基准值" data=""
+                    value="{{skupacking.minPacking||''}}" data-reg='empty' class="" />
+            </div>
+        </div>
+        <!-- 基础费率 -->
+    <div class="paddl15 bg_white   " onclick="">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">基础费率(%)</div>
+            <input type="number" name="packing" onBlur="model.inputNum(this)" placeholder="请输入基础费率" data="" value="{{skupacking.packing||''}}"
+                data-reg='empty' class="" />
+        </div>
+    </div>
+    <!-- 超出费率 -->
+    <div class="paddl15 bg_white " onclick="">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">超出费率(%)</div>
+            <input type="number" name="maxpacking" onBlur="model.inputNum(this)" placeholder="请输入超出费率" data="" value="{{skupacking.maxPacking||''}}"
+                data-reg='empty' class="" />
+        </div>
+    </div>
+    </div>
+</script>
+
+</html>

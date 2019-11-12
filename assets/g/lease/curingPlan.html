@@ -1,0 +1,374 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../../css/g.css'>
+    <link rel='stylesheet' href='../../css/comm.css'>
+    <style>
+        /* header */
+        .navTitle {
+            font-weight: normal;
+        }
+
+        .nav {
+            /* height: 55px;
+            line-height: 55px;
+            display: flex;
+            justify-content: space-around; */
+        }
+
+        .active {
+            color: #dd1669;
+            position: relative;
+        }
+
+        .active:after {
+            content: "";
+            position: absolute;
+            left: 25%;
+            bottom: 0px;
+            width: 50%;
+            height: 3px;
+            background-color: #dd1669;
+            text-align: center;
+        }
+
+        .activebg {
+            background: #dd1669;
+        }
+
+        .activeUnderline {
+            /* display: block; */
+            width: 50%;
+            position: relative;
+            top: -10px;
+            border-bottom: 3px solid #dd1669;
+        }
+
+        /* 导航滑动 */
+        #leaseNav {
+            width: 100%;
+            overflow-x: scroll;
+        }
+
+        #leaseNav .container div {
+            float: left;
+            margin: 0 5px;
+            text-align: center;
+        }
+
+        #leaseNav span {
+            min-width: 50px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+        }
+
+        #leaseNav::-webkit-scrollbar {
+            display: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* list */
+        .list {
+            border-radius: 5px;
+        }
+
+        .colorda {
+            color: #DA251C;
+        }
+
+        .btn-list {
+            display: flex;
+            /* flex-direction: row-reverse; */
+            justify-content: flex-end;
+        }
+
+        .receipt,
+        .deliverGoods,
+        .complete {
+            border: #dd1669 solid 1px !important;
+        }
+
+        .packBtn {
+            min-width: 70px;
+            text-align: center;
+            padding: 4px 7px;
+            border: 1px solid #EEEEEE;
+            margin-left: 5px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .info p {
+            margin-top: 13px;
+        }
+
+        .address::before {
+            content: '';
+            background: url('../img/order/kfdz.png') no-repeat;
+            background-size: contain;
+            /*兼容没测*/
+            position: absolute;
+            left: 0px;
+            z-index: 2;
+            width: 32px;
+            height: 16px
+        }
+
+        /* color */
+        .c666 {
+            color: #666666;
+        }
+        /* 导航数量 */
+        .nabvNum{
+            width:18px!important;
+            height: 18px!important;
+            line-height: 18px;
+            border-radius: 50% 50%;
+            background: #DD1474;
+            color:white;
+            right:-17px;
+            top:5px;
+            font-size: 10px;
+            transform: scale(.8)
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>养护计划</div>
+        </div>
+        <div class="nav  paddl5 paddr5 paddb10" id="leaseNav">
+            <div class="container flex-around">
+                <div class="nav-list " onclick="model.qh(this,1)">
+                    <span class=" bold f14 inline-block c333 active">日常养护</span>
+                </div>
+                <div class="nav-list" onclick="model.qh(this,2)">
+                    <span class=" bold f14 inline-block c333 ">申请养护</span>
+                </div>
+                <div class="nav-list verticalP" onclick="model.qh(this,3)">
+                    <span class=" bold f14 inline-block c333">申请更换</span>
+                    <p class="vertical nabvNum" style="">8</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class='bg_hui paddt10 paddb10 paddl15 paddr15' id='box'>
+        <div id="list">
+            <div class="list white paddt15 paddb15 paddl15 paddr15 marb10 ">
+                <!-- 订单时间信息 -->
+                <div class="list-h flex-between">
+                    <div class="text inline-block">
+                        <div class=" inline-block">
+                            <span class="block f14 wordW c21 bold">服务时间：2018-12-12 （周三）</span>
+                        </div>
+                    </div>
+                    <div class="inline-block paddt11 hide">
+                        <!-- //1, "待支付" 2, "待接单"  3, "待配货" 4, "待质检" 5, "待发货" 
+                                //6, "待收货" 7, "已收货" 8, "已取消" 9, "已完成" 10 "待包装" -->
+                        <p class="colorda t-a-r f14" id="">{{待接单}}</p>
+
+                    </div>
+                </div>
+                <!-- 补款信息 -->
+                <div class="flex-between mart15 hide">
+                    <span class="f12" style="color:#DA251C">需补款50.00元，等待客户支付</span>
+                    <span class="f12" style="color:#DA251C">倒计时：05：30</span>
+                </div>
+                <!-- 花店推单 -->
+                <div class="mart15 hide">
+                    <span class="f12 colordd marr5"
+                        style="border-radius: 3px;padding:2px 3px;border:1px solid #DD1474;">花店推单</span>
+                    <span class="f14 bold">未来久花店</span>
+                </div>
+                <!-- 租赁信息 -->
+                <div class="info" style="">
+                    <p class="f12 c666 address paddl20 verticalP">四川省成都市武侯区航利中心1栋一单元902</p>
+                    <p class="f12 c666 ">赵丽丽   13666666666</p>
+                    <p class="f12 c666 ">绿萝（0.3米）等10件商品</p>
+                </div>
+                <div>
+                    <!-- 订单配送 取消按钮 -->
+                    <div class="_inblock _all  btn-list mart10 ">
+                        <!-- 1, "待支付" 2, "待接单"  3, "待配货" 4, "待质检" 5, "待发货" 
+                                6, "待收货" 7, "已收货" 8, "已取消" 9, "已完成" -->
+                        <div class="packBtn printOrder f14 ">养护</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../../inc/z.js'></script>
+<script src='../../inc/g.js'></script>
+<script src='../../inc/comm.js'></script>
+<script src='../../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+        // model.init()
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        qh: function (el, v) {//导航切换
+            model.el = $(el).find('span');
+            event.stopPropagation();
+            // Comm.loading(true)
+
+            $.each($(".nav-list").find(".bold"), function (index, value) {
+                $(value).removeClass("active")
+            })
+
+            $(el).find(".bold").addClass("active");
+            // model.search()
+        },
+        init: function () {//
+            $("#list").html(template("boxTpl"))
+        }
+    }
+</script>
+<!-- 租赁 导航 -->
+<script type="text/html" id="leaseNavTpl">
+    <div class="container">
+            <div class="nav-list " onclick="model.qh(this,1)">
+                <span class=" bold f16 inline-block color77 active">待接单</span>
+            </div>
+            <div class="nav-list"  onclick="model.qh(this,2)">
+                <span class=" bold f16 inline-block color77 ">待配送</span>
+            </div>
+            <div class="nav-list" onclick="model.qh(this,3)">
+                <span class=" bold f16 inline-block color77">服务中</span>
+            </div>
+            <div class="nav-list" onclick="model.qh(this,4)">
+                <span class=" bold f16 inline-block color77">已完成</span>
+            </div>
+    </div>
+</script>
+
+<!-- 租赁数据列表-->
+<script type="text/html" id="boxTpl">
+    <div class="list white paddt10 paddb15 paddl10 paddr10 marl5 marr5 marb5" >
+        <!-- 订单时间信息 -->
+        <div class="list-h flex-between paddt10 paddb10" >
+            <div class="text inline-block">
+                <div class=" inline-block">
+                    <span class="block f14 wordW">订单时间：2018-12-12 09:00</span>
+                </div>
+            </div>
+            <div class="inline-block paddt11">
+                <!-- //1, "待支付" 2, "待接单"  3, "待配货" 4, "待质检" 5, "待发货" 
+                //6, "待收货" 7, "已收货" 8, "已取消" 9, "已完成" 10 "待包装" -->
+                <p class="colorda t-a-r" id="">{{v.state|resetState}}</p>
+                {{if v.state=="2"}}
+                <!-- <p class="colorda f12 ttime" id="" name="count_down" data=""></p> -->
+                {{set ttime=timeMinutes(v.addTime)}}
+                    {{if ttime>0}}
+                        <p class="f12 colorred ttime" id="ttime{{v.normalorderId}}" data='{{v.normalorderId}}' ttime="{{ttime}}"></p>
+                    {{else}}
+                    <p class="f12 colorred ttime hide" id="ttime{{v.normalorderId}}" data='{{v.normalorderId}}' ttime="{{ttime}}"></p>
+                    {{/if}}
+                {{/if}}
+            </div>
+        </div>
+        <!-- 订单信息 -->
+        <div class="   flex-between" style="align-items: flex-end;" onclick="model.godetails('{{v.normalorderId}}','0','{{v.selfmention}}','{{v.logistType}}')">
+            <div class="" style="width:70%">
+                <p class="color74 f14 marb10" _style="width:100%">{{v.userName}} {{v.phone}}</p>
+                <p class="color74 f14 wordW" _style="width:100%">{{v.descript}}</p>
+            </div>
+            <div class="t-a-r" style="width:30%">
+                <span class="f16">&yen;{{v.allCash|resetMoney}}</span>
+            </div>
+        </div>
+        <!-- 质检信息 -->
+        {{if v.reasonId&&v.reasonId!="0"}}
+        <div class="mart10" id="qualityTesting">
+            <p class="color74 f14 wordW">质检未通过原因：{{v.reasonId|getItemName}}</p>
+        </div>
+        {{/if}}
+        <!-- 预售信息 -->
+        <!-- <div class="mart10" id="advanceSale">
+            <p class="colordd f14 wordW">预售：2019-01-22前发货，还剩3天10小时</p>
+        </div> -->
+        <!-- 配送时间 -->
+        <!-- <div class="mart10" id="deliveryTime">
+            <p class="colordd f14 wordW">配送时间：2019-01-22</p>
+        </div> -->
+        <!-- 订单按钮-->
+        <div class="flex-between {{v.state!=7?flase:'hide'}} {{v.state!=8?flase:'hide'}} {{v.state!=9?flase:'hide'}}">
+            <div class="mart10 ">
+                </div>
+            <!-- 订单配送 取消按钮 -->
+            <div class="_inblock _all  btn-list mart10 ">
+                 <!-- 1, "待支付" 2, "待接单"  3, "待配货" 4, "待质检" 5, "待发货" 
+                6, "待收货" 7, "已收货" 8, "已取消" 9, "已完成" -->
+                {{if !(v.state=="1"||v.state=="2"||v.state=="3"||v.state=="5"||v.state=="7"||v.state=="8"||v.state=="9")}}
+                <div class="packBtn printOrder {{v.ifPrint=='0'?flase:'hide'}}" onclick="model.printMd('3','{{i}}','{{v.normalorderId}}','{{v.logistType}}')">打印小票</div>
+                {{/if}}
+                {{if v.selfmention=="1"&&v.flowerMarketId=='0'}}
+                <div class="packBtn printOrder {{v.ifPrint=='0'?flase:'hide'}}" onclick="model.printMd('3','{{i}}','{{v.normalorderId}}','{{v.logistType}}')">打印小票</div>
+                {{/if}}
+                {{if v.logistType=="174"}}
+                <a  href="tel:{{v.phone||''}}" data="{{v.phone}}" style="display:block">
+                        <div class="packBtn contactSorter " _onclick="model.contactu('{{v.normalorderId}}',this)">联系用户</div>
+                    </a>
+                {{/if}}
+                {{if v.state=="2"}}
+                <div class="packBtn cancel " onclick="model.cancel('{{v.normalorderId}}')">取消订单</div>
+                <div class="packBtn receipt colordd " onclick="model.receipt('{{v.normalorderId}}',this)">接单</div>
+                {{/if}}
+                {{if v.state=="3"}}
+                <div class="packBtn complete colordd " onclick="model.complete('{{v.normalorderId}}')">完成配货</div>
+                {{/if}}
+                {{if v.state=="5"}}
+                
+                
+                {{if v.flowerMarketId=='0'&&v.logistType!='174'}}
+           
+                <div class="packBtn deliverGoods colordd " onclick="model.deliverGoods('{{v.normalorderId}}','{{v.logistType}}')">发货</div>
+               {{/if}}
+               
+                {{/if}}
+                {{if v.state=="4"}}
+                {{if v.uphone}}
+                    <a  href="tel:{{v.uphone||''}}" data="{{v.uphone}}" style="display:block">
+                        <div class="packBtn contactSorter " _onclick="model.contactu('{{v.normalorderId}}',this)">联系分拣员</div>
+                    </a>
+                {{else}}
+                    <div class="packBtn contactSorter " onclick="model.nophone(1)">联系分拣员</div>
+                {{/if}}
+                {{if v.cphone}}
+                    <a href="tel:{{v.cphone||''}}" data="{{v.cphone}}" style="display:block">
+                        <div class="packBtn contactSortingCenter " _onclick="model.contactc('{{v.normalorderId}}',this)">联系分拣中心</div>
+                    </a>
+                {{else}}
+                    <div class="packBtn contactSortingCenter " onclick="model.nophone(2)">联系分拣中心</div>
+                {{/if}}
+                {{/if}}
+             
+                
+                {{if v.selfmention=="1"&&v.flowerMarketId=='0'}}
+                <div class="packBtn deliverGoods colordd " onclick="model.ziti('{{v.normalorderId}}')">提货码</div>
+                {{/if}}
+         
+            </div>
+        </div>
+    </div>
+</script>
+
+</html>

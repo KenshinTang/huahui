@@ -1,0 +1,290 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        .title {
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .listInfo {
+            padding: 15px;
+        }
+
+        .c333 {
+            color: #333333;
+        }
+
+        .vab {
+            vertical-align: baseline
+        }
+
+        /* time */
+        #sinbox {
+            width: 100%;
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            padding: 0px;
+        }
+
+        #sinbox .item {
+            padding: 0px 10px;
+            line-height: 50px;
+        }
+
+        #sinbox .tb {
+            height: 50px;
+            line-height: 50px;
+        }
+
+        #sinbox .tb .td {
+            width: 50%;
+            float: left;
+            background-color: #EBEBEB;
+        }
+
+        #sinbox .tb .r {
+            width: 50%;
+            height: 50px;
+            float: left;
+            color: #fff;
+            border-radius: 0px;
+        }
+
+        #sinbox .item input {
+            width: 100px;
+        }
+
+        .picker {
+            z-index: 1300 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>违规记录</div>
+        </div>
+    </header>
+
+    <section class='bg_hui paddt10 paddb10 paddl15 paddr15' id=''>
+        <!-- 月份选择 -->
+        <div class="title bg_white paddl10 paddr10 flex-between marb10">
+            <div class="inblock" onclick="Comm.showWindow('sinboxTemp',true);">
+                <span class="c333 f14" name="nowdate"></span>
+                <img src="../img/arrowDown.png" alt="" style="width:11px;height:6px">
+            </div>
+            <div class="inblock ">
+                <span class="c333 f14">被投诉次数:</span>
+                <span class="colordd" name="wgNum">0</span>
+            </div>
+        </div>
+        <div id="list" _class="mart10">
+            <div id="box"></div>
+
+        </div>
+    </section>
+    <footer>
+
+    </footer>
+    <div id="sinbox" wtd="sinboxTemp">
+        <div class="item">
+            <div class="colorb5 left">时间筛选：</div>
+            <div class="tleft">
+                <input readonly id="start" placeholder="开始时间" onclick="datePickerstart.show();" class='colordd' />
+                <span>至&nbsp;</span>
+                <input id="end" readonly onclick="datePickerend.show();" placeholder="结束时间" class='colordd' />
+            </div>
+            <div class="cls"></div>
+        </div>
+        <div class="tb">
+            <div class="td f16 " onclick="model.reset()">重置</div>
+            <div class="td f16 r btn" onclick="model.okref()">确定</div>
+            <div class="cls"></div>
+        </div>
+    </div>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script src="../inc/dict.js"></script>
+<script src="../inc/picker.min.js"></script>
+<script>
+
+    function pageload() {
+        model.getstrNum();//先计算展示的字数
+        model.getMonthStartDateAndDateRange();
+        model.restime();
+        GDict.init(function(){
+            model.init()
+        })
+       
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        onOff: true,
+        content: $(""),
+        start: '',
+        end: '',
+        opt: {},
+        getMonthStartDateAndDateRange: function () {
+            // 获取当前月的第一天  
+            var start = new Date();
+            start.setDate(1);
+            // 获取当前月的最后一天  
+            var date = new Date();
+            var currentMonth = date.getMonth();
+            var nextMonth = ++currentMonth;
+            var nextMonthFirstDay = new Date(date.getFullYear(), nextMonth, 1);
+            var oneDay = 1000 * 60 * 60 * 24;
+            var end = new Date(nextMonthFirstDay - oneDay);
+            var _month = start.getMonth() + 1;
+            var _year = start.getFullYear();
+            $("[name=nowdate]").html(_year + "." + _month + "月")
+            model.opt.startTime = app.formatDate(start, 'Y-m-d'); // 日期变换  
+            model.opt.endTime = app.formatDate(end, 'Y-m-d'); // 日期变换  
+        },
+        restime: function () {//
+            datePickerstart = new Datepicker("开始时间", function (a, b, c) {
+                $("#WTDBOX #start").val(b);
+                model.start = b;
+            });
+            datePickerend = new Datepicker("结束时间", function (a, b, c) {
+                $("#WTDBOX #end").val(b);
+                model.end = b;
+            });
+        },
+        reset: function () {//
+            model.start = '';
+            model.end = "";
+            $("#WTDBOX #start").val(model.start);
+            $("#WTDBOX #end").val(model.end);
+        },
+        okref: function () {//收支查询
+            if (!model.start) {
+                Comm.message("请选择开始时间~");
+                return
+            }
+            if (!model.end) {
+                Comm.message("请选择结束时间~");
+                return
+            }
+            var v1 = new Date(model.start);
+            var v2 = new Date(model.end);
+            if (v1.getTime() > v2.getTime()) {
+                Comm.message("结束时间小于开始时间~");
+                return
+            }
+            model.opt.startTime = model.start;
+            model.opt.endTime = model.end;
+            $("[name=nowdate]").html(model.start + "-" + model.end)
+            Comm.showWindow();
+            model.init();
+        },
+        init: function () {//初始化数据列表
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/bussiness/data/wei',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.opt;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    console.info(d.data)
+                    $("[name=wgNum]").html(d.msg)
+                    var h = template('mainTpl', d.data);
+                    refresh.appendHtml(h);
+                };
+            } else {
+                // model.opt.keyword = keyword;
+                model.mere.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+
+        showText: function (elm) {// 展开文本
+            var isoff = $(elm).attr("data");// 0 收缩 1 展开
+            var contentelm = $(elm).parent().find("[name=content]");
+            var content = $(elm).parent().find("[name=content_hide]").text();
+            if(content) content=content.trim();
+            if (isoff == '0') {
+                contentelm.html(content);
+                $(elm).attr("data", '1');
+                $(elm).find("span").html("收起");
+                $(elm).find("img").css("transform",'rotate(90deg)');
+            } else if (isoff == '1') {
+                if(content.length > model._num+5)contentelm.html(content.substr(1, model._num) + "...");
+                
+                $(elm).attr("data", '0');
+                $(elm).find("span").html("展开");
+                $(elm).find("img").css("transform",'rotate(270deg)');
+            }
+        },
+
+        getstrNum: function () {
+            var dom = $("#list");
+            var _w = $(dom).width() * 1 - 30;
+            model._num = Math.floor(_w / 15.5) * 2;
+        }
+    }
+    template.defaults.imports.substr = function (v) {
+        var str = "";
+        // v = "描述详情：" + v;
+        if (v && v.length > model._num) {
+            str = v.substr(0, model._num) + "..."
+        } else {
+            str = v;
+        }
+        return str
+    };
+</script>
+
+
+<script type="text/html" id="mainTpl">
+    {{each $data as v k}}
+<div class="listInfo bg_white marb10">
+                <div class="flex-between">
+                    <span class="f14 ">投诉类型：{{getItemName(v.reason)}}</span>
+                    <span class="f12 color999">{{v.addTime}}</span>
+                </div>
+                <div class="mart15 verticalP" >
+                    <span class="f12 c333 lh25" name="content">
+                        描述详情：{{substr(v.refuseMsg)}}
+                    </span>
+                    <span class="f12 c333 lh25 hide" name="content_hide">
+                        描述详情：{{(v.refuseMsg)}}
+                    </span>
+                    <span class="vab right lh25" _style="margin-top:3px" onclick="model.showText(this)" data="0">
+                            <span class="f12 colordd  vab" style="">
+                                展开
+                            </span>
+                            <img src="./img/ddfh.png" alt="" class="inblock vab  " style="width:10px;transform: rotate(270deg);padding-right:0px">
+                    </span>
+                   
+                </div>
+            </div>
+            {{/each}}
+</script>
+
+</html>

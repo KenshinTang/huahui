@@ -1,0 +1,164 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        .cellContent {
+            /* height: 50px; */
+            /* justify-content: normal; */
+        }
+
+        .cellContent input {
+            text-align: left;
+            font-size: 15px;
+            height: 30px;
+            /* border: 1px solid #e2e2e2; */
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        .cellContent button {
+            width: 30%;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>管理商品分类</div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <div class="padd15 hide">
+            <p class="f16 bold ">添加分类</p>
+            <div class=" bg_white ">
+                <div class="cellContent  _indicator bottomBorder " style="padding-right: 0px">
+
+                    <input type="text" name="categoryName" placeholder="请输入分类" data="" value="" data-reg='empty'
+                        style="width:50%" />
+                    <button onclick="model.addCate()">确认添加</button>
+                </div>
+            </div>
+        </div>
+        <div class="mart10 padd15" id="list">
+
+        </div>
+    </section>
+    <footer class='t-a-c paddt5 paddb5'>
+        <button onclick="Comm.go('leaseSelcity.html')">添加分类</button>
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+        model.init()
+    }
+    function pageresume() {
+model.init()
+    }
+    var model = {
+        userinfo: Comm.db("userinfo"),
+        init: function () {//初始化
+            Comm.loading(true);
+            var url = '/common/categoryUser/getList'
+            opt = {
+                itemId: model.userinfo.bussinessId,
+                itemType: '1',
+                pId: '0'
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    $("#list").html(template("listTpl", res.data))
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        addCate: function () {// 增加一级类别
+            var data = Check.submit("POST");
+            if (!data) {
+                Comm.loading(false)
+                return
+            }
+            Comm.loading(true);
+            var url = '/common/categoryuser/add';
+            data.pId = '0';//0 一级类别
+            data.itemId = model.userinfo.bussinessId;
+            data.picAddress = "";
+            data.type = '1';
+            AJAX.POST(url, data, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("添加成功~");
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+                $('[name=categoryName]').val('')
+            })
+        },
+        del :function(categoryUserId,goodsNum){//删除类别
+            if(goodsNum!='0'){
+                Comm.message("该类别还有商品，无法删除~");
+                return;
+            }
+            Comm.loading(true);
+            var url = '/common/categoryuser/delete'
+                opt = {
+                    categoryUserId:categoryUserId
+                };
+            AJAX.POST(url, opt, function (res) {
+            Comm.loading(false);
+                if(res.code == 1) {
+                    Comm.message("删除成功~");
+                    model.init();s
+               } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+    }
+</script>
+
+<script type="text/html" id="listTpl">
+    <p class="f16 bold ">类别列表</p>
+    {{each $data as v k}}
+    <div class=" bg_white ">
+    <div class="cellContent  _indicator bottomBorder ">
+     <div class="label f16 icon_pre " style='line-height:30px'>{{v.categoryName}}({{v.goodsNum}}商品)</div>
+     <span>
+            <img src="../img/bj.png" alt="" style="width:20px" onclick="Comm.go('leaseSelcity.html?categoryUserId='+{{v.categoryUserId}})" class='marr10'>
+            <img src="./img/delete.png" alt="" style="width:20px" onclick="model.del('{{v.categoryUserId}}','{{v.goodsNum}}')">
+     </span>
+    </div>
+     </div>
+     {{/each}}
+</script>
+
+</html>

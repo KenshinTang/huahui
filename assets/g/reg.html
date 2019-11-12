@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        section>div {
+            margin-left: 25px;
+            margin-right: 25px;
+        }
+
+        .ph input {
+            background-image: url('../img/login/phone.png');
+        }
+
+        .code input {
+            background-image: url('../img/login/code.png');
+        }
+
+        .pw input {
+            background-image: url('../img/login/pass.png');
+        }
+
+        .ph,
+        .pw,
+        .code {
+            background-color: #fff;
+            border-bottom: 1px solid #ededf5;
+            position: relative;
+            height: 48px;
+            line-height: 48px;
+            color: #111;
+        }
+
+        .ph input,
+        .pw input,
+        .code input {
+            width: 90%;
+            height: 30px;
+            font-size: 16px;
+            color: #111;
+            padding-left: 30px;
+            background-repeat: no-repeat;
+            background-size: auto 20px;
+            background-position: left center;
+        }
+
+        .pw i,
+        .ph i {
+            position: absolute;
+            right: 10px;
+            top: 0px;
+            padding: 0 5px;
+            width: 30px;
+        }
+
+        .code-btn {
+            color: #fff;
+            width: 25%;
+            height: 30px;
+            line-height: 30px;
+            font-size: 14px;
+            margin-top: 5px;
+            float: right;
+        }
+
+        button[disabled] {
+            color: #fff !important;
+        }
+
+        .bgarge {
+            background-image: url('../img/login/no.png');
+            background-repeat: no-repeat;
+            background-size: 12px 12px;
+            background-position: 0px 6px;
+            line-height: 20px;
+            height: 20px;
+            width: 200px;
+            margin: 0 auto;
+            margin-top: 30px;
+            padding-left: 14px;
+        }
+        .sign-btn {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+        </div>
+    </header>
+    <section id=''>
+        <div style="margin-top: 45px; margin-bottom: 45px;">
+            <span class="f24">注册</span>
+        </div>
+        <div class="ph">
+            <input number class="f16" style="width: 100%;" id="phone" name="phone" data-reg='m' type="tel" placeholder="请输入11位手机号" maxlength="11">
+        </div>
+        <div class="code mart15" id="code">
+            <input number type="tel" class="f16" style="width: 60%;" name="code" data-reg='c' id="code1" placeholder="请输入验证码" maxlength="4">
+            <button type="button" onclick="model.getCode(this)" class="code-btn" style="background: #DD1474">验证码</button>
+        </div>
+        <div class="pw mart15" id="pw">
+            <input value="" class="f16" type="password" name="password" id="password" data-reg='p' placeholder="请输入密码" maxlength="20">
+            <i>
+                <img onclick="app.checkimg(this)" class="imgContain" src="../img/login/close.png">
+            </i>
+        </div>
+        <div class="mart15 tcenter">
+            <button type="button" class="mart15 sign-btn" onclick="model.reg()">下一步</button>
+        </div>
+        <div class="center f12 bgarge " onclick="model.toRead(this)">
+            <span>
+                <i> 我已阅读并且同意</i>
+                <i class="colorred v109" onclick="model.goab(109)"></i><i>和</i>
+                <i class="colorred v113" onclick="model.goab(113)"></i>
+            </span>
+        </div>
+    </section>
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script>
+    function pageload() {
+        model.init();
+        AJAX.GET('/admin/article/detail?articleId=113', function(a) {
+            if (a.code == 1) {
+                $(".bgarge i.colorred.v113").html(a.data.articlename)
+            }
+        })
+        AJAX.GET('/admin/article/detail?articleId=109', function(a) {
+            if (a.code == 1) {
+                $(".bgarge i.colorred.v109").html(a.data.articlename)
+            }
+        })
+    }
+
+    function pageresume() {
+
+    }
+
+    var model = {
+        bgarge: Comm.db('bgarge'),
+        init: function () {
+            if (model.bgarge) {
+                $('.bgarge').css('background-image', 'url(../img/login/yes.png)')
+            } else {
+                $('.bgarge').css('background-image', 'url(../img/login/no.png)')
+            }
+        },
+        toRead: function (a) {
+            if ($(a).css('background-image').indexOf('img/login/yes.png') >= 0) {
+                Comm.db('bgarge', 0)
+                $(a).css('background-image', 'url(../img/login/no.png)')
+            } else {
+                Comm.db('bgarge', 1)
+                $(a).css('background-image', 'url(../img/login/yes.png)')
+            }
+        },
+        goab: function (id) {
+            event.stopPropagation();
+            Comm.go('ab.html?id='+id)
+        },
+        reg: function () {
+            var opt = Check.submit('POST');
+            if ($('.bgarge').css('background-image').indexOf('img/login/no.png') >= 0) {
+                return Comm.message('同意服务协议才可操作');
+            }
+            if (opt) {
+                opt.customerName = "";
+                opt.sex = 0;
+                opt.type = 1;  //1注册 2修改密码 3 忘记密码 4其他 5微信绑定手机号
+                AJAX.POST('/bussiness/bussiness/insert', opt, function (a) { //注册
+                    console.info(a)
+                    if (a.code == 1) {
+                        Comm.message('注册成功!');
+                        setTimeout(function () {
+                            model.login(opt)
+                        }, 600);
+                    } else {
+                        Comm.message(a.msg);
+                    }
+                });
+            }
+        },
+        login: function (data) {
+            AJAX.POST('/bussiness/bussiness/login', data, function (a) {
+                if (a.code == 1) {
+                    Comm.registerPush({
+                    clientType: a.data.token.data.userType,
+                    state: 1,
+                    token: a.data.token.token,
+                    url: config.root + '/common/customer/updDeviceToken'
+                });
+                    AJAX.setTag(a.msg);
+                    a.data.token.data.phone = data.phone;
+                    a.data.token.data.bussinessId = a.data.bussinessId;
+                    a.data.token.data.customerId = a.data.customerId;
+                    Comm.db('userinfo', a.data.token.data);
+                    setTimeout(function () {
+                        Comm.db("logInfo", data)
+                        if (a.data.ifDetail == 0) {
+                            Comm.gotop("applySuppliers.html")
+                            return
+                        }
+                        Comm.go("index.html")
+                    }, 600);
+                } else {
+                    Comm.message(a.msg);
+                }
+            });
+        },
+        getCode: function (t) {
+            var type = 1; //1：注册 2：找回密码  5：手机验证
+            app.timeCountDown(t, $('#phone').val(), type);
+        }
+    }
+</script>
+
+</html>

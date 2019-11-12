@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <title>选择配送方式</title>
+    <link rel="stylesheet" href="../css/g.css">
+    <link rel="stylesheet" href="../css/comm.css">
+    <style>
+        .navItemIcon {
+            background-image: inherit;
+            width: auto;
+        }
+
+        footer {
+            border: 0;
+        }
+
+        footer button {
+            border-radius: 5px;
+            border: 0px;
+            margin-bottom: 10px;
+        }
+
+        .bg {
+            background-image: url('../img/select-n.png');
+            background-repeat: no-repeat;
+            background-size: auto 20px;
+            background-position: left center;
+        }
+
+        .cur .bg {
+            background-image: url('img/cart-qk.png');
+        }
+    </style>
+</head>
+
+<body>
+    <header class="bg_white">
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">选择配送方式</div>
+        </div>
+    </header>
+    <section>
+    </section>
+    <footer>
+        <div class="center">
+            <button onclick="model.ok()">确定</button>
+        </div>
+    </footer>
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<script type="text/javascript" src="../inc/art-template.js"></script>
+<script>
+    var model = {
+        dict: null,
+        k: Comm.query('k'),
+        bussinessId: Comm.query('b'),
+        v: Comm.query('v'),
+        qk: function (a, k) {
+            if (!$(a).hasClass('cur')) {
+                $(".borderb").removeClass('cur');
+                $(a).addClass('cur');
+                model.dict = model.d[k];
+                model.dict.bussinessId = model.bussinessId;
+            }
+        },
+        ok: function () {
+            var d = Comm.db('lgtc')
+            if (d && d.length > 0) {
+                var k = -1;
+                for (var i = 0; i < d.length; i++) {
+                    if (model.dict.bussinessId == d[i].bussinessId) {
+                        d[i] = model.dict;
+                        k++;
+                    }
+                }
+                if (k == -1) {
+                    d.push(model.dict)
+                }
+            } else {
+                d = [model.dict];
+            }
+            model.dict.k = model.k;
+            Comm.db('lgtc', d);
+            Comm.db('k', model.dict);
+            Comm.close()
+        }
+    }
+
+    function pageload() {
+        GDict.init(function () {
+            var tdata = [];
+            model.d = GDict.get('logistics');
+            /*for (var i = 0; i < model.d.length; i++) {
+                if (model.k == "0") {//鲜花超市
+                    tdata.push(model.d[i])
+                } else {
+                    if (model.d[i].dictid == 174) {
+                        continue;
+                    }
+                    tdata.push(model.d[i])
+                }
+            }*/
+            //model.d = tdata;
+            $('section').html(template('mainTpl', model));
+            for (var i = 0; i < model.d.length; i++) {
+
+                if (model.d[i].dictname == model.v) {
+                    model.dict = model.d[i];
+                    model.dict.bussinessId = model.bussinessId;
+                }
+            }
+        })
+    }
+
+</script>
+
+<script id="mainTpl" type="text/html">
+    {{each $data.d m k}}
+        <div class="borderb pad10 {{m.dictname==v?'cur':''}}" onclick="model.qk(this,{{k}})">
+            <div class="paddl30 bg lh20">
+                <span class="f16">{{m.dictname}}</span>
+            </div>
+            <div class="lh20 mart5 marl30 color999" style="letter-spacing: 1px;">
+                {{m.remark}}
+            </div>
+        </div>
+    {{/each}}
+</script>
+
+</html>

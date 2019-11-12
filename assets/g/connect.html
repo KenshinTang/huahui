@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>连接打印机</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        .navTitle {
+            font-weight: normal;
+        }
+
+        /* header */
+        /* section */
+        .cellContent {
+            height: 50px;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        .head,
+        .head>img {
+            height: 40px;
+            width: 40px;
+        }
+
+        .head {
+            overflow: hidden;
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+            color: #999;
+        }
+
+        .cellContent input,
+        #wx_id,
+        #sex,
+        #sj_id {
+            color: black;
+        }
+
+        .isInvoice {
+            width: 40px;
+            float: right;
+        }
+
+        .ro180 {
+            transform: rotate(180deg)
+        }
+
+        /* footer */
+        .quit {
+            height: 45px;
+            line-height: 45px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">连接打印机</div>
+        </div>
+    </header>
+    <section id='' class="bg_hui ">
+
+        <div class="paddl15 bg_white _mart10" onclick="printMd('1')">
+            <div class="cellContent indicator bottomBorder ">
+                <div class="label f16  indicator icon_pre icon_name ">连接小票打印机</div>
+            </div>
+        </div>
+
+        <div class="paddl15 bg_white _mart10" onclick="printMd('5')">
+            <div class="cellContent indicator bottomBorder ">
+                <div class="label f16  indicator icon_pre icon_name ">断开小票打印机</div>
+            </div>
+        </div>
+        <div class="paddl15 bg_white _mart10 hide" onclick="printMd('2')">
+            <div class="cellContent indicator bottomBorder ">
+                <div class="label f16  indicator icon_pre icon_name ">连接蓝牙打印机</div>
+            </div>
+        </div>
+
+    </section>
+    <footer class="shared ">
+
+    </footer>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo");
+
+
+    function pageresume() {
+    }
+
+    function pageload() {
+
+    }
+    //jsonObj:{type:1,data:d}; 1 wifi打印机 2 蓝牙打印机 3 wifi打印（小票） 4 蓝牙打印（面单） 5 wifi打印 6 蓝牙打印
+    function printMd(type, index) {
+        if (type == "1" || type == '2'|| type=="5") {
+            Comm.bluetoothPrint({ type: type })
+        }
+    }
+</script>
+
+</html>

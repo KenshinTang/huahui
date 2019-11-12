@@ -1,0 +1,143 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        #list {
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        #list .img {
+            width: 170px;
+            height: 105px;
+        }
+
+        #list .listinfo {
+            display: inline-block;
+            width: 170px
+        }
+
+        .textinfo {
+            width: 100%;
+        }
+
+        .del {
+            width: 15px;
+            top: 7px;
+            left: 0px;
+            padding: 2px;
+            background: #00000050;
+        }
+
+        /* footer */
+        footer button {
+            border-radius: 5px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>案列管理</div>
+        </div>
+    </header>
+
+    <section class='bg_hui ' id='box'>
+        <div class="paddt10 paddb10 flex marauto paddt15 paddl10 paddr10 paddb15" id='list'>
+
+        </div>
+    </section>
+    <footer class="paddt5 paddb5 t-a-c">
+        <button class="f18" onclick="Comm.go('./addcase.html')">上传案列</button>
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script>
+
+    function pageload() {
+        model.init()
+    }
+    function pageresume() {
+        model.init()
+    }
+    var model = {
+        opt: {
+            userType: '1',
+            type: '1',
+        },
+        init: function () {//
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/common/case/list',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.opt;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    console.info(d.data)
+                    var h = template('staffTpl', d.data);
+                    refresh.appendHtml(h);
+                };
+            } else {
+                // model.opt.keyword = keyword;
+                model.mere.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+        del: function (bcaseId) {//删除案列
+
+            Comm.Mess.confirm("是否删除案例？", Comm.setcb(function (a) {
+                if (a == "1") {
+                    Comm.loading(true);
+                    var url = '/common/case/delete'
+                    opt = {
+                        bcaseId: bcaseId
+                    };
+                    AJAX.POST(url, opt, function (res) {
+                        Comm.loading(false);
+                        if (res.code == 1) {
+                            Comm.message("删除成功~");
+                            model.init()
+                        } else {
+                            Comm.message(res.msg)
+                        }
+                    })
+                }
+            }))
+
+        }
+    }
+</script>
+<script type="text/html" id="staffTpl">
+    {{each $data  as v k}}
+    <div class="bg_white marb10 verticalP listinfo">
+            <img src="{{OSS(v.pic)}}" alt="" class='img'>
+            <p class='textinfo f14 c21 wordW mart10 paddl10'>{{v.title}}</p>
+            <p class='textinfo f12 color999 wordW mart5 marb10 paddl10'>{{v.descript}}</p>
+            <img src="./img/delw.png" alt="" class='vertical del' onclick="model.del('{{v.bcaseId}}')">
+        </div>
+        {{/each}}
+ </script>
+
+</html>

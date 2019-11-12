@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>配送信息</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        .navTitle {
+            font-weight: normal;
+        }
+
+        /* list */
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+            /* color: #999; */
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .cellContent input[type=button] {
+            /* color: #CCCCCC; */
+            background-color: white;
+            margin-right: 5px;
+        }
+
+        .sweepCode {
+            width: 15px;
+            height: 15px;
+            /* padding-right: 30px; */
+            background-repeat: no-repeat;
+            background-position: right 0px center;
+            background-size: 15px auto;
+            background-image: url("./img/saom.png");
+            display: inline-block;
+            position: absolute;
+            top: 18px;
+            right: 10px;
+        }
+
+        /* foot */
+        footer div {
+            width: 100%;
+            height: 45px;
+            line-height: 45px;
+            border-radius: 5px;
+        }
+
+        .cancel {
+            border: 1px solid #f2f2f2;
+        }
+
+        .sure {}
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">配送信息</div>
+        </div>
+    </header>
+    <section id='' class="bg_hui">
+        <div class="paddl15 bg_white " id="logistCompany">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f16 icon_pre  ">物流公司</div>
+                <input type="text" name="logistCompany" placeholder="请输入物流公司" data="" value="" data-reg="empty">
+            </div>
+        </div>
+        <div class="paddl15 bg_white " _onclick="sweepCode()" style="position:relative" id="logistNum">
+            <div class="cellContent  _sweepCode bottomBorder " style="">
+                <div class="label f16 icon_pre  ">物流单号</div>
+                <input type="text" name="logistNum" _readonly placeholder="请填写物流单号" data="" value="" data-reg="">
+
+            </div>
+        </div>
+        <div class="paddl15 bg_white " onclick="" id="goodsNum">
+            <div class="cellContent   bottomBorder ">
+                <div class="label f16 icon_pre  ">包裹数量</div>
+                <input type="number" name="goodsNum" placeholder="请输入包裹数量" data="" value=""
+                    onkeyup="model.onkeyup(this)" data-reg="empty">
+            </div>
+        </div>
+        <div class="padd15 bg_white " onclick="" id="shuoming">
+                <div class="label f16 icon_pre">发货说明</div>
+               <textarea data-reg="" name="shuoming" id="" cols="30" rows="10" style="width: 100%;border:0px" class="mart10" placeholder="请填写发货说明..."></textarea>
+        </div>
+    </section>
+    <footer class="shared  paddt5 paddb5 paddl15 paddr15 bg_hui ">
+        <div class="bgdd-ef  sure center right f16 colorfff" onclick="model.sure()">发货</div>
+    </footer>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="../inc/dict.js"></script>
+<script src="../inc/art-template.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo"),
+        normalOrderId = Comm.query("normalOrderId"),
+        logistType = Comm.query("logistType");
+    function pageload() {
+        if (logistType == "231") {//宅急送
+            $('#logistCompany').remove()
+            $('#logistNum').remove()
+        }
+    }
+
+    var model = {
+        onkeyup: function (el) {
+            var reg = /^\d+$/;
+            var flag = reg.test(el.value);
+            if (!flag) {
+                Comm.message("请输入正整数~");
+                el.value = el.value.slice(0, el.value.length - 1);
+            }
+        },
+        wl: [],
+        sure: function () {
+            var opt = Check.submit('POST');
+            opt.normalOrderId = normalOrderId;
+            if (logistType == "231") {//宅急送
+                opt.logistNum="";
+            }
+            if (!opt) {
+                return
+            }
+            console.info(opt)
+            Comm.loading(true)
+            AJAX.POST("/bussiness/norOrder/deliverGoods", opt, function (res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("发货成功~")
+                    Comm.close()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+
+    }
+
+</script>
+
+</html>

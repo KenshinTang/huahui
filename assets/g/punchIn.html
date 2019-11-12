@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>上班签到</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        .navTitle {
+            font-weight: normal;
+        }
+
+        /* header */
+        /* section */
+
+        .nowTime {
+            width: 150px;
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .punchCir {
+            width: 150px;
+            height: 150px;
+            border-radius: 50% 50%;
+            line-height: 150px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">上班签到</div>
+        </div>
+    </header>
+    <section id='' class="bg_hui ">
+        <div class="white mart15 marl15 marr15 flex-between paddl15 paddr15 paddt20 paddb20">
+            <div class="">
+                <span class="color74 f14">签到人：</span>
+                <span class="f14" name="name"></span>
+            </div>
+            <div style="min-width: 92px;height: 30px;border-radius: 3px;" class="paddt5 paddb5 bgdd t-a-c">
+                <span class="inDate  colorfff " style="min-width: 92px">2019.07.04</span>
+            </div>
+        </div>
+        <div class="white mart10 marl15 marr15 paddt30  paddb30">
+            <div class="nowTime marauto center f34 color77" style="margin-bottom:30px"></div>
+            <!-- <div class="mart40"></div> -->
+            <div class="punchCir bgdd-ef colorfff center marauto f20" onclick="model.playCard()">上班签到</div>
+        </div>
+    </section>
+    <footer class="shared">
+
+    </footer>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="./foot.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo");
+    function pageload() {
+        // 计时
+        setInterval(function () {
+            model.getNowTime()
+        }, 1000)
+        $("[name=name]").html(userinfo.customerName);
+        model.isPlayCard() 
+    }
+    var model = {
+        timestamp: (new Date()).getTime(),//当前时间戳
+        getNowTime: function () {//获取当前时间
+            model.timestamp += 1000;
+            var time = new Date(model.timestamp + 1000);
+            var y = time.getFullYear();
+            var M = time.getMonth() + 1;
+            var d = time.getDate();
+            var h = time.getHours();
+            var m = time.getMinutes();
+            var s = time.getSeconds();
+            if (M < 10) M = "0" + M;
+            if (d < 10) d = "0" + d;
+            if (h < 10) h = "0" + h;
+            if (m < 10) m = "0" + m;
+            if (s < 10) s = "0" + s;
+            $(".inDate").html(y + "." + M + "." + d);
+            $(".nowTime").html(h + ":" + m + ":" + s)
+        },
+        isPlayCard: function () {//判断今日是否打卡
+            Comm.loading(true);
+            var url = '/ident/ident/ifplayCard'
+            opt = {
+                userType: 1,//
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    model.isPlayCardState = res.data;
+                    if (res.data == '1' || res.data == '2') {//data 0 未打卡 1 上班打卡 2 下班打卡
+                        model.opt.type = '2';
+                        $(".punchCir").html("下班签到");
+                    }
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        opt: {
+            userType: 1,// 1 供应商
+            type: '1',//1 上班 2 下班
+        },
+        playCard: function () {
+            Comm.loading(true);
+            var url = '/ident/ident/playCard';
+            AJAX.POST(url, model.opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    if (model.isPlayCardState == '0') {
+                        Comm.message("上班打卡成功~");
+                    } else if (model.isPlayCardState == '1') {
+                        Comm.message("下班打卡成功~");
+                    }
+                    model.isPlayCard()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+    }
+</script>
+
+</html>

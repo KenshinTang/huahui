@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        section>div {
+            margin-left: 25px;
+            margin-right: 25px;
+        }
+        
+        section>div input {
+            width: 90%;
+            height: 30px;
+            font-size: 16px;
+            color: #111;
+            padding-left: 30px;
+            background-repeat: no-repeat;
+            background-size: auto 20px;
+            background-position: left center;
+        }
+        
+        .ph input {
+            background-image: url('../img/login/phone.png');
+        }
+        
+        .code input {
+            background-image: url('../img/login/code.png');
+        }
+        
+        .pw input {
+            background-image: url('../img/login/pass.png');
+        }
+        
+        .forget {
+            line-height: 42px;
+            height: 42px;
+            font-size: 14px;
+            border: none;
+            text-align: left;
+        }
+        
+        .colorABABAB {
+            color: #ABABAB;
+        }
+        
+        section>button,
+        footer>button {
+            margin-top: 28px;
+            display: block;
+            height: 44px;
+            color: #fff;
+            font-size: 17px;
+            text-align: center;
+            line-height: 44px;
+        }
+        
+        .ph,
+        .pw,
+        .code {
+            background-color: #fff;
+            border-bottom: 1px solid #EDEDF5;
+            position: relative;
+            height: 48px;
+            line-height: 48px;
+            color: #111;
+        }
+        
+        .pw i,
+        .ph i {
+            position: absolute;
+            right: 10px;
+            top: 0;
+            padding: 0 5px;
+            width: 30px;
+        }
+        
+        .ph i>img,
+        .pw i>img {
+            vertical-align: middle;
+        }
+        
+        .skip {
+            width: auto;
+            text-align: center;
+            margin-top: 20px;
+            height: 100px;
+        }
+        
+        .skip img {
+            width: 87px;
+            height: 78px;
+        }
+        
+        .register {
+            line-height: 42px;
+            font-size: 16px;
+        }
+        
+        .register>span {
+            color: #27b2ff;
+        }
+        
+        .code>input {
+            width: 60%;
+        }
+        
+        .code>button {
+            color: #fff;
+            width: 40%;
+            height: 33px;
+            float: right;
+            line-height: 33px;
+            font-size: 14px;
+            margin-top: 7px;
+        }
+        
+        .sign-btn {
+            width: 100%;
+        }
+        
+        #articleboxC {
+            width: calc(100% - 40px);
+            margin: 0 auto;
+        }
+         /* 隐私 */
+         #WTDBOXTD{
+            width: 95%;
+            height: 80%;
+        }
+        #articlebox{
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <header style="height: 44px;">
+    </header>
+    <section>
+        <div style="margin-top: 45px; margin-bottom: 45px;">
+            <span class="f24">账号登录</span>
+        </div>
+        <div class="ph">
+            <input number id="phone" value='' name="phone" data-reg='m' type="tel" placeholder="请输入11位手机号码" maxlength="11" />
+        </div>
+        <div class="pw mart15" id="pw">
+            <input type="password" value="" name="password" data-reg='p' id="password" placeholder="请输入登录密码" maxlength="20" />
+            <i>
+                <img onclick="app.checkimg(this)" class="imgContain" src="../img/login/close.png">
+            </i>
+        </div>
+        <div class="forget mart15" id="forget">
+            <span class="colorABABAB" onclick="Comm.go('forget.html')">忘记密码?</span>
+            <span class="fr _hide" onclick="Comm.go('reg.html')">
+                <span class="colorABABAB">新用户？</span>
+            <span class="bold" style="color: #DD1474;">注册</span>
+            </span>
+        </div>
+        <div class="center mart15">
+            <button type="button" onclick="sub()" class="sign-btn">登录</button>
+        </div>
+        <div class="center sign-wx mart5 hide" style="margin-top: 50px;">
+            <div class="fl" style="width: 50%;">
+                <img src="../img/login/wx.png" alt="" onclick="wxSign()">
+            </div>
+            <div class="fl" style="width: 50%;">
+                <img src="../img/login/qq.png" alt="" onclick="wxSign()">
+            </div>
+        </div>
+    </section>
+    <div id="articlebox" wtd="articleTemp">
+        <div id="articleboxC"></div>
+    </div>
+</body>
+<script id="articleTpl" type="text/html">
+    <div class="bg_white paddl15 paddr15 " style="border-radius:4px;">
+        <div class="f16 paddt20 paddb20">{{articlename}}</div>
+        <div class="lh20">
+            <div style="height:400px;overflow: hidden;overflow-y: auto;" class="t-a-l">{{section}}</div>
+        </div>
+        <div class="paddb20 paddt20 dflex">
+            <div>
+                <button onclick="Comm.showWindow(false)" style="background:#fff;color:#222;border:1px solid #ccc;">取消</button>
+            </div>
+            <div>
+                <button onclick="model.rega()">同意</button>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/art-template.js"></script>
+<script type="text/javascript">
+    function pageload() {
+
+        if (!Comm.isweixin() && Comm.db('rega') != 1) {
+            AJAX.GET('/admin/article/detail?articleId=113', function(a) {
+                if (a.code == 1) {
+                    Comm.showWindow('articleTemp', false);
+                    $('#WTDBOX #articleboxC').html(template('articleTpl', a.data));
+                }
+            })
+        }
+    }
+    var model = {
+        rega: function() {
+            Comm.db('rega', 1);
+            Comm.showWindow(false);
+        }
+    }
+
+    function sub() {
+        var data = Check.submit('POST');
+        data.bo = 5; //1 注册 2 忘记 3修改手机 5手机验证
+        console.info(data)
+        if (!data) {
+            return false;
+        }
+        var url = '/bussiness/bussiness/login?'
+            // 
+        Comm.loading('正在登录...');
+        // 
+        AJAX.POST(url, data, function(a) {
+            console.info(a)
+            Comm.loading();
+            if (a.code == 1) {
+                //注册推送
+                Comm.registerPush({
+                    clientType: a.data.token.data.userType,
+                    state: 1,
+                    token: a.data.token.token,
+                    url: config.root + '/common/customer/updDeviceToken'
+                });
+
+                Comm.message('登录成功');
+                AJAX.setTag(a.msg);
+                a.data.token.data.phone = data.phone;
+                a.data.token.data.bussinessId = a.data.bussinessId;
+                a.data.token.data.customerId = a.data.customerId;
+                a.data.token.data.ifDetail = a.data.ifDetail;
+                Comm.db('userinfo', a.data.token.data);
+                setTimeout(function() {
+                    if (a.data.ifDetail == 0) {
+                        Comm.gotop("applySuppliers.html")
+                        return
+                    }
+                    Comm.gotop("index.html")
+                }, 600);
+
+            } else {
+                Comm.message(a.msg);
+            }
+        });
+    }
+</script>
+
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>地址选择</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- <script src="js/remset.js"></script> -->
+    <link href="../css/g.css" type="text/css" rel="stylesheet">
+    <link href="../css/comm.css" type="text/css" rel="stylesheet">
+    <style>
+        .mapCt {
+            height: 30rem;
+            position: relative;
+        }
+
+        #bMap {
+            height: 100%;
+        }
+
+        #locList {
+            height: calc(100% - 14rem);
+        }
+
+        .p15.bottomline.actived {
+            background-color: #f1f1f1;
+        }
+
+        #loadingbox {
+            width: 200px;
+            margin-left: -100px;
+        }
+
+        #loadingbox>span {
+            background-size: auto 15px;
+        }
+
+        /*add css*/
+
+        .p15 {
+            padding: 15px;
+            height: auto;
+            border-bottom: 0.55px solid #E4E4E4;
+        }
+
+        #loadingbox {
+            width: 200px;
+            margin-left: -100px;
+        }
+
+        #loadingbox {
+            top: 50%;
+            left: 50%;
+            position: fixed;
+            height: 40px;
+            width: 200px;
+            text-align: center;
+            margin-top: 0;
+            overflow: hidden;
+            display: none;
+            z-index: 1000;
+            background-color: #fff;
+            border-radius: .1rem;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.25);
+        }
+
+        #loadingbox>span {
+            color: #000;
+            background-color: #fff;
+        }
+
+        .anchorBL {
+            display: none !important;
+        }
+
+        #search {
+            margin-left: 0px;
+            width: 97%;
+        }
+
+        .navTitle {
+            margin: 0 45px 0px 10px;
+            /*text-overflow:ellipsis;*/
+            /*white-space:nowrap;*/
+            overflow: hidden;
+            height: 44px;
+            line-height: 44px;
+            color: #222222;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .navTitle input {
+            width: 100%;
+            background: #F4F4F4;
+            border-radius: 40px;
+            height: 30px;
+            line-height: 30px;
+            display: block;
+            margin-top: 7px;
+            padding-left: 40px;
+        }
+
+        .navTitle img {
+            position: absolute;
+            top: 14px;
+            left: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow" style="padding: 0">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navItem marr10 colorb5" onclick="cityePicker.show()">选择地区</div>
+            <div class="navTitle">
+                <img src="img/search.png" width="16">
+                <input id="search" type="search" placeholder="请输入关键字">
+            </div>
+        </div>
+        <div class="mapCt">
+            <div id="bMap"></div>
+        </div>
+    </header>
+    <section>
+        <div class="body">
+            <div id="locList" class="scrolltouch"></div>
+        </div>
+    </section>
+    <script src="../inc/z.js"></script>
+    <script src="../inc/g.js"></script>
+    <script src="../inc/comm.js"></script>
+    <script src="../inc/picker.min.js"></script>
+    <script src="../inc/area.js"></script>
+    <script src="http://api.map.baidu.com/api?v=2.0&ak=R0d1Iv4YdniK8MUN4snaMZKRAGnI5TGW"></script>
+    <script>
+        function pageresume() {
+            var po = Comm.db("searchLoc");
+            if (po) {
+                Comm.db("searchLoc", null);
+                var pt = new BMap.Point(po.lng, po.lat);
+                map.centerAndZoom(pt, 15);
+                getLoc(pt);
+            }
+        }
+
+
+        var top_right_navigation = new BMap.NavigationControl({
+            anchor: BMAP_ANCHOR_TOP_RIGHT
+        })
+
+        var geoc = null;
+        var endTimer = null;
+        var map = null;
+        var cityePicker = null;
+        var soursePage = Comm.query('soursePage');
+
+        function pageload() {
+
+            Area.init(function () {
+                cityePicker = new Areapicker("选择地区", function (obj, name, sid) {
+                    $(".navItem").html(obj[1].s);
+                    map.centerAndZoom(obj[1].s, 15);
+                    setTimeout(function () {
+                        var newpoint = new BMap.Point(map.Oe.lng, map.Oe.lat);
+                        //;
+                        map.clearOverlays();
+                        var marker = new BMap.Marker(newpoint); // 创建标注
+                        map.addOverlay(marker);
+                        marker.disableDragging();
+                        getLoc(newpoint, false);
+                    }, 500)
+                });
+            });
+
+            Comm.loading("正在获取位置信息....");
+            if (Comm.w9()) {
+                Comm.position(function (r) {
+                    setTimeout(function () {
+                        initMap();
+                        if (r && parseInt(r.code) === 1) {
+                            $(".navItem").html(r.city);
+                            var newpoint = new BMap.Point(r.lng, r.lat);
+                            map.centerAndZoom(newpoint, 15);
+
+                            map.clearOverlays();
+                            var marker = new BMap.Marker(newpoint); // 创建标注
+                            map.addOverlay(marker);
+                            marker.disableDragging();
+                            getLoc(newpoint, false);
+                        } else {
+                            Comm.message(r.msg ? r.msg : "定位失败，请打开GPS或检查权限后重试");
+                            Comm.loading();
+                        }
+                    }, 500);
+                })
+            } else {
+                initMap();
+
+                new BMap.Geolocation().getCurrentPosition(function (r) {
+                    if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                        getLoc(r.point, false);
+                        var newpoint = new BMap.Point(r.point.lng, r.point.lat);
+                        map.centerAndZoom(newpoint, 15);
+
+                        map.clearOverlays();
+                        var marker = new BMap.Marker(newpoint); // 创建标注
+                        map.addOverlay(marker);
+                        marker.disableDragging();
+
+                        $(".navItem").html(r.address.city);
+                    } else {
+                        Comm.message("定位失败，请打开GPS或检查权限后重试");
+                        Comm.loading();
+                    }
+                });
+            }
+        }
+
+        function initMap() {
+            map = new BMap.Map("bMap");
+            map.addControl(top_right_navigation);
+
+            // 创建地图实例30.626124, longitude: 104.03797
+            //map.centerAndZoom(new BMap.Point(116.404, 39.915), 15);
+            var newpoint = new BMap.Point(104.03797, 30.626124);
+            map.centerAndZoom(newpoint, 15);
+            var marker = new BMap.Marker(newpoint); // 创建标注
+            map.addOverlay(marker);
+            marker.disableDragging();
+            geoc = new BMap.Geocoder();
+
+            map.addEventListener("dragend", function (e) {
+                clearTimeout(endTimer);
+                map.clearOverlays();
+                var centerpoint = e.target.getCenter();
+                var marker = new BMap.Marker(centerpoint); // 创建标注
+                map.addOverlay(marker);
+                marker.disableDragging();
+                endTimer = setTimeout(function () {
+                    getLoc(centerpoint);
+                }, 500);
+            })
+
+            map.addEventListener("click", function (e) {
+                clearTimeout(endTimer);
+                map.clearOverlays();
+                var newpoint = new BMap.Point(e.point.lng, e.point.lat);
+
+                var marker = new BMap.Marker(newpoint); // 创建标注
+                map.addOverlay(marker);
+                marker.disableDragging();
+                endTimer = setTimeout(function () {
+                    getLoc(newpoint);
+                }, 500);
+            })
+
+
+            var options = {
+                onSearchComplete: function (results) {
+                    if (local.getStatus() == BMAP_STATUS_SUCCESS) {
+                        // 判断状态是否正确      
+                        var es = [];
+                        for (var i = 0; i < results.getCurrentNumPois(); i++) {
+                            var e = results.getPoi(i)
+                            if (i == 0) {
+                                map.clearOverlays();
+                                var newpoint = new BMap.Point(e.point.lng, e.point.lat);
+                                map.centerAndZoom(newpoint, 15);
+
+                                var marker = new BMap.Marker(newpoint); // 创建标注
+                                map.addOverlay(marker);
+                                marker.disableDragging();
+                            }
+                            es.push('<div onclick="seletItem(this,' + e.point.lat + ',' + e.point.lng + ')" class="p15 bottomline">\
+                                <div class="f14">' + e.title + '</div>\
+                                <div class="f12 CAEAEAE">' + e.address + '</div>\
+                            </div>');
+                        }
+                        listbox.innerHTML = es.join("");
+                    }
+                }
+            };
+            var local = new BMap.LocalSearch(map, options);
+
+            setInterval(function () {
+                var search = $("#search").val();
+                if (search != searchname) {
+                    searchname = search;
+                    local.search(search);
+                }
+            }, 1500)
+        }
+
+        var searchname = '';
+        var pro = null;
+        var city = null;
+        var dis = null;
+        var local = null;
+
+        function getLoc(pt, load) {
+            load == null && (load = true);
+            if (load) Comm.loading("正在获取位置信息");
+            geoc.getLocation(pt, function (rs) {
+                Comm.loading();
+                if (rs) {
+                    var addComp = rs.addressComponents;
+                    pro = addComp.province;
+                    city = addComp.city;
+                    dis = addComp.district;
+                    !rs.surroundingPois && (rs.surroundingPois = []);
+                    $(".navItem").html(city);
+                    getList(rs.surroundingPois, rs);
+                } else {
+                    getList([]);
+                }
+            });
+        }
+
+        var listbox = document.getElementById("locList");
+
+        function getList(list, rs) {
+            var es = [];
+            if (list.length > 0) {
+                for (var i = 0; i < list.length; i++) {
+                    es.push('<div onclick="seletItem(this,' + list[i].point.lat + ',' + list[i].point.lng + ')" class="p15 bottomline">\
+                        <div class="f14">' + list[i].title + '</div>\
+                        <div class="f12 CAEAEAE">' + list[i].address + '</div>\
+                    </div>');
+                }
+            } else {
+                if (rs) {
+                    es.push('<div onclick="seletItem(this,' + rs.point.lat + ',' + rs.point.lng + ')" class="p15 bottomline">\
+                        <div class="f14">' + rs.address + '</div>\
+                        <div class="f12 CAEAEAE">' + rs.address + '</div>\
+                    </div>');
+                } else
+                    es.push('<div class="p15 tc mt15">暂无更多数据</div>')
+            }
+            listbox.innerHTML = es.join("");
+        }
+
+        function seletItem(e, lat, lng) {
+
+            active(e);
+            var area = {
+                pro: pro,
+                city: city,
+                dis: dis ? dis.replace('县', '').replace('市', '') : '',
+                detail: e.childNodes[1].innerHTML,
+                lat: lat,
+                lng: lng
+            };
+            area = filter(area);
+            Comm.db('loc_' + soursePage, area);
+            Comm.db('loc_check', area);
+            setTimeout(function () {
+                Comm.close();
+            }, 200);
+        }
+
+        function filter(o) {
+            if (o.pro === "四川省" && o.city === "达州市" && o.dis === "达县") o.dis = "通川";
+            return o;
+        }
+
+        function active(e) {
+            if (e) {
+                e.className = e.className + " actived";
+                setTimeout(function () {
+                    e.className = e.className.replace(" actived", "");
+                }, 100);
+            }
+        }
+        $('#search').bind('keyup', function (event) {
+
+            if (event.keyCode == "13") {
+
+                //回车执行查询
+
+                $('#search').blur();
+            }
+
+        });
+    </script>
+</body>
+
+</html>

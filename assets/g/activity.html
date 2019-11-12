@@ -1,0 +1,169 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        .box {
+            width: calc((100% - 40px) / 2);
+            height: 150px;
+            margin: 5px 10px;
+            display: inline-block;
+        }
+
+        .box img,
+        .box span {
+            width: 100%;
+        }
+
+        .box img {
+            width: 60px;
+            height: 60px;
+            margin-top: 20px;
+        }
+        .zh {
+            /* background-color: rgba(255, 255, 255, 0.7); */
+            opacity: .5;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>活动管理</div>
+        </div>
+    </header>
+
+    <section class='bg_hui   t-a-c' id=''>
+        <!-- // 1 预定 2 竞拍  4 搭配销售 8 团购 16 店铺买赠 32 满减 64 预售 128 秒杀 256 积分 -->
+
+
+
+
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+        var a = $(".box").width();
+        if (window.innerWidth <= 320) {
+            a += 20;
+        }
+        $("section").find("div").css({ "height": a })
+        model.getActivityNum()
+        model.getDj()
+    }
+    function pageresume() {
+        model.getActivityNum()
+    }
+    var model = {
+        go: function (v) {
+            Comm.db("acGoodsId", null);
+            if (v == '1') {//预定西安判断有误设置订金比列
+                if (model.dj <= 0) {
+                    Comm.message('请设置订金比例~');
+                    // setTimeout(function(){
+                    //     Comm.go('storeSetup.html')
+                    // },600)
+                    return;
+                }
+            }
+            Comm.go('activityInfo.html?type=' + v);
+        },
+        getDj: function () {//获取订金比列
+            Comm.loading(true);
+            var url = '/bussiness/bussiness/getbili'
+            opt = {
+
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    model.dj = res.data;
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        getActivityNum: function () {//获取活动数量
+            Comm.loading(true);
+            var url = '/bussiness/activity/listNum'
+            opt = {
+
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    $("section").html(template("mainTpl", res.data))
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        no: function () {
+            Comm.message("暂未开放，敬请期待")
+        },
+    }
+</script>
+
+
+<script type="text/html" id="mainTpl">
+    <div class=" box white left" onclick="model.go(128)">
+            <img src="./img/msha.png" alt="" class="inblock" >
+            <span class="inblock mart10 bold f16">秒杀</span>
+            <span class="inblock mart10 color999 paddb10">活动中商品 &nbsp;{{ms}}</span>
+        </div>
+        <div class=" box white left zh"  _onclick="model.go(2)" onclick="model.no()">
+            <img src="./img/jpai.png" alt="" class="inblock">
+            <span class="inblock mart10 bold f16">竞拍</span>
+            <span class="inblock mart10 color999 paddb10">活动中商品 &nbsp;{{jinpai}}</span>
+        </div>
+        <div class=" box white left" onclick="model.go(8)">
+            <img src="./img/tgou.png" alt="" class="inblock" >
+            <span class="inblock mart10 bold f16">团购</span>
+            <span class="inblock mart10 color999 paddb10">活动中商品 &nbsp;{{tg}}</span>
+        </div>
+        <div class=" box white left" onclick="model.go(4)">
+            <img src="./img/dpxs.png" alt="" class="inblock" >
+            <span class="inblock mart10 bold f16">搭配销售</span>
+            <span class="inblock mart10 color999 paddb10">活动中商品 &nbsp;{{dpxs}}</span>
+        </div>
+        <div class=" box white left" onclick="model.go(64)">
+            <img src="./img/yushou.png" alt="" class="inblock" >
+            <span class="inblock mart10 bold f16">预售</span>
+            <span class="inblock mart10 color999 paddb10">活动中商品 &nbsp;{{yushou}}</span>
+        </div>
+        <div class=" box white left hide" onclick="model.go(1)">
+            <img src="./img/yuding.png" alt="" class="inblock" >
+            <span class="inblock mart10 bold f16">预定</span>
+            <span class="inblock mart10 color999 paddb10">活动中商品 &nbsp;{{yuding}}</span>
+        </div>
+        <div class=" box white left" onclick="model.go(32)">
+            <img src="./img/dpmj.png" alt="" class="inblock" >
+            <span class="inblock mart10 bold f16 paddb10">满减</span>
+        </div>
+        <div class=" box white left" onclick="model.go(16)">
+            <img src="./img/dpmzeng.png" alt="" class="inblock" >
+            <span class="inblock mart10 bold f16 paddb10">店铺买赠</span>
+        </div>
+        <div class=" box white left" onclick="model.go(256)">
+            <img src="./img/dpjifen.png" alt="" class="inblock" >
+            <span class="inblock mart10 bold f16 paddb10">店铺积分</span>
+        </div>
+</script>
+
+</html>

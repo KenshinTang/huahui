@@ -1,0 +1,141 @@
+<html lang='zh'>
+
+	<head>
+		<meta charset='UTF-8'>
+		<meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+		<meta name='apple-mobile-web-app-capable' content='yes' />
+		<meta name='format-detection' content='telephone=no,email=no,adress=no' />
+		<title></title>
+		<link rel='stylesheet' href='../css/g.css'>
+		<link rel='stylesheet' href='../css/comm.css'>
+		<style>
+			.cellContent {
+            height: 50px;
+            /* justify-content: normal; */
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        .info {}
+
+        .info span {
+            display: block;
+        }
+         textarea{
+             width: calc(100% - 15px);
+             padding: 5px 0px;
+            border: 0px;
+         }
+			 
+		 .resdic{
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			padding: 10px 0px;
+			padding-right: 15px;
+			min-height: 35px;
+		 }
+    </style>
+	</head>
+
+	<body>
+		<header>
+			<div class='navBar bottomShadow'>
+				<div class='navBackIcon' onclick='Comm.close()'></div>
+				<div class='navTitle'>流水详情</div>
+			</div>
+		</header>
+
+		<section class='bg_hui' id=''>
+
+		</section>
+		<footer>
+
+		</footer>
+	</body>
+	<script src='../inc/z.js'></script>
+	<script src='../inc/g.js'></script>
+	<script src='../inc/comm.js'></script>
+	<script src='../inc/art-template.js'></script>
+	<script>
+
+		function pageload() {
+        model.init();
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        billId:Comm.query("billId"),
+        t :Comm.query('t'),//1 订单详情 2 流水详情
+        init :function(){//
+            Comm.loading(true);
+            var url = '/bussiness/financial/jizhangDetail',
+                opt = {
+                    billId:model.billId
+                };
+            AJAX.POST(url, opt, function (res) {
+            Comm.loading(false);
+                if(res.code == 1) {
+                   $("section").html(template("mainTpl",res.data))
+               } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+    }
+</script>
+	<script type="text/html" id="mainTpl">
+		<div class="info block paddt30 paddb30 t-a-c bg_white">
+            <span class="colordd bold block" style="font-size: 36px;height: 40px;">{{category=='1'?'-':'+'}}{{price}}</span>
+            <span class="c333 f16 ">{{billType=='0'?'线上订单':'线下订单'}}</span>
+        </div>
+        <div class="mart10">
+            <!-- 流水 收支类型 备注 时间 操作者 -->
+            <div class="paddl15 bg_white ">
+                    <div class="cellContent  _indicator bottomBorder ">
+                        <div class="label f16 icon_pre  color999">收支类型</div>
+                        <span class="c333 f16 ">{{category=='1'?'支出':'收入'}}
+                        </span>
+                    </div>
+                </div>
+            <div class="paddl15 bg_white ">
+                <div class="cellContent  _indicator bottomBorder ">
+                    <div class="label f16 icon_pre  color999">订单时间</div>
+                    <span class="c333 f16 ">{{formatDate(addTime,'Y-m-d')}}
+                    </span>
+                </div>
+            </div>
+            <div class="paddl15 bg_white ">
+                <div class="cellContent  _indicator bottomBorder ">
+                    <div class="label f16 icon_pre  color999">操作人</div>
+                    <span class="c333 f16 ">{{customerName}}
+                    </span>
+                </div>
+            </div>
+            <div class="paddl15 bg_white ">
+                <div class="resdic  _indicator verticalP" style='height:auto;'>
+                    <span class="label f16 icon_pre  color999 " style="top:0px">备注</span>
+                    <span class="c333 f16 v-a-t" style="width:calc(100% - 50px);text-align: right;">{{remark}}</span>
+                </div>
+                <!-- <textarea name="" id="" >{{remark}}</textarea> -->
+            </div>
+        </div>
+		
+</script>
+</html>

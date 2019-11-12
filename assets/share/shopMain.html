@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>商家详情</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        section {
+            /* background-color: #F4F4F4; */
+        }
+        
+        header {
+            background-color: #F4F4F4;
+            background-image: url('img/shop/bg.png');
+            background-repeat: no-repeat;
+            background-size: 100% auto;
+        }
+        
+        .navBackIcon {
+            background-image: url('../img/back_w.png');
+        }
+        
+        .navItemIcon.share {
+            background-image: url('img/shop/share.png');
+        }
+        
+        .navItemIcon.cell {
+            background-image: url('img/shop/cell.png');
+        }
+        
+        .addr {
+            background-color: #DD1474;
+            color: #fff;
+            font-size: 12px;
+            padding: 1px 3px;
+            border-radius: 8px;
+        }
+        
+        .pad10ed {
+            padding: 10px 10px 0px 10px;
+        }
+        
+        .active {
+            display: inline-block;
+            border-bottom: 3px solid #DD1474;
+            color: #DD1474;
+        }
+        
+        .linebod {
+            height: 5px;
+        }
+        
+        .goodimg {
+            width: calc(100% - 20px);
+            border-radius: 5px;
+            max-height: 100px;
+        }
+        
+        .borred {
+            border: 1px solid #DD1474;
+            padding: 0 8px;
+            border-radius: 5px;
+        }
+        
+        .btn {
+            border: 0;
+            ;
+            padding: 0 5px;
+            border-radius: 5px;
+            line-height: normal;
+            height: auto;
+            width: auto;
+            font-size: 12px;
+        }
+        
+        span.hd {
+            background-color: #F9A1AB;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 头部 -->
+    <header>
+    </header>
+    <section id="box" class="mescroll">
+        <header id="baseInfo">
+        </header>
+        <div class="dflex pad10ed bg_white borderb">
+            <div class="lh30" onclick="model.qh(this,1)">
+                <span class="color999">新品</span>
+            </div>
+            <div class="lh30" onclick="model.qh(this,2)">
+                <span class="color999">浏览量</span>
+            </div>
+            <div class="lh30" onclick="model.qh(this,3)">
+                <span class="color999">全部活动</span>
+                <img src="img/shop/gdfl.png" width="10" />
+            </div>
+            <div class="lh30" onclick="model.qh(this,4)">
+                <span class="color999">价格</span>
+                <img src="img/shop/jgsx.png" height="10" />
+            </div>
+        </div>
+        <div id="list" class="bg_white">
+
+        </div>
+    </section>
+    <footer class="shared">
+        <div class="dflex">
+            <div class="dflex">
+                <div>
+                    <a id="peoplephone" href="javascrtipt:;" style="display: block;">
+                        <p class="mart5">
+                            <img src="img/good/sj.png" height="15" />
+                        </p>
+                        <p class="f12 color999">联系商家</p>
+                    </a>
+                </div>
+            </div>
+            <div>
+                <button style="border-radius: 0px; width: 100%;border:0px;" onclick="Comm.go('http://app.huahuiyun8.com/app/isios.html?type=1')">下载app</button>
+            </div>
+        </div>
+    </footer>
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/area.js"></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+<script src="js/c.js"></script>
+<script>
+    function pageload() {
+        //Foots.init(model.bussinessId); //底部
+        Area.init();
+        GDict.init(function() {
+            model.info();
+            model.getGoodsList()
+        });
+        //1 预定 2 竞拍  4 搭配销售 8 团购 16 店铺买赠 32 满减 64 预售 128 秒杀 256 积分
+        var activityTypes = [{
+            text: '全部活动',
+            i: ''
+        }, {
+            text: '预定',
+            i: '1'
+        }, {
+            text: '竞拍',
+            i: '2'
+        }, {
+            text: '搭配销售',
+            i: '4'
+        }, {
+            text: '团购',
+            i: '8'
+        }, {
+            text: '预售',
+            i: '64'
+        }, {
+            text: '秒杀',
+            i: '128'
+        }];
+
+
+        model.activityTypePicker = new Commpicker("选择活动", [activityTypes], function(a, v, sid) {
+            $("#flowercolor").html(v).attr("data", sid);
+            model.activityType = sid
+            model.getGoodsList();
+        });
+    }
+
+    template.defaults.imports.getArea = function(aid) {
+        var d = Area.getArea(aid);
+        if (d) {
+            return Area.getArea(d.p).text
+        }
+        return ''
+    }
+
+    function pageresume() {
+
+    }
+
+    var model = {
+        userinfo: Comm.db('userinfo'),
+        bussinessId: Comm.query('id'),
+        isCollid: 0,
+        sortByPrice: '',
+        sortByBrowse: '',
+        activityType: '',
+        qh: function(a, i) {
+            if (i == 3) {
+                model.activityTypePicker.show();
+                return
+            } else if (i == 1) {
+                $(a).parent().find('span').removeClass('active')
+                $(a).find('span').addClass('active')
+                model.newProduct = 1;
+                model.sortByPrice = '';
+                model.sortByBrowse = '';
+            } else if (i == 2) {
+                if (!$(a).find('span').hasClass('active')) {
+                    model.sortByBrowse = 2;
+                    $(a).parent().find('span').removeClass('active')
+                    $(a).find('span').addClass('active')
+                } else {
+                    model.sortByBrowse = '';
+                    $(a).find('span').removeClass('active')
+                }
+                model.newProduct = '';
+                model.sortByPrice = '';
+            } else if (i == 4) {
+                model.newProduct = '';
+                model.sortByBrowse = '';
+                $(a).parent().find('span').removeClass('active')
+                $(a).find('span').addClass('active')
+                if (model.sortByPrice == "") {
+                    model.sortByPrice = 2;
+                    $(a).find('img').attr('src', 'img/shop/jiag.png')
+                } else if (model.sortByPrice == 2) {
+                    model.sortByPrice = 1;
+                    $(a).find('img').attr('src', 'img/shop/jiage.png')
+                } else if (model.sortByPrice == 1) {
+                    model.sortByPrice = '';
+                    $(a).find('img').attr('src', 'img/shop/jgsx.png')
+                }
+            }
+            model.getGoodsList();
+        },
+        info: function() {
+            AJAX.POST('/purchase/bussiness/getBussInfoByBussId', {
+                bussinessId: model.bussinessId,
+                customerId: model.userinfo ? model.userinfo.customerId : ''
+            }, function(res) {
+                if (res.code == 1) {
+                    model.data = res.data;
+                    model.isCollid = res.data.collection;
+                    $('#baseInfo').html(template('shopBase', res.data))
+                    $("footer .shopContact").html('<a style="color:#A7A8BF;display:block;height:50px;padding-top: 31px;" href="tel:' + res.data.peoplephone + '">联系商家</a>').css("padding-top", "0px")
+                } else {
+                    Comm.message(res.msg)
+                }
+                model.manjianandmaizeng();
+            })
+        },
+        manjianandmaizeng: function() {
+            AJAX.GET('/bussiness/bussiness/manjianandmaizeng?bussinessId=' + model.bussinessId, function(d) {
+                if (d.code == 1) {
+                    $('#manjianandmaizeng').html(template('manjianandmaizengTpl', d.data));
+                }
+            })
+        },
+        cell: function(a) { //收藏
+            if (model.isCollid == 0) {
+                Coll.addCollection({
+                    goodsId: model.bussinessId,
+                    type: 2
+                }, function(d) {
+                    model.isCollid = d.data;
+                    Comm.message('收藏成功')
+                    $(a).css('background-image', 'url(img/shop/cellred.png)');
+                })
+            } else {
+                Coll.delCollection(model.isCollid, function() {
+                    model.isCollid = 0;
+                    Comm.message('取消收藏')
+                    $(a).css('background-image', 'url(img/shop/cell.png)');
+                })
+            }
+        },
+        getGoodsList: function() {
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/purchase/bussiness/getGoodsList',
+                    refreshTypeGet: true
+                });
+                //网络请求参数projectType="+dictid+"&sortType="+sortType
+                model.mere.refreshOption.refreshParm = {
+                    bussinessId: model.bussinessId,
+                    sortByPrice: model.sortByPrice,
+                    sortByBrowse: model.sortByBrowse,
+                    newProduct: model.newProduct,
+                    activityType: model.activityType
+
+                };
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function(refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    $.each(d.data, function (i, v) {
+                        if (v.descript != '') {
+                            try {
+                                d.data[i].descript = JSON.parse(v.descript)
+                            } catch (error) {
+                                d.data[i].descript = {}
+                            }
+                        }
+
+                    }) 
+                    var h = template('goodTpl', d.data);
+                    refresh.appendHtml(h);
+                };
+            } else {
+                //网络请求参数projectType="+dictid+"&sortType="+sortType
+                model.mere.refreshOption.refreshParm = {
+                    bussinessId: model.bussinessId,
+                    sortByPrice: model.sortByPrice,
+                    sortByBrowse: model.sortByBrowse,
+                    newProduct: model.newProduct,
+                    activityType: model.activityType
+                };
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+        share: function() {
+            var url = 'shopMain.html?id=' + model.bussinessId;
+            var opt = {
+                title: model.data.bussinessName /*分享标题*/ ,
+                pic: config.ossroot + model.data.headPic /*分享图标*/ ,
+                url: config.webroot + '/share/' + url /*分享链接 OR app的线上fir下载地址*/ ,
+                desc: model.data.mainGoods ? model.data.mainGoods : model.data.bussinessName /*分享描述*/
+            };
+            Comm.shareUrl(opt, function(d) {
+                if (d == 1) {
+                    Comm.message("分享成功");
+                }
+            });
+        },
+        opne: function(a) {
+            event.stopPropagation();
+            if ($(a).attr('isopent') == "close") {
+                $(a).attr('isopent', 'open');
+                $(a).find('span').html('收起');
+                $(a).parent().find('.con').removeClass('wordW');
+            } else {
+                $(a).attr('isopent', 'close');
+                $(a).find('span').html('展开');
+                $(a).parent().find('.con').addClass('wordW');
+            }
+        }
+    }
+</script>
+
+<script type="text/html" id="shopBase">
+    <div class="navBar bottomShadow" style="padding: 0;box-shadow: none;">
+
+    </div>
+    <div class="mart20 pad10">
+        <div class="pad10 bottomShadow bg_white radius5" onclick="Comm.go('shopDetail.html?id={{bussinessId}}')">
+            <img src="{{OSS(headPic)}}" class="fr radius5" height="50" width="50" onerror="app.errorimg(this)" />
+            <div class="lh20 wordW">
+                <span class="f20">{{bussinessName}}</span>
+                <img src="img/shop/more.png" height="14" style="margin-top: 3px;">
+            </div>
+            <div class="mart10">
+                <span class="addr">{{getArea(manageAddress)}}</span> {{set m=[1,2,3,4,5]}} {{each m t j}} {{if(t
+                <=starrat*1)}} <img class="xx" src="img/index-pingfen.png" height="12" /> {{else}}
+                <img class="xx" src="img/index-pfen.png" height="12" /> {{/if}} {{/each}}
+                <span class="colorred">{{starrat}}分</span>
+            </div>
+            <div id="manjianandmaizeng"></div>
+        </div>
+    </div>
+</script>
+<script id="manjianandmaizengTpl" type="text/html">
+    {{if(manjian&&manjian.length>0)}}
+    <div class="mart10 flex_wrap">
+        <div class="">
+            <span class="addr hd marr10">满减</span>
+        </div>
+        <div class="wordW con" style="width: calc(100% - 100px);">
+            <span class="color999 f12">店铺活动：
+                {{each manjian v k}}
+                    满{{v.manprice}}
+                    {{if(v.jianPrice>0)}}
+                        减{{v.jianPrice}},
+                    {{/if}}
+                    {{if(v.packingfee>0)}}
+                        减{{v.packingfee}}%包装费;
+                    {{else if(v.packingfee=="-2.00")}}
+                        免包装费
+                    {{/if}}
+                    {{if(v.zaiFee>0)}}
+                        减{{v.zaiFee}}%运费;
+                    {{else if(v.zaiFee=="-2.00")}}
+                        免运费；
+                    {{/if}}
+                {{/each}}
+            </span>
+        </div>
+        {{if(manjian.length>=1)}}
+        <div class="paddl10" onclick="model.opne(this)" isopent='close'>
+            <span class="color999 f12">展开</span>
+            <img src="img/psfs.png" width="10" />
+        </div>
+        {{/if}}
+    </div>
+    {{/if}} {{if(maizeng&&maizeng.length>0)}}
+    <div class="mart10 flex_wrap">
+        <div class="">
+            <span class="addr hd marr10">买赠</span>
+        </div>
+        <div class="wordW con" style="width: calc(100% - 100px);">
+            <span class="color999 f12">店铺活动：
+                    {{each maizeng v k}}
+                        {{if(v.type==1)}}
+                        满{{v.num}}元赠{{v.zeng}};
+                        {{else}}
+                        买{{v.num*1}}赠{{v.zeng}};
+                        {{/if}}
+                    {{/each}}
+            </span>
+        </div>
+        {{if(maizeng.length>=2)}}
+        <div class="paddl10" onclick="model.opne(this)" isopent='close'>
+            <span class="color999 f12">展开</span>
+            <img src="img/psfs.png" width="10" />
+        </div>
+        {{/if}}
+    </div>
+    {{/if}}
+</script>
+<script id="goodTpl" type="text/html">
+    {{each $data v k }}
+    <div class="clearfix pad10">
+        <div class="fl center" style="width: 40%;max-height:122px;min-height:100px;" onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+            <img src="{{OSS(v.img)}}" class="goodimg" onerror="app.errorimg(this)">
+        </div>
+        <div class="">
+            <p class="wordW2" onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                <span>{{v.goodsName}}&nbsp;{{v.versionNumber}}</span> {{if(v.ifFlowerSuper=="1")}}
+                <button class="f12 colorred btn">鲜花超市</button> {{/if}}
+            </p>
+            <p class="lh20 wordW2" style="max-height: 40px;" onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                {{if(v.grade!="-1")}}
+                <span class="color999 f12 inblock">等级：{{getItemName(v.grade)}}</span> {{/if}} {{if(v.maturity!="-1")}}
+                <span class="color999 f12 inblock">成熟度：{{getItemName(v.maturity)}}</span> {{/if}} {{if(v.color!="-1")}}
+                <span class="color999 f12 inblock">颜色：{{getItemName(v.color)}}</span> {{/if}} {{if(v.keyValue)}}
+                <span class="color999 f12 inblock">规格：{{v.keyValue}}</span> {{/if}} 
+                {{if(v.descript)}}
+                {{each v.descript as m n}}
+                <span class="color999 f12">{{m.keyName}}:{{m.value}}</span> {{/each}}
+                 {{/if}}
+            </p>
+            <div class="mart5 wordW2">
+                <span class="colorred f16">￥{{v.lowSkuPrice}}</span>
+                <span class="color999 f12 linethrough hide">￥18.90</span>
+                <span class="f12 colorred borred hide">团</span>
+                <span class="f12 colorred borred hide">秒杀</span>
+            </div>
+        </div>
+    </div>
+    <div class="linebod"></div>
+    {{/each}}
+</script>
+
+</html>

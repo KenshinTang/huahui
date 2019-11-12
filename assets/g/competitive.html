@@ -1,0 +1,484 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <link rel="stylesheet" href="../inc/mescroll/swiper.min.css" />
+    <style>
+        /* 导航滑动 */
+        #groupNum {
+            width: 100%;
+            overflow-x: scroll;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+
+        #groupNum span {
+            min-width: 50px;
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+        }
+
+        #groupNum::-webkit-scrollbar {
+            display: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .c71 {
+            color: #717171;
+        }
+
+        .active {
+            color: #dd1669;
+            position: relative;
+        }
+
+        .active:after {
+            content: "";
+            position: absolute;
+            left: 25%;
+            bottom: 0px;
+            width: 50%;
+            height: 2px;
+            background-color: #dd1669;
+            text-align: center;
+        }
+
+        /* 列表 */
+        section {
+            height: auto;
+        }
+
+        section span {
+            display: block;
+        }
+
+        .listInfo {
+            height: auto;
+            padding: 20px 15px 20px 55px;
+        }
+
+        .listInfo button {
+            width: 75px;
+            height: 30px;
+            line-height: 30px;
+            background: #ffffff;
+            border: 1px #EEEEEE solid;
+            border-radius: 3px;
+            color: black;
+            /* padding: 10px; */
+        }
+
+        .listInfo img {
+            width: 35px;
+            height: 35px;
+            top: 40px;
+            left: 10px;
+            border-radius: 50%;
+        }
+
+        ul li {
+            display: inline-block;
+            min-width: 20%;
+            padding: 5px 0px 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomBorder'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>竞采列表</div>
+        </div>
+
+        <div class="scrollx mescroll-touch-x">
+            <div id="scrollxContent" class="scrollx-content">
+                <ul id="nav" class="nav f16 flex-around t-a-c ">
+
+                </ul>
+            </div>
+        </div>
+    </header>
+    <div class="linebod"></div>
+    <section class=' bg_hui' id='box'>
+        <!--轮播-->
+        <div id="swiper" class="swiper-container">
+            <div id="swiperWrapper" class="swiper-wrapper">
+
+            </div>
+        </div>
+        <!-- <div id="list"></div> -->
+
+
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript " src="../inc/mescroll/swiper.min.js "></script>
+<script>
+
+    function pageload() {
+        model.getTime()
+    }
+    var model = {
+        state: '0',
+        navclick: function (a) {
+            var i = Number($(a).attr("i"));
+            model.swiper.slideTo(i); //以轮播的方式切换列表
+        },
+        init: function () {
+            //0 全部  1 待付款  2 待收货  3 已完成  4 已取消  5 售后
+            model.nav = [{
+                name: "进行中",
+                data: '2',
+                k: 0
+            }, {
+                name: "我参与的",
+                data: '1',
+                k: 1
+            }];
+            //初始化nav
+            for (var i = 0; i < model.nav.length; i++) {
+                $('#nav').append(template('navTpl', model.nav[i]));
+                $('#swiperWrapper').append(template('swiperWrapperTpl', {
+                    k: i
+                }));
+            }
+            model.opt = new Array(model.nav.length);
+            model.mescrolls = new Array(model.nav.length);
+            /*初始化轮播*/
+            model.swiper = new Swiper('#swiper', {
+                observer: true,
+                onTransitionEnd: function (swiper) {
+                    //轮播切换完毕的事件
+                    var i = swiper.activeIndex;
+                    $('#nav li').removeClass('active')
+                    $($('#nav li')[i]).addClass('active')
+
+                    //初始化数据
+                    model.initmescroll(i);
+                }
+            });
+
+            if (model.state == "0") {
+                model.initmescroll("0");
+            } else {
+                model.navclick($('#nav li')[model.state]);
+            }
+        },
+        opt: [],
+        mescrolls: [],
+        initmescroll: function (i) {
+            if (model.mescrolls[i] == null) {
+                model.mere = new MERefresh('mescroll' + i + ',dataList' + i, {
+                    refreshUrl: '/bussiness/jincai/list',
+                    refreshTypeGet: true
+                });
+                model.mere.i = i;
+                model.opt[i] = {
+                    pageSize: 10,
+                    state: model.nav[i].data
+                };
+                model.mere.refreshOption.refreshParm = model.opt[i];
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    console.info(d.data)
+                    var now = new Date();
+                    for (var i = 0; i < d.data.length; i++) {
+                        var e = d.data[i];
+                        // e.type = t
+                        e.ends = (hhmmss.todate(e.addTime).getTime() + (model.jctime * 60000) - now.getTime()) / 1000;
+                        e.starts = (hhmmss.todate(e.addTime).getTime() - now.getTime()) / 1000;
+
+                    }
+                    var h = template('mainTpl', d.data);
+                    refresh.appendHtml(h);
+                };
+                model.mescrolls[i] = model.mere;
+                model.djs(i)
+            } else {
+                model.mere = model.mescrolls[i];
+                model.mere.i = i;
+            }
+            model.navcenter(i);
+        },
+        navcenter: function (i) {
+            var curNavDom = $('#nav li')[i];
+            //菜单项居中动画
+            var scrollxContent = Comm.g("scrollxContent");
+            var star = scrollxContent.scrollLeft; //当前位置
+            var end = curNavDom.offsetLeft + curNavDom.clientWidth / 2 - document.body.clientWidth / 2; //居中
+            model.mere.MeRefScroll.getStep(star, end, function (step, timer) {
+                scrollxContent.scrollLeft = step; //从当前位置逐渐移动到中间位置,默认时长300ms
+            });
+        },
+        refresh: function () {
+
+            model.mere.refreshOption.refreshParm = model.opt[model.mere.i];
+            //重置列表数据
+            model.mere.MeRefScroll.resetUpScroll();
+            //隐藏回到顶部按钮
+            model.mere.MeRefScroll.hideTopBtn();
+        },
+        djs: function (i) {//倒计时
+            // 
+            clearInterval(model.ind);
+            model.ind = setInterval(function () {
+                var num = 0;
+                var _l = $( "#mescroll"+i).find(".ttime");
+                _l.each(function (i, e) {
+                    var id = $(e).attr('data');
+                    var result = $(e).attr('ttime');
+                    if (result > 0) {
+                        result = result - 1;
+                        var hour = Math.floor(result / 3600);
+                        var second = Math.floor(result % 60);
+                        var minite = Math.floor((result / 60) % 60);
+                        if (second < 10) second = "0" + second;
+                        if (minite < 10) minite = "0" + minite;
+                        var _t = model.resetTime(hour, minite, second);
+                        $('[name=ttime' + id+"]").html("距结束 " + _t).attr('ttime', result);
+                    } else {
+                        $('[name=ttime' + id+"]").html("已结束");
+                        num++
+                    }
+                })
+                if (num == $(".ttime").length) clearInterval(model.ind)
+            }, 1000)
+        },
+        getTime: function () {//获取竞采有效时间
+            AJAX.POST('/api/config/bykeys', { keys: "jctime" }, function (res) {
+                if (res.code == 1) {
+                    model.jctime = res.data[0].value;
+                    // model.initgo(2)
+                    model.init()
+                }
+            })
+        },
+        qh: function (elm, type) {//
+            $.each($("#nav").find("li"), function (index, value) {
+                $(value).removeClass("active");
+            })
+            $(elm).addClass("active");
+            model.opt.state = type;
+            model.delmore();
+            model.initgo(type)
+        },
+        delmore: function () {//
+            $(".mescroll-downwarp").remove();
+            $(".mescroll-upwarp").remove();
+            delete model.more
+        },
+        initgo: function (t) {//初始化竞采列表
+
+            if (!model.more) {
+                model.more = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/bussiness/jincai/list',
+                    refreshTypeGet: true
+                });
+                model.more.refreshOption.refreshParm = model.opt;
+                //页面 <刷新> 的回调
+                model.more.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    console.info(d.data)
+                    var now = new Date();
+                    for (var i = 0; i < d.data.length; i++) {
+                        var e = d.data[i];
+                        e.type = t
+                        e.ends = (hhmmss.todate(e.addTime).getTime() + (model.jctime * 60000) - now.getTime()) / 1000;
+                        e.starts = (hhmmss.todate(e.addTime).getTime() - now.getTime()) / 1000;
+
+                    }
+                    var h = template('mainTpl', d.data);
+                    refresh.appendHtml(h);
+                };
+                var ind = setInterval(function () {
+                    var num = 0;
+                    $(".ttime").each(function (i, e) {
+                        var id = $(e).attr('data');
+                        var result = $(e).attr('ttime');
+                        if (result > 0) {
+                            result = result - 1;
+                            var hour = Math.floor(result / 3600);
+                            var second = Math.floor(result % 60);
+                            var minite = Math.floor((result / 60) % 60);
+                            if (second < 10) second = "0" + second;
+                            if (minite < 10) minite = "0" + minite;
+                            var _t = model.resetTime(hour, minite, second);
+                            $('#ttime' + id).html("距结束 " + _t).attr('ttime', result);
+                        } else {
+                            $('#ttime' + id).html("已结束");
+                            num++
+                        }
+
+                    })
+                    if (num == $(".ttime").length) clearInterval(ind)
+                }, 1000)
+            } else {
+                // model.opt.keyword = keyword;
+                model.more.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.more.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.more.MeRefScroll.hideTopBtn();
+            }
+        },
+        cy: function (jinCaiId, goodsName,jinNum) {//参与竞采
+            Comm.db("jincaiName", goodsName);
+            Comm.go('./partakeCompetitive.html?jinCaiId=' + jinCaiId+"&jinNum="+jinNum)
+        },
+        detail: function (jinCaiId) {//竞采详情
+            Comm.go("competitiveDetail.html?jinCaiId=" + jinCaiId)
+        },
+        del: function (jinCaiId) {// 删除订单
+            Comm.loading(true);
+            var url = '/bussiness/jincai/delete'
+            opt = {
+                jinCaiDetailId: jinCaiId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("删除成功~");
+                   model.refresh()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        resetTime: function (hour, minite, second) {//重置倒计时
+            if (hour * 1 > 0) {
+                hour = hour + ':';
+                if (minite * 1 > 0) {
+                    minite = minite + ':';
+                } else {
+                    minite = '00' + ':';
+                }
+            } else {
+                hour = '';
+                if (minite * 1 > 0) {
+                    minite = minite + ':';
+                } else {
+                    minite = '';
+                }
+            }
+            return hour + minite + second
+        },
+    }
+</script>
+
+
+
+<script type="text/html" id="mainTpl">
+{{each $data as v k}}
+    <div class='white listInfo verticalP bottomBorder item'>
+        <div _onclick="model.detail('{{v.jinCaiId}}')">
+            <span class="f16  ">{{v.userName}}</span>
+            <span class="mart5 f12 color999">{{formatDate(v.addTime,"Y-m-d H:i:s")}}</span>
+        </div>
+        <div class="mart15" _onclick="model.detail('{{v.jinCaiId}}')">
+            <span>商品名：{{v.goodsName}}</span>
+            <span class="mart5">数量：{{v.jinNum}}</span>
+            <span class="mart5 wordW3">商品描述：{{v.jinDes}}</span>
+        </div>
+        <div class="t-a-r mart15">
+            {{if v.state1=='2'}}
+                {{if v.state=='0'}}
+                <button class="f14 " onclick="model.cy('{{v.jinCaiId}}','{{v.goodsName}}',{{v.jinNum}})">参与竞采</button>
+                {{/if}}
+            {{/if}}
+            {{if v.state1=='1'}}
+                <button class="f14 " onclick="model.detail('{{v.jinCaiId}}')">查看订单</button>
+        
+                {{if v.state=='2'||v.state=='3'}}
+                <button class="f14 " onclick="model.del('{{v.jinCaiId}}')">删除订单</button>
+                {{/if}}
+            {{/if}}
+            <!-- <button class="f14 " onclick="model.detail('{{v.jinCaiId}}')">查看订单</button>
+            <button class="f14 " onclick="model.del('{{v.jinCaiId}}')">删除订单</button> -->
+        </div>
+        <img src="{{OSS(v.avatar)}}" alt="" class="vertical" _onerror="app.herrorimg(this)">
+        {{if v.state =='0'}}
+            {{if v.ends>0}}
+            <span class='vertical f14 ttime' name="ttime{{v.jinCaiId}}" id="ttime{{v.jinCaiId}}" data='{{v.jinCaiId}}' ttime="{{v.ends}}" style="color:#DA251C;top:30px;right:15px">距结束 00:00</span>
+            {{else}}
+            <span class='vertical f14 '  style="color:#DA251C;top:30px;right:15px">已结束</span>
+            {{/if}}
+        {{else if v.state =='1'}}
+            <span class='vertical f14 '  style="color:#DA251C;top:30px;right:15px">竞采成功</span>
+        {{else if v.state =='2'}}
+            <span class='vertical f14 '  style="color:#DA251C;top:30px;right:15px">竞采失败</span>
+        {{else if v.state =='3'}}
+            <span class='vertical f14 '  style="color:#DA251C;top:30px;right:15px">取消竞采</span>
+        {{/if}}
+            
+
+    </div>
+    {{/each}}
+</script>
+<script type="text/html" id="CymainTpl">
+{{each $data as v k}}
+    <div class='white listInfo verticalP bottomBorder item'>
+        <div >
+            <span class="f16  ">{{v.userName}}</span>
+            <span class="mart5 f12 color999">{{formatDate(v.addTime,"Y-m-d H:i:s")}}</span>
+        </div>
+        <div class="mart15" >
+            <span>商品名：{{v.goodsName}}</span>
+            <span class="mart5">数量：{{v.jinNum}}</span>
+            <span class="mart5 wordW3">商品描述：{{v.jinDes}}</span>
+        </div>
+        <div class="t-a-r mart15">
+                <button class="f14 " onclick="model.detail('{{v.jinCaiId}}')">查看订单</button>
+    
+                {{if v.state=='2'||v.state=='3'}}
+                <button class="f14 " onclick="model.del('{{v.jinCaiId}}')">删除订单</button>
+                {{/if}}
+            </div>
+        <img src="{{OSS(v.avatar)}}" alt="" class="vertical" _onerror="app.herrorimg(this)">
+        {{if v.state =='0'}}
+            <span class='vertical f14 ttime' id="ttime{{v.jinCaiId}}" data='{{v.jinCaiId}}' ttime="{{v.ends}}" style="color:#DA251C;top:30px;right:15px">距结束 00:00</span>
+        {{else if v.state =='1'}}
+            <span class='vertical f14 '  style="color:#DA251C;top:30px;right:15px">竞采成功</span>
+        {{else if v.state =='2'}}
+            <span class='vertical f14 '  style="color:#DA251C;top:30px;right:15px">竞采失败</span>
+        {{else if v.state =='3'}}
+            <span class='vertical f14 '  style="color:#DA251C;top:30px;right:15px">取消竞采</span>
+        {{/if}}
+    </div>
+    {{/each}}
+</script>
+<script id="navTpl" type="text/html">
+    <!-- <div class="nav-list" onclick="model.qh(this,{{k}})">
+            <span class=" bold f14 inline-block c71 {{k=='0'?'active':''}}" data="yuNum">{{name}}</span>
+        </div> -->
+        <li onclick="model.navclick(this)" class="{{k==0?'active':''}} bold f14 inline-block c71 " i="{{k}}" data="{{data}}">{{name}}</li>
+</script>
+<script id="swiperWrapperTpl" type="text/html">
+    <div id="mescroll{{k}}" class="swiper-slide mescroll">
+        <div id="dataList{{k}}" class="data-list"></div>
+    </div>
+</script>
+
+</html>

@@ -1,0 +1,121 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        .title span {
+            font-size: 16px;
+        }
+
+        span {
+            text-align: center;
+            word-wrap: break-word;
+            word-break: normal;
+        }
+
+        .list span {
+            font-size: 14px
+        }
+
+        .c21 {
+            color: #212121;
+        }
+
+        .c5c {
+            color: #5C5C5C
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>查看分配情况</div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <ul>
+
+        </ul>
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+        model.init()
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        activityId: Comm.query('activityId'),
+        init: function () {
+            var url = '/bussiness/activityAuction/fenpqk'
+            opt = {
+                activityId: model.activityId
+            };
+            Comm.loading(true);
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false)
+                model.data =res.data
+                if (res.code == 1 ) {
+                    var type = '';
+                    if (res.data && res.data.length != '0') {
+                        type = '1'
+                    } else {
+                        type = '2'
+                    }
+                    $("ul").html(template('listTpl', { data: res.data, type: type }))
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+    }
+    template.defaults.imports.resetNum = function (v) {
+        if (!v) {
+            return ""
+        }
+        return Number(v);
+    };
+</script>
+<script type='text/html' id="listTpl">
+            {{if type=='1'}}
+            <li class="title bg_hui paddt10 paddb10 paddl10 paddr10 flex-between">
+                <span style="width: 50% ">客户</span>
+                <span style="width: 25%">报价</span>
+                <span style="width: 25%">数量</span>
+            </li>
+            {{each  data as v k}}
+            <li class="list paddt10 paddb10 paddl10 paddr10 flex-between bottomBorder">
+                <span style="width: 50%" class="c21">{{v.purchaseName}} {{formatDate(v.addTime,'m-d H:i')}}</span>
+                <span style="width: 25%" class="c5c">&yen;{{v.singlePirce|resetNum}}</span>
+                <span style="width: 25%" class="c5c">{{v.successNum}}</span>
+            </li>
+            {{/each}}
+            {{else if type=='2'}}
+            <div class="t-a-c mart20">
+                    <img src="../img/wjg.png" alt="" style="width:140px;margin:0 auto" class="block paddt10 paddb10">
+                    <span class="color999 f14">抱歉,暂无报价</span>
+                </div>
+            {{/if}}
+        
+</script>
+
+
+</html>

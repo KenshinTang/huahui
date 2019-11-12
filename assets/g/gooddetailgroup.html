@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>商品详情</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <link rel="stylesheet" href="../css/side.css" />
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        body>header {
+            opacity: 0;
+        }
+        
+        section .navBackIcon {
+            background-image: url(img/good/fh.png);
+            background-size: auto 30px;
+        }
+        
+        .animate {
+            -webkit-animation: animatekey 1s linear 0s 1 forwards;
+        }
+        
+        @-webkit-keyframes animatekey {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        body>header .cell {
+            background-image: url('img/good/cell.png');
+        }
+        
+        body>header .navTitle {
+            line-height: 40px;
+        }
+        
+        body>header .navTitle span {
+            height: 43px;
+            line-height: 43px;
+        }
+        
+        body>header .active {
+            display: inline-block;
+            border-bottom: 2px solid #DD1474;
+            color: #DD1474;
+        }
+        
+        section .navItemIcon.share {
+            background-image: url('img/good/fx.png');
+            background-size: auto 30px;
+        }
+        
+        section .navItemIcon.cell {
+            background-image: url('img/good/shouc.png');
+            background-size: auto 30px;
+        }
+        
+        section {
+            position: relative;
+        }
+        
+        section header {
+            position: absolute;
+            top: 0px;
+            width: 100%;
+        }
+        
+        .main {
+            position: relative;
+        }
+        
+        .borred {
+            border: 1px solid #DD1474;
+            padding: 0 5px;
+            border-radius: 5px;
+        }
+        
+        .borfff {
+            background-color: #DD1474;
+            color: #fff;
+            padding: 0 5px;
+            border-radius: 5px;
+        }
+        
+        .w33 {
+            width: 32%;
+            display: inline-block;
+        }
+        
+        .skusinbox {
+            position: absolute !important;
+            width: 100%;
+            bottom: 0px;
+            left: 0px;
+            padding: 10px;
+        }
+        
+        span.line {
+            width: calc(32% - 10px);
+            display: inline-block;
+            text-align: center;
+            border-radius: 5px;
+            background-color: #F5F5F5;
+            margin-bottom: 10px;
+            margin-left: 10px;
+            line-height: 28px;
+            font-weight: normal;
+            font-size: 14px;
+        }
+        
+        footer {
+            background-color: #fff;
+        }
+        
+        .topbackimg {
+            position: fixed;
+            height: 50px;
+            z-index: 100;
+            right: 10px;
+            bottom: 60px;
+        }
+        
+        footer span.rednum {
+            padding: 0px 3px;
+            position: absolute;
+            left: 50%;
+            top: 2px;
+            height: 18px;
+            line-height: 18px;
+            font-size: 12px;
+            color: #fff;
+            border-radius: 18px;
+            background: -webkit-linear-gradient(right, #EE900E, #DD1474);
+        }
+        
+        .bg_FF404D {
+            background: -webkit-linear-gradient(right, #FF587D, #FF404D);
+        }
+        
+        .readiusnum {
+            background-color: #C0C0C0;
+            height: 15px;
+            line-height: 15px;
+            border-radius: 15px;
+            width: 15px;
+            color: #fff;
+            display: inline-block;
+            font-size: 12px;
+        }
+        
+        .lh15 {
+            line-height: 15px;
+        }
+        
+        #WTDBOXTD {
+            width: 100%;
+        }
+        
+        .colorDA251C {
+            color: #DA251C;
+        }
+        
+        #loadingbox {
+            z-index: 10001;
+        }
+        
+        #MessgeBox {
+            z-index: 10000;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <img src="img/home.png" id="topbackimg" class="topbackimg" onclick="Comm.gotop('index.html')" /> -->
+    <!-- 头部 -->
+    <header class="hide">
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <!-- <div class="navItemIcon marr10 cell hide" onclick="model.cell(this)"></div> -->
+            <div class="navItemIcon marr10 share" onclick="model.share(this)"></div>
+            <div class="navTitle">
+                <span class="active inblock marl5 marr5" onclick="model.qh(this,1)">商品</span>
+                <span class="inblock marl5 marr5" onclick="model.qh(this,2)">详情</span>
+                <span class="inblock marl5 marr5 pj hide" onclick="model.qh(this,3)">评价</span>
+            </div>
+        </div>
+    </header>
+    <section id="box" class="mescroll">
+        <header>
+            <div class="navBar bottomShadow" style="padding: 0;box-shadow: none;">
+                <div class="navBackIcon" onclick="Comm.close()"></div>
+                <!-- <div class="navItemIcon marr10 cell hide" onclick="model.cell(this)"></div> -->
+                <div class="navItemIcon marr10 share" onclick="model.share(this)"></div>
+            </div>
+        </header>
+        <div id="banner" class="banner side_box">
+            <ul class="side_ul" id="side">
+
+            </ul>
+        </div>
+        <div class="main">
+            <div id="gooddetail">
+
+            </div>
+            <div id="comments">
+                <div id="commentsTit">
+
+                </div>
+                <div class="listpj" id="listpj">
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class='hide'>
+        <div class="dflex">
+            <div class="dflex paddt5 paddb5" style="flex:50%">
+                <div onclick="model.goShop()">
+                    <p class="mart5">
+                        <img src="img/good/dp.png" height="15" />
+                    </p>
+                    <p class="f12 color999 hide" id="foshop">店铺</p>
+                </div>
+                <div>
+                    <a id="peoplephone" href="javascrtipt:;" style="display: block;">
+                        <p class="mart5">
+                            <img src="img/good/sj.png" height="15" />
+                        </p>
+                        <p class="f12 color999">商家</p>
+                    </a>
+                </div>
+                <div id="footcart" onclick="Comm.gotop('cart.html')" style="position: relative;">
+                    <p class="mart5">
+                        <img src="img/good/gwc.png" height="15" />
+                    </p>
+                    <p class="f12 color999">购物车</p>
+                    <span id="rednum" class="rednum hide"></span>
+                </div>
+            </div>
+            <div id="addfoot" style="flex: 50%" class="hide ">
+                <button style="border-radius: 0px; width: 100%;border:0px;line-height: 50px; height: 50px;" onclick="model.gg()">加入购物车</button>
+            </div>
+            <div id="groupfoot" style="flex: 60%" class="dflex hide">
+
+            </div>
+        </div>
+    </footer>
+    <div id="sinbox" class="skusinbox" wtd="WinTemp">
+        <div class="goodgg">
+
+        </div>
+        <div class="mart20">
+            <button style="border-radius: 5px; border: 0px;" onclick="model.cart()">确定</button>
+        </div>
+    </div>
+
+    <div id="sinbox" wtd="sinbox1Temp" style="width:80%;margin:auto;border-radius:8px;">
+        <div class="tleft" id="sin">
+
+        </div>
+        <div class="center" style="position: absolute;width:100%; height: 30px;bottom:-45px;left:0px;">
+            <img src="../img/close@2x.png" onclick="Comm.showWindow()" width="30">
+        </div>
+    </div>
+    <div id="sinbox" wtd="sinboxTemp">
+        <div id="MessgeBox" style="display: block;height: 145px;">
+            <div class="center lh50 f18">竞价失败</div>
+            <div class="center lh20 f16" style="color: #DA251C;min-height: 40px;">余额不足,请先前往充值</div>
+            <div class="nowrap dflex mart5">
+                <span class="lh50 border_top border_right f18" onclick="Comm.showWindow()">取消</span>
+                <span class="lh50 border_top colorred f18" onclick="Comm.go('charge.html')">去充值</span>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/side.js"></script>
+<script type="text/javascript" src="../inc/art-template.js"></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<!-- <script type="text/javascript" src="js/c.js"></script> -->
+<script>
+    function pageload() {
+        if (Comm.isweixin()) {
+            $(".share").hide()
+        }
+        var screenwidth = window.screen.width;
+        $("#side").css("height", screenwidth + "px")
+        $("section").scroll(function() {
+            model.scroll(this);
+        });
+        GDict.init(function() {
+            if (model.ifflower) {
+                $('#foshop').html('超市')
+            }
+            $('#foshop').removeClass('hide');
+            model.init();
+        });
+        // model.touch();
+    }
+
+    function pageresume() {
+        if (model.temp) {
+            model.auction = Comm.db('auction' + model.temp.dictid);
+        }
+    }
+
+    var model = {
+        k: 0,
+        num: 1,
+        userinfo: Comm.db('userinfo'),
+        id: Comm.query('id'),
+        activityId: Comm.query('activityId'),
+        ifflower: Comm.query('ifflower'),
+        activityGroupBuyDetailId: Comm.query('activityGroupBuyDetailId'),
+        init: function() {
+            Comm.db("imgView", []);
+            Comm.loading(true)
+                //获取幻灯片
+            AJAX.GET('/purchase/goodsInfo/goodsImg?goodsId=' + model.id, function(d) {
+                if (d.code == 1) {
+                    $("#side").html(template('bannerTpl', d.data)).height($("#banner").width());
+                    new Side('banner', 3, true);
+                    if (d.data) {
+                        var tempimg = [];
+                        for (var i = 0; i < d.data.length; i++) {
+                            tempimg.push(d.data[i].url)
+                        }
+                        Comm.db("imgView", tempimg);
+                    }
+                }
+            });
+            //获取商品详情
+            AJAX.GET('/purchase/goodsInfo/goodsDetails?goodsId=' + model.id + '&customerId=' + (model.userinfo ? model.userinfo.customerId : ''), function(d) {
+                Comm.loading(false)
+                if (d.code == 1) {
+                    if (d.data) {
+                        d.data.ifflower = model.ifflower;
+                        model.isCollid = d.msg * 1;
+                        model.good = d.data;
+                        if (model.isCollid * 1 > 0) {
+                            $('header .cell').css('background-image', 'url(img/good/cellred.png)');
+                            $('section header .cell').css('background-image', 'url(img/good/shoured.png)');
+                        }
+                        if (model.good.peoplephone) {
+                            $("#peoplephone").attr('href', 'tel:' + model.good.peoplephone);
+                        }
+                        try {
+                            d.data.descript = JSON.parse(d.data.descript)
+                        } catch (error) {
+                            d.data.descript = {}
+                        }
+                        $("#gooddetail").html(template('gooddetailTpl', d.data));
+                        //sku();
+                        if (model.good.ifFlower != "1") {
+                            model.evaluate();
+                            $('.navTitle .pj').removeClass('hide');
+                            $('.navItemIcon.cell').removeClass('hide');
+                        }
+                        if (model.good.imgList) {
+                            var tempimg = [];
+                            for (var i = 0; i < model.good.imgList.length; i++) {
+                                tempimg.push(model.good.imgList[i].url)
+                            }
+                            Comm.db("imgView1", tempimg);
+                        }
+                        //查询活动信息
+                        active();
+                    }
+                }
+            });
+
+            //获取商家 是否 歇业
+            function buss() {
+                AJAX.POST('/purchase/bussiness/getBussInfoByBussId', {
+                    bussinessId: model.good.bussinessId
+                }, function(res) {
+                    if (res.code == 1) {
+                        if (!template.defaults.imports.shopenable(res.data.vacationEnd, res.data.vacationStart)) {
+                            $("footer button").attr('onclick', '').html('歇业中').css('background', '#ccc')
+                        }
+                    } else {
+                        Comm.message(res.msg)
+                    }
+                })
+            }
+
+            function sku() {
+                //获取商品规格
+                AJAX.GET('/purchase/goodsInfo/getSku?goodsId=' + model.id, function(d) {
+                    if (d.code == 1) {
+                        if (d.data && d.data.length > 0) {
+                            model.sku = d.data;
+                            model.good.sku = model.sku;
+                            model.getPrice(d.data[0].goodsSkuId);
+                        }
+                    }
+                })
+            }
+
+            //获取商品活动
+            function active() {
+                if (model.activityId) {
+                    AJAX.GET('/purchase/activity/detail?activityId=' + model.activityId, function(d) {
+                        if (d.code == 1) {
+                            //判断活动类型】
+                            var now = new Date();
+                            if (d.data.activityType == "2") { //竞拍
+                                jp.jpccfun();
+                                if (jp.temp.status == -1) { //未开始
+                                    d.data.starts = 1;
+                                } else if (jp.temp.status == -2) { //已结束
+                                    d.data.ends = -1;
+                                } else if (jp.temp.status == 0) { //进行中
+                                    d.data.ends = jp.temp.ends;
+                                }
+                            } else {
+                                d.data.ends = (hhmmss.todate(d.data.endTime).getTime() - now.getTime()) / 1000;
+                                d.data.starts = (hhmmss.todate(d.data.startTime).getTime() - now.getTime()) / 1000;
+                            }
+
+                            model.good.active = d.data;
+                            model.good.sku = d.data.skus;
+
+                            if (model.good.sku.length == 1) {
+                                model.good.cursku = {
+                                    i: model.k,
+                                    s: model.good.sku[model.k],
+                                    num: 1,
+                                }
+                            }
+
+                            d.data.goodid = model.id;
+                            $('#active').html(template('activeTpl', d.data));
+                            hhmmss.init('active');
+                            // $('#group').html(template('groupTpl', d.data));//屏蔽选择操作
+                            if (d.data.activityType == "8") { //团购
+                                if (d.data.groupType == "1") { //普通团
+                                    if (model.good.sku.length == 1) {
+                                        $("#addfoot").removeClass('hide').find('button').html('立即购买').attr('onclick', 'model.gotuan()');
+                                    } else {
+                                        $("#addfoot").removeClass('hide').find('button').html('立即购买');
+                                    }
+                                } else if (d.data.groupType == "2") { //自主团购
+                                    if (model.activityGroupBuyDetailId) {
+                                        AJAX.GET('/purchase/activitygroupbuy/myselfdetail?activityGroupBuyDetailId=' + model.activityGroupBuyDetailId, function(a) {
+                                            if (a.code == 1) {
+                                                var r = {
+                                                    ifFlower: model.ifflower,
+                                                    purchases: a.data.purchases,
+                                                    num: d.data.groupNum * 1 - (a.data.purchases ? a.data.purchases.length : 0),
+                                                    activitygroupbuyzhu: {
+                                                        addTime: a.data.endTime,
+                                                        activityGroupBuyZhuId: a.data.activityGroupBuyZhuId,
+                                                        activityGroupBuyId: a.data.activityGroupBuyId
+                                                    }
+                                                }
+                                                r.groupNum = d.data.groupNum; //参团数
+                                                r.moresku = model.good.sku.length;
+
+                                                $('#groupType').html(template('groupTypeTpl', r));
+                                                model.tui = r;
+                                                hmsfor(r);
+                                            }
+                                        })
+                                    } else {
+                                        var purchaseid = model.userinfo ? model.userinfo.purchaseid : '';
+                                        AJAX.GET('/purchase/activitygroupbuy/tui?activityId=' + model.activityId + "&purchaseId=" + purchaseid, function(a) {
+                                            if (a.code == 1) {
+                                                a.data.groupNum = d.data.groupNum; //参团数
+                                                a.data.moresku = model.good.sku.length;
+                                                $('#groupType').html(template('groupTypeTpl', a.data));
+                                                model.tui = a.data;
+                                                hmsfor(a.data);
+                                            }
+                                        })
+                                    }
+
+                                    function hmsfor(rr) {
+                                        if (rr.activitygroupbuyzhu) {
+                                            var now = new Date();
+
+                                            var hms = (hhmmss.todate(rr.activitygroupbuyzhu.addTime).getTime() - now.getTime()) / 1000;
+                                            if (hms < 0) {
+                                                $('#groupthhmmss').html('已结束');
+                                                model.tui.activitygroupbuyzhu.activityGroupBuyZhuId = -1;
+                                                $('#groupType button').remove();
+                                                return
+                                            }
+                                            setInterval(function() {
+                                                if (hms > 0) {
+                                                    var r = hhmmss.covert(hms);
+                                                    hms--;
+                                                    if (hms >= 0) {
+                                                        var hs = '剩余';
+                                                        if (r[0] != "00") {
+                                                            hs += r[0] + ":"
+                                                        }
+                                                        hs += r[1] + ":" + r[2];
+                                                        $('#groupthhmmss').html(hs);
+                                                    } else {
+                                                        $('#groupType button').remove();
+                                                        $('#groupthhmmss').html('已结束');
+                                                    }
+                                                }
+                                            }, 1000)
+                                        } else {
+                                            $('#groupType button').remove();
+                                            $('#groupthhmmss').html('已结束');
+                                        }
+                                    }
+
+                                    $("#groupfoot").removeClass('hide').html(template('groupfootTpl', d.data));
+                                    if (model.good.sku.length == 1) {
+                                        $("#groupfoot>div").attr('onclick', 'model.gotuan(1)');
+                                        if (model.activityGroupBuyDetailId) {
+                                            model.isping = true;
+                                        }
+                                    }
+                                }
+                                $('#footcart').addClass('hide');
+                            } else {
+                                if (d.data.activityType == "2") { //竞拍
+                                    if (model.good.active.paiDetail) {
+                                        if (model.good.active.paiDetail.state == 1 || model.good.active.paiDetail.state == 4) {
+                                            $("#addfoot").removeClass('hide').find('button').html('查看竞价');
+                                        } else if (model.good.active.paiDetail.state == 2) {
+                                            $("#addfoot").removeClass('hide').find('button').html('竞价失败').attr('onclick', '');
+                                        } else {
+                                            $("#addfoot").removeClass('hide').find('button').html('重新竞价');
+                                        }
+                                    } else {
+                                        $("#addfoot").removeClass('hide').find('button').html('竞价');
+                                    }
+                                    $('#footcart').addClass('hide');
+                                } else if (d.data.activityType == "64") { //预售
+                                    if (model.good.sku.length == 1) {
+                                        $("#addfoot").removeClass('hide').find('button').html('立即购买').attr('onclick', 'model.gotuan()');
+                                    } else {
+                                        $("#addfoot").removeClass('hide').find('button').html('立即购买');
+                                    }
+                                } else {
+                                    if (model.good.sku.length == 1) {
+                                        $("#addfoot").removeClass('hide').find('button').attr('onclick', 'model.carted()');
+                                    } else {
+                                        $("#addfoot").removeClass('hide')
+                                    }
+                                }
+                            }
+
+                            if (d.data.activityType == "1" && model.ifflower == 1) {
+                                //获取系统配置
+                                AJAX.POST('/api/config/bykeys', {
+                                    keys: "ding_bi"
+                                }, function(res) {
+                                    if (res.code == 1) {
+                                        model.ptdj = res.data[0].value;
+                                        $('#bili').html('需支付' + model.ptdj + '%定金');
+                                    }
+                                })
+                            }
+
+                            if (d.data.activityType != "64") {
+                                $('#versionNumber').removeClass('hide');
+                            }
+
+                            if (model.good.active.starts > 0) { //未开始
+                                $("#addfoot button").css('background', "#ccc").attr('onclick', '');
+                                $("#groupfoot>div").css('background', "#ccc").attr('onclick', '');
+                            } else if (model.good.active.ends > 0) { //进行中
+
+                            } else { //已结束
+                                $("#addfoot button").css('background', "#ccc").attr('onclick', '');
+                                $("#groupfoot>div").css('background', "#ccc").attr('onclick', '');
+                            }
+                        }
+                        //商家信息
+                        buss();
+                    })
+                } else {
+
+                    //商家信息
+                    buss();
+                }
+            }
+            model.shownum();
+        },
+        shownum: function() {
+            Cart.getnum(function(cartnum) {
+                if (cartnum > 0) {
+                    cartnum = cartnum >= 100 ? '99+' : cartnum;
+                    if (cartnum < 10) {
+                        $("#rednum").css('padding', '0px 6px')
+                    } else {
+                        $("#rednum").css('padding', '0px 3px')
+                    }
+                    $("#rednum").html(cartnum).removeClass('hide');
+                } else {
+                    $("#rednum").addClass('hide');
+                }
+            })
+        },
+        getPrice: function(goodsSkuId) { //获取商品价格
+            AJAX.GET('/purchase/goodsInfo/getSkuPrice?goodsId=' + model.id, function(d) {
+                if (d.code == 1) {
+                    model.priceAll = d.data;
+                    model.queryPrice(goodsSkuId);
+                }
+            })
+        },
+        queryPrice: function(goodsSkuId) { //查询sku对应价格
+            model.price = [];
+            for (var i = 0; i < model.priceAll.length; i++) {
+                var e = model.priceAll[i];
+                if (e.goodsSkuId == goodsSkuId) {
+                    model.price.push(e);
+                }
+            }
+            model.good.price = model.price;
+            //$("#price").html(template('priceTpl', model))
+        },
+        cell: function(a) { //收藏
+            if (model.isCollid == "0") {
+                Coll.addCollection({
+                    goodsId: model.id,
+                    type: 1
+                }, function(d) {
+                    model.isCollid = d.data;
+                    Comm.message('收藏成功')
+                        //$(a).css('background-image', 'url(img/good/cellred.png)');
+                    $('header .cell').css('background-image', 'url(img/good/cellred.png)');
+                    $('section .cell').css('background-image', 'url(img/good/shoured.png)');
+                })
+            } else {
+                Coll.delCollection(model.isCollid, function() {
+                    model.isCollid = "0";
+                    Comm.message('取消收藏')
+                        //$(a).css('background-image', 'url(img/good/cell.png)');
+                    $('header .cell').css('background-image', 'url(img/good/cell.png)');
+                    $('section .cell').css('background-image', 'url(img/good/shouc.png)');
+                })
+            }
+        },
+        gg: function(d, isping) { //加入购物车弹出
+            if (isping) {
+                model.isping = true;
+            }
+            if (model.good.active) {
+                if (model.good.active.activityType == "2") { //竞拍
+                    jp.show();
+                } else {
+                    if (!d) {
+                        Comm.showWindow('WinTemp', true);
+                    }
+                    model.good.cursku = {
+                        i: model.k,
+                        s: model.good.sku[model.k],
+                        num: 1,
+                    }
+                    $("#WTDBOX .goodgg").html(template('ggTpl', model.good));
+                    if (model.good.active.activityType = "128") { //团购
+                        $('#WTDBOX #sinbox button').html('立即购买')
+                    }
+
+                    if (model.good.active.starts > 0) { //未开始
+                        $("#WTDBOX #sinbox button").css('background', "#ccc").attr('onclick', '');
+                    } else if (model.good.active.ends > 0) { //进行中
+
+                    } else { //已结束
+                        $("#WTDBOX #sinbox button").css('background', "#ccc").attr('onclick', '');
+                    }
+                }
+            }
+        },
+        qkgg: function(a, goodsSkuId, k) {
+            if (!$(a).hasClass('btn')) {
+                $(a).parent().find("span").removeClass('btn')
+                $(a).addClass('btn');
+                model.k = k;
+                //model.queryPrice(goodsSkuId);
+                model.gg(true);
+                $('#selsku').html(model.good.cursku.s.keyValue + "," + $('#WTDBOX .num') + "件")
+            }
+        },
+        goShop: function() { //跳转商品详情
+            if (model.ifflower) {
+                Comm.db('selClass', {
+                    categoryId: -1,
+                    isflowr: 1,
+                });
+                Comm.close();
+            } else {
+                Comm.go('shopMain.html?id=' + model.good.bussinessId)
+            }
+        },
+        openheader: function() { //顶部显示
+            if ($("body>header").hasClass("hide")) {
+                $("body>header").removeClass("hide").addClass("animate")
+                setTimeout(function() {
+                    Comm.resizeSection();
+                }, 1000)
+            }
+        },
+        closeheader: function() { //顶部隐藏
+            if (!$("body>header").hasClass("hide")) {
+                $("body>header").addClass("hide");
+                Comm.resizeSection();
+            }
+        },
+        qh: function(a, i) { //顶部切换
+            if (!$(a).find('span').hasClass('active')) {
+                $(a).parent().find("span").removeClass('active')
+                $(a).addClass('active');
+                var bh = $("#banner").height();
+                if (i == 1) {
+                    model.closeheader();
+                    $("section").scrollTop(0);
+                } else if (i == 2) {
+                    $("section").scrollTop($("#contents").position().top + bh);
+                } else if (i == 3) {
+                    $("section").scrollTop($("#comments").position().top + bh);
+                }
+            }
+        },
+        scroll: function(a) { //滚动处理
+            var top = $(a).scrollTop();
+            //console.log(top);
+            var bh = $("#banner").height();
+            var commenth = $("#comments").position().top + bh
+            var contentth = $("#contents").position().top + bh
+            if (top > commenth) {
+                $("body>header .navTitle span").removeClass("active");
+                $("body>header .navTitle span:nth-child(3)").addClass("active");
+            } else if (top > contentth) {
+                $("body>header .navTitle span").removeClass("active");
+                $("body>header .navTitle span:nth-child(2)").addClass("active");
+            } else if (top > 200) {
+                model.openheader();
+            } else if (top < 200) {
+                model.closeheader();
+            }
+        },
+        addsub: function(a, i) { //加减
+            var num = $(a).parent().find('div.num').html() * 1 + i;
+            if (num > model.good.cursku.s.nowStock * 1) {
+                Comm.message('库存不足')
+                return
+            }
+            if (num > 0) {
+                model.good.sku[model.k].num += i
+                $(a).parent().find('div.num').html(num);
+            }
+        },
+        carted: function() {
+            var type = 2;
+            if (model.good.active.activityType == "1") {
+                type = 4;
+            }
+
+            var num = $('#group .num').html() * 1;
+            if (model.good.active.activityType == "8" && model.good.active.groupType == "2") { //拼团
+                num = 1;
+            }
+
+            if (model.good.active.activityType == "8") { //团购
+                if (num > model.good.cursku.s.nowStock * 1) {
+                    Comm.message('库存不足')
+                    return
+                }
+                model.gotuan(num);
+            } else { //其他活动
+                var i = Cart.query(model.good.goodsId, model.good.cursku.s.goodsSkuId, type);
+                if (i >= 0) {
+                    num = num + Cart.mycart[i].num;
+                }
+                if (num > model.good.cursku.s.nowStock * 1) {
+                    Comm.message('库存不足')
+                    return
+                }
+            }
+            model.good.active.sku = model.good.cursku.s;
+            var opt = {
+                isadd: true,
+                type: type,
+                num: num,
+                ifFlowerSuper: model.ifflower,
+                bussinessId: model.good.bussinessId,
+                goodsId: model.good.goodsId,
+                goodsSkuId: model.good.cursku.s.goodsSkuId,
+                activityGoodSkuId: model.good.cursku.s.activityGoodSkuId,
+                activity: model.good.active
+            }
+
+            Cart.add(opt);
+            model.shownum();
+            Comm.message('加入购物车成功');
+        },
+        cart: function() {
+            var type = 2;
+            if (model.good.active.activityType == "1") {
+                type = 4;
+            }
+            var num = $('#WTDBOX .num').html() * 1;
+            if (model.good.active.activityType == "8" && model.good.active.groupType == "2") { //拼团
+                num = 1;
+            }
+
+            if (model.good.active.activityType == "8") { //团购
+                if (num > model.good.cursku.s.nowStock * 1) {
+                    Comm.message('库存不足')
+                    return
+                }
+                if (model.activityGroupBuyDetailId) {
+                    model.gotuan(num, true);
+                }
+            } else { //其他活动
+                var i = Cart.query(model.good.goodsId, model.good.cursku.s.goodsSkuId, type);
+                if (i >= 0) {
+                    num = num + Cart.mycart[i].num;
+                }
+
+                if (num > model.good.cursku.s.nowStock * 1) {
+                    Comm.message('库存不足')
+                    return
+                }
+
+                var opt = {
+                    isadd: true,
+                    type: type,
+                    num: num,
+                    ifFlowerSuper: model.ifflower,
+                    bussinessId: model.good.bussinessId,
+                    goodsId: model.good.goodsId,
+                    goodsSkuId: model.good.cursku.s.goodsSkuId,
+                    activityGoodSkuId: model.good.cursku.s.activityGoodSkuId,
+                    activity: model.good.active
+                }
+                Cart.add(opt);
+                model.shownum();
+                Comm.message('加入购物车成功');
+                Comm.showWindow();
+            }
+        },
+        gotuan: function(num, isping) {
+            if (!num) {
+                num = $('#group .num').html() * 1;
+                if (num > model.good.cursku.s.nowStock * 1) {
+                    Comm.message('库存不足')
+                    return
+                }
+            }
+            model.good.ifFlower = model.ifflower;
+            var order = {
+                good: model.good,
+                num: num
+            }
+
+            if (model.isping || isping) { //是否参团
+                order.activityGroupBuyZhuId = model.tui && model.tui.activitygroupbuyzhu ? model.tui.activitygroupbuyzhu.activityGroupBuyZhuId : -1;
+            }
+            Comm.db('grouporder', order);
+            Comm.go('gogroup.html');
+        },
+        evaluate: function() {
+            if (!model.mere) {
+                model.mere = new MERefresh('box,listpj', {
+                    pagesize: 10,
+                    refreshUrl: '/common/evaluate/getEvaluateByBussiness',
+                    refreshTypeGet: true
+                });
+
+                //网络请求参数projectType="+dictid+"&sortType="+sortType
+                model.mere.refreshOption.refreshParm = {
+                    bussinessId: model.good.bussinessId,
+                    type: -1,
+                    ifFlower: 0,
+                };
+
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function(refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    refresh.appendHtml(template('pjTpl', d.data));
+                };
+
+                if (model.good.ifFlower != "1") {
+                    AJAX.GET('/common/evaluate/getEvaluateNum?bussinessId=' + model.good.bussinessId + "&ifFlower=0", function(d) {
+                        if (d.code == 1) {
+                            var totalCount = d.data.goodNum + d.data.differenceNum + d.data.middleNum
+                            if (totalCount > 0) {
+                                //计算好评率和总数
+                                $('#commentsTit').html(template('commentsTitTpl', {
+                                    totalCount: totalCount,
+                                    pv: (d.data.goodNum / totalCount * 100).toFixed(2) + "%"
+                                }))
+                            } else {
+                                $('#commentsTit').html(template('commentsTitTpl', {
+                                    totalCount: 0,
+                                    pv: '无'
+                                }))
+                            }
+                        }
+                    })
+                }
+            } else {
+                //网络请求参数projectType="+dictid+"&sortType="+sortType
+                model.mere.refreshOption.refreshParm = {
+                    bussinessId: model.good.bussinessId,
+                    type: -1,
+                    ifFlower: 0,
+                };
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+        share: function() {
+            var url = 'gooddetailgroup.html?id=' + model.id + "&activityId=" + model.activityId + "&ifflower=" + model.ifflower;
+            var opt = {
+                title: model.good.goodsName /*分享标题*/ ,
+                pic: Comm.OSS.getImgUrl(model.good.img, 'd') /*分享图标*/ ,
+                url: config.webroot + '/share/' + url /*分享链接 OR app的线上fir下载地址*/ ,
+                desc: model.good.details /*分享描述*/
+            };
+            Comm.shareUrl(opt, function(d) {
+                if (d == 1) {
+                    Comm.message("分享成功");
+                }
+            });
+        },
+        touch: function() {
+            var img = document.getElementById('topbackimg');
+
+            var x = 0,
+                y = 0,
+                right = 10,
+                bottom = 10;
+
+            img.addEventListener('touchstart', function(e) {
+                event.stopPropagation();
+                var touch = event.targetTouches[0];
+                x = touch.clientX;
+                y = touch.clientY;
+            });
+            img.addEventListener('touchmove', function(e) {
+                event.stopPropagation();
+                var touch = event.targetTouches[0];
+                var xx = x - touch.clientX;
+                var yy = y - touch.clientY;
+
+                x = touch.clientX;
+                y = touch.clientY;
+
+                right += xx;
+                bottom += yy;
+
+                if (right < 0) {
+                    right = 0;
+                }
+                if (bottom < 0) {
+                    bottom = 0;
+                }
+                if (right > document.body.offsetWidth - img.width) {
+                    right = document.body.offsetWidth - img.width
+                }
+                if (bottom > document.body.offsetHeight - img.width) {
+                    bottom = document.body.offsetHeight - img.width
+                }
+
+                img.style.right = right + "px";
+                img.style.bottom = bottom + "px";
+                console.log(xx + ":" + yy);
+                //console.log(img.style.right + "------------" + img.style.bottom);
+            });
+            img.addEventListener('touchend', function(e) {
+                event.stopPropagation();
+                var touch = event.targetTouches[0];
+            })
+        }
+    }
+    var jp = {
+        day: Comm.db('day'),
+        userinfo: Comm.db('userinfo'),
+        jpccfun: function() {
+            jp.jpcc = GDict.get('jpcc');
+            var now = new Date();
+            var nowtimpspan = now.getTime();
+            var st = [];
+            var st1 = [];
+            var day = now.getFullYear() + "/" + (now.getMonth() + 1) + "/" + now.getDate();
+
+            for (var i = 0; i < jp.jpcc.length; i++) {
+                var e = jp.jpcc[i];
+
+                if (jp.day != day) {
+                    //每天清空 每场数据
+                    Comm.db('auction' + e.dictid, null);
+                    Comm.db('day', day);
+                }
+
+                if (e.dictname && e.dictname.indexOf('-') > 0) {
+                    var t = e.dictname.split('-');
+                    var star = new Date(day + " " + t[0]);
+                    var end = new Date(day + " " + t[1]);
+                    if (nowtimpspan < star.getTime()) {
+                        //未开始
+                        e.time = star.getTime() - nowtimpspan;
+                        e.status = -1;
+                        st.push(e);
+                    } else if (nowtimpspan > end.getTime()) {
+                        //已结束
+                        e.time = nowtimpspan - end.getTime();
+                        e.status = -2;
+                        st.push(e);
+                    } else if (star.getTime() < nowtimpspan && nowtimpspan < end.getTime()) {
+                        //进行中
+                        e.status = 0;
+                        var s1 = end.getTime() - nowtimpspan;
+                        var s2 = nowtimpspan - star.getTime();
+                        e.time = s1 > s2 ? s1 : s2;
+                        e.ends = s1 / 1000;
+                        st1.push(e);
+                    }
+                }
+            }
+            var temp = null;
+            if (st1.length > 0) {
+                //分组排序
+                for (var i = 0; i < st1.length; i++) {
+                    var t = st1[i];
+                    if (i == 0) {
+                        temp = t;
+                    }
+                    if (temp && t.time < temp.time) {
+                        temp = t;
+                    }
+                }
+            } else if (st.length > 0) {
+                //分组排序
+                for (var i = 0; i < st1.length; i++) {
+                    var t = st1[i];
+                    if (i == 0) {
+                        temp = t;
+                    }
+                    if (temp && t.time < temp.time) {
+                        temp = t;
+                    }
+                }
+            }
+            if (temp) {
+                jp.temp = temp;
+                //判断是否开始
+                if (temp.status == 0) {
+                    //now.getFullYear() + "/" + (now.getMonth() + 1) + "/" + now.getDate()
+                    jp.auction = Comm.db('auction' + temp.dictid + "_" + jp.userinfo.purchaseid);
+                }
+            } else {
+                jp.temp = {
+                    status: -1
+                };
+            }
+        },
+        show: function() {
+            if (jp.temp.status == -1) {
+                Comm.message('活动未开始')
+                return
+            } else if (jp.temp.status == -2) {
+                Comm.message('活动已结束');
+                return
+            }
+            if (!jp.auction && !model.good.active.paiDetail) {
+                Comm.confirm('请完善收货信息', function(i) {
+                    if (i == 1) {
+                        Comm.go('auction.html?dictid=' + jp.temp.dictid)
+                    }
+                });
+                return
+            }
+
+
+            if (model.good.active.paiDetail) {
+                if (model.good.active.paiDetail.state == 3) {
+                    model.good.active.paiDetail.singlePirce = price;
+                    model.good.active.paiDetail.numj = true;
+                }
+            }
+            jp.tactive = {
+                yuanPrice: model.good.active.yuanPrice,
+                activityId: model.good.active.activityId,
+                paiDetail: model.good.active.paiDetail
+            }
+
+            if (model.good.active.paiDetail) {
+                jp.tactive.price = model.good.active.paiDetail.singlePirce
+            }
+
+            Comm.showWindow('sinbox1Temp', true);
+            $('#WTDBOX #sin').html(template('sinTpl', {
+                activityId: model.good.activeactivityId,
+                price: model.good.active.price,
+                goodsId: model.good.goodsId,
+                goodsName: model.good.goodsName,
+                versionNumber: model.good.versionNumber,
+                active: model.good.active,
+                paiDetail: model.good.active.paiDetail,
+                status: model.good.active.paiDetail ? model.good.active.paiDetail.state : jp.temp.status,
+            }));
+            var tv = "";
+            $("#sin #inputprice").blur(function() {
+                var v = $(this).val();
+                if (v) {
+                    var reg = /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/;
+                    if (!reg.test(v)) {
+                        Comm.message("请输入正确的竞拍价格:整数或者保留两位小数");
+                        $("#sin #inputprice").val('')
+                        return false;
+                    }
+                    jp.tactive.price = v;
+                    jp.jinjiaPrice();
+                }
+            });
+            $("#sin input.num").blur(function() {
+                var v = $(this).val();
+                if (v) {
+                    jp.jinjiaPrice();
+                }
+            });
+        },
+        addsub: function(a, i) { //加减
+            var num = $(a).parent().find('input.num').val() * 1 + i;
+            if (num > 0) {
+                $(a).parent().find('input.num').val(num);
+                jp.jinjiaPrice();
+            }
+        },
+        jinjiaPrice: function() {
+            if (jp.tactive.price) {
+                var num = $('#WTDBOX .num').val() * 1;
+
+                if (jp.tactive.paiDetail && num == jp.tactive.paiDetail.num && !jp.tactive.paiDetail.numj) {
+                    if (jp.tactive.paiDetail && jp.tactive.price < jp.tactive.paiDetail.singlePirce) {
+                        $("#sin #jjbtn").attr('onclick', 'Comm.message(\'重新竞价价格必须大于等于原来竞价\')').css('background', '#ccc');
+                        Comm.message('重新竞价价格必须大于等于原来竞价')
+                        return
+                    }
+                } else if (jp.tactive.paiDetail && !jp.tactive.paiDetail.numj && num < jp.tactive.paiDetail.num) {
+                    $("#sin #jjbtn").attr('onclick', 'Comm.message(\'数量必须大于原来数量\')').css('background', '#ccc');
+                    Comm.message('数量必须大于原来数量');
+                    return
+                } else if (num <= 0) {
+                    $("#sin #jjbtn").attr('onclick', 'Comm.message(\'数量必须大于0\')').css('background', '#ccc');
+                    Comm.message('数量必须大于0');
+                    return
+                } else if (jp.tactive.paiDetail && jp.tactive.price < jp.tactive.paiDetail.singlePirce && jp.tactive.paiDetail.numj) {
+                    $("#sin #jjbtn").attr('onclick', 'Comm.message(\'重新竞价价格必须大于等于原来竞价\')').css('background', '#ccc');
+                    Comm.message('重新竞价价格必须大于等于原来竞价')
+                    return
+                } else if (jp.tactive.price >= jp.tactive.yuanPrice) {
+                    $("#sin #jjbtn").attr('onclick', 'Comm.message(\'竞价价格必须小于原价\')').css('background', '#ccc');
+                    Comm.message('竞价价格必须小于原价');
+                    return
+                }
+
+                jp.tactive.num = num;
+                var deliveryAddressId = jp.auction.addr.deliveryAddressId;
+                jp.tactive.deliveryAddressId = deliveryAddressId;
+                var logistType = jp.auction.dict.dictid;
+                jp.tactive.logistType = logistType;
+                Comm.loading(true);
+                $('body').append('<div id="MainBg" class="mybg" style="z-index:1201;"></div>');
+                AJAX.GET('/purchase/activityAuction/jinjiaPrice?activityId=' + jp.tactive.activityId + "&price=" + jp.tactive.price + "&num=" + num + "&deliveryAddressId=" + deliveryAddressId + "&logistType=" + logistType, function(d) {
+                    Comm.loading(false);
+                    $('#MainBg.mybg').remove();
+                    if (d.code == 1) {
+                        if (model.good.active.paiDetail) {
+                            jp.tactive._packingFee = model.good.active.paiDetail.packingFee + d.data.rightBao;
+                            jp.tactive._zaiFee = model.good.active.paiDetail.zaiFee + d.data.rightYun;
+                            jp.tactive._allPrice = model.good.active.paiDetail.allPrice + d.data.allPrice;
+                        } else {
+                            jp.tactive._packingFee = d.data.rightBao;
+                            jp.tactive._zaiFee = d.data.rightYun;
+                            jp.tactive._allPrice = d.data.allPrice;
+                        }
+                        jp.tactive.packingFee = d.data.rightBao;
+                        jp.tactive.zaiFee = d.data.rightYun;
+                        jp.tactive.allPrice = d.data.allPrice;
+
+                        $("#sin #totalpirce").html('合计：￥' + app.price(jp.tactive._allPrice) + '元');
+                        if (jp.tactive._packingFee > 0) {
+                            $("#sin #rightBao").html('需预付包装费：￥' + app.price(jp.tactive._packingFee)).removeClass('hide');
+                        } else {
+                            $("#sin #rightBao").addClass('hide');
+                        }
+                        if (jp.tactive._zaiFee > 0) {
+                            $("#sin #rightYun").html('需预付配送费：￥ ' + app.price(jp.tactive._zaiFee)).removeClass('hide')
+                        } else {
+                            $("#sin #rightYun").addClass('hide')
+                        }
+                        $("#sin #jjbtn").attr('onclick', 'jp.jinjia()').css('background', '-webkit-linear-gradient(right, #EE900E, #DD1474)');
+                    } else {
+                        jp.tactive.allPrice = 0;
+                        Comm.message(d.msg);
+                        jp.msg = d.msg;
+                        $("#sin #jjbtn").attr('onclick', 'Comm.message(\'' + jp.msg + '\')').css('background', '#ccc');
+
+                        $("#sin #totalpirce").html('合计：￥' + 0 + '元');
+                        $("#sin #rightYun").addClass('hide');
+                        $("#sin #rightBao").addClass('hide');
+                    }
+                })
+            }
+        },
+        jinjia: function() {
+            if (jp.tactive.allPrice) {
+                var hx = "";
+                if (jp.tactive.paiDetail) {
+                    hx = "还";
+                }
+                Comm.confirm('系统' + hx + '需要冻结' + jp.tactive.allPrice + "元确认提交竞价？", function(d) {
+                    if (d) {
+                        AJAX.POST('/purchase/activityAuction/jinjia', jp.tactive, function(d) {
+                            if (d.code == 1) {
+                                Comm.showWindow();
+                                Comm.message('竞价成功！');
+                                model.init();
+                            } else if (d.code == 2) {
+                                Comm.showWindow();
+                                Comm.showWindow('sinboxTemp', true);
+                            } else {
+                                Comm.message(d.msg);
+                            }
+                        })
+                    }
+                })
+            } else {
+                if (!jp.tactive.price) {
+                    Comm.message('请输入竞价');
+                } else if (jp.msg) {
+                    Comm.message(jp.msg);
+                } else {
+
+                }
+            }
+        }
+    }
+
+    //匿名展示
+    template.defaults.imports.stringr = function(v) {
+        if (v.length == 1) {
+            v = "**"
+        } else if (v.length == 2) {
+            v = v.substring(0, 1) + "*";
+        } else if (v.length >= 3) {
+            v = v.substring(0, 1) + "**" + v.substring(v.length - 1, v.length);
+        }
+        return v;
+    }
+</script>
+
+<script id="bannerTpl" type="text/html">
+    {{each $data v k }}
+    <li class="scroll">
+        <img onclick="Comm.go('imgView.html?ind={{k}}')" src="{{OSS(v.url,'d')}}" width="100%" onerror="app.errorimg(this)" />
+    </li>
+    {{/each}}
+</script>
+<script id="activeTpl" type="text/html">
+    <!--1 预定 2 竞拍  4 搭配销售 8 团购 16 店铺买赠 32 满减 64 预售 128 秒杀 256 积分-->
+    {{if(activityType=="128"||activityType=="8"||activityType=="1"||activityType=="64")}}
+    <div class="dflex bg_FF404D lh50 " style="padding:8px 0px;">
+        <div class="marl10 flex_wrap">
+            <div>
+                <div>
+                    <div class="tleft {{groupType!='2'?'lh50':'lh20'}}">
+                        <span class="colorfff f12">￥</span>
+                        <span class="colorfff f30">{{price}}</span>
+                    </div>
+                    {{if groupType=="2"}}
+                    <div class="colorfff lh20 f12 mart5">单买价￥{{yuanPrice}}</div>
+                    {{/if}}
+                </div>
+            </div>
+            <div class="marl10">
+                {{if(groupType!='2'&&activityType!="128"&&activityType!="1")}}
+                <div class="lh20 tleft">
+                    <span class="colorfff linethrough">￥{{yuanPrice}}</span>
+                </div>
+                {{/if}} {{if(activityType=="128")}}
+                <div class="flex_wrap tleft" style="align-items:center;justify-content:center;">
+                    <div>
+                        <div class="lh20 tleft">
+                            <span class="colorfff f12">剩余{{num*1-saleNum*1}}个</span>
+                        </div>
+                        <div class="lh20 tleft">
+                            <span class="colorfff linethrough">￥{{yuanPrice}}</span>
+                        </div>
+                    </div>
+                    <div class="lh20">
+                        <span class="f12 colorred marl5" style="background-color:#fff;border-radius: 3px; padding:1px 3px;">秒杀特价</span>
+                    </div>
+                </div>
+                {{else if(activityType=="8")}} {{if groupType=="1"}}
+                <div class="lh20">
+                    <span class="f12 colorred" style="background-color:#fff;border-radius: 3px; padding:1px 2px;">特价团购</span>
+                </div>
+                {{else}}
+                <div class="lh20 tleft">
+                    <div class="inblock bg_white" style="border-radius: 9px; padding:1px 3px;line-height:15px;">
+                        <img src="img/good/ptrs.png" height="10" />
+                        <span class="f12 colorred">
+                            {{groupNum}}人拼
+                        </span>
+                    </div>
+                </div>
+                {{/if}} {{else if(activityType=="1")}}
+                <div class="lh50">
+                    <span class="f12 colorred bg_white" id="bili" style="border-radius: 3px; padding:1px 2px;">需支付{{bili}}%定金</span>
+                </div>
+                {{else if(activityType=="64")}}
+                <div class="lh20">
+                    <span class="f12 colorred bg_white" style="border-radius: 3px; padding:1px 2px;">{{formatDate(faTime)}}发货</span>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+        {{if(starts>0)}}
+        <div style="text-align:right;max-width:115px;" class="paddr15">
+            <div class="lh50 tright"><span class="colorfff">未开始</span></div>
+        </div>
+        {{else if(ends>0)}}
+        <div style="text-align:right;max-width:115px;" class="paddr15 item">
+            <div class="lh15"><span class="colorfff f12 center inblock" style="width:85px;">距离结束</span></div>
+            <div class="lh20 hhmmss" data="{{ends}}">
+                <span class="f12 inblock bg_white colorred radius5 hh" id="hh" style="padding: 0 3px;">00</span>
+                <span class="f12 colorfff">:</span>
+                <span class="f12 inblock bg_white colorred radius5 mm" id="mm" style="padding: 0 3px;">00</span>
+                <span class="f12 colorfff">:</span>
+                <span class="f12 inblock bg_white colorred radius5 ss" id="ss" style="padding: 0 3px;">00</span>
+            </div>
+        </div>
+        {{else}}
+        <div style="text-align:right;max-width:115px;" class="paddr15">
+            <div class="lh50 tright"><span class="colorfff">已结束</span></div>
+        </div>
+        {{/if}}
+    </div>
+    {{else if(activityType=="2")}}
+    <div class="dflex bg_FF404D lh50 " style="padding:8px 0px;">
+        <div class="marl15 flex_wrap">
+            <div>
+                <div class="lh50 tleft">
+                    <span class="colorfff f12">￥</span>
+                    <span class="colorfff f30">{{price}}</span>
+                    <span class="colorfff f18">起拍</span>
+                </div>
+            </div>
+            <div class="marl15">
+                <div class="lh20 tleft">
+                    <div class="colorfff f12">剩余{{num}}个</div>
+                    <div class="colorfff f12 linethrough">￥{{yuanPrice}}</div>
+                </div>
+            </div>
+        </div>
+        {{if(starts>0)}}
+        <div style="text-align:right;max-width:115px;" class="paddr15">
+            <div class="lh50 tright"><span class="colorfff">已结束</span></div>
+        </div>
+        {{else if(ends>0)}}
+        <div style="text-align:right; max-width:115px;" class="paddr15 item">
+            <div class="lh15"><span class="colorfff f12 center inblock" style="width:85px;">距离结束</span></div>
+            <div class="lh20 hhmmss" data="{{ends}}">
+                <span class="f12 inblock bg_white colorred radius5 hh" id="hh" style="padding: 0 3px;">00</span>
+                <span class="f12 colorfff">:</span>
+                <span class="f12 inblock bg_white colorred radius5 mm" id="mm" style="padding: 0 3px;">00</span>
+                <span class="f12 colorfff">:</span>
+                <span class="f12 inblock bg_white colorred radius5 ss" id="ss" style="padding: 0 3px;">00</span>
+            </div>
+        </div>
+        {{else}}
+        <div style="text-align:right;max-width:115px;" class="paddr15">
+            <div class="lh50 tright"><span class="colorfff">已结束</span></div>
+        </div>
+        {{/if}}
+    </div>
+    {{/if}}
+</script>
+<script id="groupTpl" type="text/html">
+    <div class="linebod"></div>
+    <div class="dflex lh50">
+        <div class="marl15 flex_wrap">
+            <div>
+                <span class="color999">已选</span>
+                <span id="selsku">{{skus[0].keyValue}}，1件</span>
+            </div>
+        </div>
+        {{if(skus.length>1)}}
+        <div style="text-align:right;" class="paddr20" onclick="model.gg()">
+            <img src="../img/r.png" height="15" />
+        </div>
+        {{else}} {{if (groupType==1||activityType!=8)}}
+        <div class="paddr20">
+            <div class="dflex lh25 border mart10 fr" style="width: 90px; border-radius: 20px;">
+                <div onclick="model.addsub(this,-1)">
+                    <img src="img/cart-jian.png" width="12">
+                </div>
+                <div class="num" style="margin-top:2px;">
+                    1
+                </div>
+                <div onclick="model.addsub(this,1)">
+                    <img src="img/cart-jia.png" width="12">
+                </div>
+            </div>
+        </div>
+        {{/if}} {{/if}}
+    </div>
+    <!--1 预定 2 竞拍  4 搭配销售 8 团购 16 店铺买赠 32 满减 64 预售 128 秒杀 256 积分-->
+    {{if(activityType=="8"&&groupType=="2")}}
+    <div id="groupType"></div>
+    <div class="linebod"></div>
+    <div class="lh50">
+        <div class="marl15 ">
+            <span class="f16 paddl10" style="border-left:3px solid #DD1474;">拼购玩法</span>
+        </div>
+        <div class="dflex lh20" style="align-items:center;">
+            <div>
+                <span class="readiusnum">1</span>
+                <span>开团/参团</span>
+                <img src="../img/r.png" height="10" class="marl15" />
+            </div>
+            <div>
+                <span class="readiusnum">2</span>
+                <span>邀请好友</span>
+                <img src="../img/r.png" height="10" class="marl15" />
+            </div>
+            <div>
+                <span class="readiusnum">3</span>
+                <span>满员发货</span>
+            </div>
+        </div>
+        <div class="color999 lh20 tright marr10 f12 paddb5">
+            不满自动退款
+        </div>
+    </div>
+    {{/if}}
+</script>
+<script id="groupTypeTpl" type="text/html">
+    {{if(num>0)}}
+    <div class="linebod"></div>
+    <div>
+        <div class="dflex lh50">
+            <div class="marl15 flex_wrap">
+                <div>
+                    <span class="f16 paddl10" style="border-left:3px solid #DD1474;">已有</span>
+                    <span class="colorred f16">{{purchases?purchases.length:0}}人</span>
+                    <span class=" f16">参与活动</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex_wrap" style="align-items:center;justify-content:space-between;">
+            <div class="marl15 flex_wrap paddb5" style="align-items:center;">
+                <div>
+                    {{each purchases v k}} {{if(k==0)}}
+                    <img src="{{OSS(v.avatar)}}" onerror="app.herrorimg(this)" height="30" width="30" style="border-radius:30px;" /> {{else}}
+                    <img src="{{OSS(v.avatar)}}" onerror="app.herrorimg(this)" height="30" width="30" style="border-radius:30px;margin-left:-10px;" /> {{/if}} {{/each}}
+                </div>
+                <div class="marl15">
+                    <div>
+                        <span class="f12">还差</span>
+                        <span class="colorred f12">{{purchases?groupNum-purchases.length:groupNum}}人</span>
+                        <span class="f12">成团</span>
+                    </div>
+                    <div>
+                        <span class="f12 color999" id="groupthhmmss">剩余</span>
+                    </div>
+                </div>
+            </div>
+            {{if(moresku==1)}}
+            <button onclick="model.gotuan(1,true)" style="width:60px;height25px;line-height:25px;height:25px;font-size:12px;" class="marr15">去参团</button> {{else}}
+            <button onclick="model.gg(false,true)" style="width:60px;height25px;line-height:25px;height:25px;font-size:12px;" class="marr15">去参团</button> {{/if}}
+        </div>
+    </div>
+    {{/if}}
+</script>
+
+
+<script id="gooddetailTpl" type="text/html">
+    <div id="active">
+
+    </div>
+    <div class="lh45 paddl15 paddr15 wordW">
+        {{if(ifflower=="1")}}
+        <span class="f12 borfff">鲜花超市</span> {{/if}}
+        <span class="f18 bold">{{goodsName}}</span><span id="versionNumber" class="hide f18 bold">&nbsp;{{versionNumber}}</sapn>
+    </div>
+    <div class="paddl15 paddr15 paddb15">
+        {{if(grade!="-1")}}
+        <div class="w33">
+            <p class="tleft color999 f12">等级：{{getItemName(grade)}}</p>
+        </div>
+        {{/if}} {{if(color!="-1")}}
+        <div class="w33">
+            <p class="tleft color999 f12">颜色：{{getItemName(color)}}</p>
+        </div>
+        {{/if}} {{if(maturity!="-1")}}
+        <div class="w33">
+            <p class="tleft color999 f12">成熟度：{{getItemName(maturity)}}</p>
+        </div>
+        {{/if}} {{if(speci)}}
+        <div class="w33">
+            <p class="tleft color999 f12">规格：{{(speci)}}/{{company}}</p>
+        </div>
+        {{/if}} {{if(weight>0)}}
+        <div class="w33">
+            <p class="tleft color999 f12">重量：{{(weight)}}g</p>
+        </div>
+        {{/if}} {{if(keyValue)}}
+        <div class="w33">
+            <p class="tleft color999 f12">规格：{{(keyValue)}}</p>
+        </div>
+        {{/if}} {{if(descript)}}
+        <div>
+            {{each descript as v i }}
+            <div class="w33">
+                <p class="tleft color999 f12">{{v.keyName}}:{{v.value}}</p>
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
+    </div>
+    <div id="group"></div>
+    <div class="linebod"></div>
+    <div class="pad15" id="contents">
+        <p class="f18 marb10">商品详情</p>
+        <div>
+            {{details?split(details):'<span class="color999">暂无商品详情</span>'}} {{if(imgList)}} {{each imgList v k}}
+        <img onclick="Comm.go('imgView.html?ind={{k}}&mt=1')" src="{{OSS(v.url,'d')}}" width="100%" class="mart10" /> {{/each}} {{/if}}
+    </div>
+    </div>
+    <div class="linebod"></div>
+</script>
+
+<script id="ggTpl" type="text/html">
+    <div class="borderb paddb10">
+        <div class="fl marr10" style="height: 90px;">
+            <img src="{{OSS(sku[cursku.i].pics)}}" width="100" height="100" class="radius5" style="margin-top: -30px;" onerror="app.errorimg(this)" />
+        </div>
+        <div style="margin-left:100px;">
+            <div class="lh20">
+                <img src="img/good/close.png" height="20" class="fr" onclick="Comm.showWindow()" />
+                <div class="tleft" style="width: calc(100% - 30px);max-height:40px;">
+                    <div class="wordW2">{{goodsName}}{{versionNumber}}</div>
+                </div>
+            </div>
+            <p class="tleft lh25">
+                <span class="colorred f12">￥</span>
+                <span class="colorred f18" id="price">{{active?active.price:''}}</span>
+            </p>
+            <p class="tleft lh25">
+                {{if(ifFlower!="1")}}
+                <span class="f12 inblock">已选：{{sku[cursku.i].keyValue}}</span> {{else}} {{if(grade!="-1")}}
+                <span class="f12 inblock">等级：{{getItemName(grade)}}</span> {{/if}} {{if(color!="-1")}}
+                <span class="f12 inblock">颜色：{{getItemName(color)}}</span> {{/if}} {{if(maturity!="-1")}}
+                <span class="f12 inblock">成熟度：{{getItemName(maturity)}}</span> {{/if}} {{/if}}
+                <span class="f12 color999 inblock">库存:{{sku[cursku.i].stock<=0?'售罄':sku[cursku.i].stock}}</span>
+            </p>
+        </div>
+    </div>
+    {{if(sku&&sku.length>1)}}
+    <div class="gg mart10">
+        <div class="tleft">规格</div>
+        <div class="tleft mart10">
+            {{each sku v k }}
+            <span class="line {{k==cursku.i?'cur btn':''}} " onclick="model.qkgg(this,{{v.goodsSkuId}},{{k}})">{{v.keyValue}}</span> {{/each}}
+        </div>
+    </div>
+    {{/if}} {{if (groupType==1||activityType!=8)}}
+    <div class="tleft mart10">数量</div>
+    <div class="dflex lh25 border mart10" style="width: 90px; border-radius: 20px;">
+        <div onclick="model.addsub(this,-1)">
+            <img src="img/cart-jian.png" width="12">
+        </div>
+        <div class="num" style="margin-top:2px;">
+            1
+        </div>
+        <div onclick="model.addsub(this,1)">
+            <img src="img/cart-jia.png" width="12">
+        </div>
+    </div>
+    {{else}}
+    <div class="tleft mart10">数量</div>
+    <div class="dflex lh25 mart10" style="width: 90px; border-radius: 20px;">
+        <div class="num" style="margin-top:2px;">
+            1
+        </div>
+    </div>
+    {{/if}}
+</script>
+
+<script id="pjTpl" type="text/html">
+    {{each $data v k }}
+    <div class="item pad10">
+        <div>
+            <img src="{{OSS(v.avatar)}}" height="35" width="35" style="border-radius: 35px;" class="fl marr10" onerror="app.herrorimg(this)" />
+            <span class="f12 fr color999 mart10">{{formatDate(v.addTime)}}</span>
+            <div>
+                <p>{{stringr(v.customerName)}}</p>
+                <p>
+                    {{set m=[1,2,3,4,5]}} {{each m t j}} {{if(v.star*1>=t)}} <img class="xx" src="img/index-pingfen.png" height="12" /> {{else}}
+                    <img class="xx" src="img/index-pfen.png" height="12" /> {{/if}} {{/each}}
+                </p>
+            </div>
+        </div>
+        <div class="paddl5 mart10 lh20">
+            {{v.content}}
+        </div>
+        {{if(v.rContent)}}
+        <div class="paddl5 paddt10 mart10 lh20 f12 color999 bordert">
+            卖家回复：{{v.rContent}}
+        </div>
+        {{/if}}
+    </div>
+    <div class="linebod"></div>
+    {{/each}}
+</script>
+<script id="commentsTitTpl" type="text/html">
+    <div class="marb10 paddl10 paddr10 paddt10">
+        <div class="fr">
+            <span class="color999 ">好评率</span>
+            <span class="">{{pv}}</span>
+        </div>
+        <span>商品评价({{totalCount}})</span>
+    </div>
+    <div class="linebod"></div>
+</script>
+
+<script id="groupfootTpl" type="text/html">
+    <div class="paddt5 paddb5" style="background-color: #DD1474;" onclick="model.gg()">
+        <div class="lh20">
+            <span class="f12 colorfff">￥</span>
+            <span class="f16 colorfff">{{price}}</span>
+        </div>
+        <div class="f12 colorfff lh20">{{groupNum}}人拼</div>
+    </div>
+</script>
+
+<script id="sinTpl" type="text/html">
+    <div class="f18 wordW2">{{goodsName}}{{versionNumber}}</div>
+    <div class="f14 mart20">竞拍说明</div>
+    <div class="f12 mart10 wordW2 color999">{{split(active.jinDesc)}}</div>
+
+    {{if status==0||status==3}}
+    <div class="flex_wrap mart20">
+        <div class="lh30 marr15">竞价</div>
+        <div style="position:relative;">
+            <input value="" placeholder="请输入大于底价{{paiDetail?paiDetail.singlePirce:price}}" type="number" class="lh30 border radius5 paddl10" id="inputprice" />
+            <span class="color666" style="position: absolute;bottom:8px;right:10px;">元</span>
+        </div>
+    </div>
+    <div class="flex_wrap mart20">
+        <div class="lh30 marr15">数量</div>
+        <div class="dflex lh25 border" style="border: 1px solid #EBEBEB;border-radius: 20px;width: 90px;">
+            <div onclick="jp.addsub(this,-1,1,0)">
+                <img src="img/cart-jian.png" width="12">
+            </div>
+            <input type="tel" number value="{{paiDetail?paiDetail.num:'1'}}" class="num" style="margin-top:2px;width:30px;" />
+            <div onclick="jp.addsub(this,1,1,0)">
+                <img src="img/cart-jia.png" width="12">
+            </div>
+        </div>
+    </div>
+    {{/if}} {{if(status==1||status==4)}}
+    <div class="flex_wrap mart10">
+        <div class="lh30 marr15">竞价：</div>
+        <div class="lh30" style="position:relative;" id="totalpirces">
+            {{paiDetail?paiDetail.singlePirce:''}}
+        </div>
+    </div>
+    <div class="flex_wrap mart10">
+        <div class="lh30 marr15">数量：</div>
+        <div class="lh30" style="position:relative;">
+            {{paiDetail&&status==4?paiDetail.num:paiDetail.successNum}}
+        </div>
+    </div>
+    {{/if}}
+    <div class="mart20  {{status==2?'hide':''}}">
+        {{if(paiDetail&&paiDetail.packingFee>0)}}
+        <div class="f12 lh30  {{status==0||status==3?'colorDA251C':''}}" id="rightBao">需预付包装费：￥{{paiDetail.packingFee}}</div>
+        {{else}}
+        <div class="f12 lh30 hide colorDA251C" id="rightBao">需预付包装费：￥</div>
+        {{/if}} {{if(paiDetail&&paiDetail.zaiFee>0)}}
+        <div class="f12 lh30  {{status==0||status==3?'colorDA251C':''}}" id="rightYun">需预付配送费：￥{{paiDetail.zaiFee}}</div>
+        {{else}}
+        <div class="f12 lh30 hide colorDA251C" id="rightYun">需预付配送费：￥</div>
+        {{/if}}
+    </div>
+    {{if(status==4)}}
+    <div class="mart10">
+        <div class="colorDA251C lh30">等待公布竞拍结果</div>
+    </div>
+    {{/if}} {{if(status==2)}}
+    <div class="mart10">
+        <div class="colorDA251C lh30">竞拍失败</div>
+    </div>
+    {{/if}}
+    <div class="dflex">
+        <div class="f16 lh45" style="text-align:left;" id="totalpirce">合计：￥{{paiDetail?paiDetail.allPrice:0}}元</div>
+        {{if(status==0||status==3)}}
+        <div style="text-align:right;"><button id="jjbtn" style="border-radius:5px;background:#ccc" onclick="">确认竞价</button></div>
+        {{/if}}
+    </div>
+</script>
+
+</html>

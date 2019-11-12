@@ -1,0 +1,78 @@
+apply plugin: 'com.android.application'
+
+android {
+
+    signingConfigs {
+        release {
+            keyAlias 'yunlinker'
+            keyPassword '20160516'
+            storeFile file('G:\\Source\\ionic\\android_huahui\\Yunlinker-20160516.jks')
+            storePassword '20160516'
+        }
+    }
+    compileSdkVersion 26
+    buildToolsVersion "26.0.3"
+    sourceSets.main.jniLibs.srcDirs = ['libs']
+    defaultConfig {
+        applicationId "com.yunlinker.hhgys"
+        minSdkVersion 19
+        targetSdkVersion 26
+        multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.release
+        }
+    }
+    sourceSets {
+        main {
+            assets.srcDirs = ['../assets']
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    allprojects {
+        repositories {
+            mavenCentral()
+        }
+    }
+
+
+    aaptOptions.cruncherEnabled = false
+    aaptOptions.useNewCruncher = false
+
+
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    //----------图片选择----------
+    compile project(':imagepicker')
+    compile project(':luban')
+    compile project(':push')
+    compile 'com.android.support:appcompat-v7:26.+'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.google.code.gson:gson:2.8.1'
+    compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
+    compile 'com.squareup.okhttp3:okhttp:3.9.0'
+    compile 'com.umeng.analytics:analytics:latest.integration'
+    compile 'com.qiyukf.unicorn:unicorn:3.7.0'
+    compile 'com.alibaba:fastjson:1.2.56'
+    compile 'com.hjq:xxpermissions:5.0'
+    compile 'com.liulishuo.filedownloader:library:1.7.6'
+    testCompile 'junit:junit:4.12'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC1'
+
+    compile "com.afollestad.material-dialogs:core:0.9.4.5"
+    compile "com.afollestad.material-dialogs:commons:0.9.4.5"
+
+}

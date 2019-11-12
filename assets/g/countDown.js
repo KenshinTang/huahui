@@ -1,0 +1,3 @@
+var count_down=[],Interval=[],sign=0;template.defaults.imports.cDown=function(a,c,d){time(a,c,d);return""};
+function time(a,c,d){a=Math.floor(new Date(a)-new Date+6E4*d);var e=Math.floor(a/1E3/60),b=Math.floor(a/1E3%60),g="",h="",f=this.Interval.length;this.Interval.push(setInterval(function(){--b;-1==b&&(b=59,--e);g=10>e?"0"+e:e;h=10>b?"0"+b:b;this.count_down.splice(f,1,g+":"+h);setCountDown(f,this.count_down[f],c);0>=e&&0>=b&&(clearInterval(this.Interval[f]),$(c).addClass("hide"),$("button[name=receipt]").removeClass("colorA8"))},1E3))}
+function setCountDown(a,c,d){$(d).html(c+"\u540e\u53ef\u63a5\u5355")};

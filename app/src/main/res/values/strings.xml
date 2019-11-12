@@ -1,0 +1,45 @@
+<resources>
+    <!--<string name="app_name">花汇(采购)</string>-->
+    <string name="app_name">花汇云供应商端</string>
+    <string name="facebook_app_id">637758443238130</string>
+
+
+    <string name="viewfinderview_status_text1">将二维码放入取景框内</string>
+    <string name="viewfinderview_status_text2">即可自动扫描</string>
+
+    <string name="msg_intent_failed">Sorry, the requested application could not be launched. The barcode contents may be invalid.</string>
+    <string name="button_ok">OK</string>
+    <string name="msg_camera_framework_bug">Sorry, the Android camera encountered a problem. You may need to restart the device.</string>
+    <string name="title_activity_bai_du">BaiDuActivity</string>
+
+
+    <string name="activity_devicelist_title_paired_devices">已配对设备</string>
+    <string name="activity_devicelist_title_other_devices">其它设备</string>
+    <string name="activity_devicelist_button_scan">扫描蓝牙</string>
+    <string name="activity_devicelist_get_device_err">获取设备失败:</string>
+    <string name="activity_devicelist_none_paired">未配对设备</string>
+    <string name="activity_devicelist_select_device">设备列表</string>
+    <string name="activity_devicelist_scanning">扫描中......</string>
+
+    <string name="activity_main_tips">请连接打印机！</string>
+
+    <string name="str_wifi_ip">请输入IP：</string>
+    <string name="str_wifi_port">请输入端口号：</string>
+    <string name="str_confirm">确定</string>
+    <string name="str_cancel">取消</string>
+    <string name="str_printer_conn_normal">打印机连接正常</string>
+    <string name="str_printer_out_of_paper">打印机缺纸</string>
+    <string name="str_printer_open_cover">打印机开盖</string>
+    <string name="str_printer_error">打印机出错</string>
+    <string name="str_state">状态：</string>
+    <string name="str_printer_printmode_esc">打印模式:ESC</string>
+    <string name="str_printer_printmode_tsc">打印模式:TSC</string>
+    <string name="str_printer_printmode_cpcl">打印模式:CPCL</string>
+    <string name="str_cann_printer">请连接小票打印机</string>
+    <string name="str_choice_printer_command">请选择正确的打印机指令</string>
+    <string name="str_continuityprinter">连续打印:</string>
+    <string name="str_conn_fail">连接失败！</string>
+    <string name="str_disconnect_success">成功断开连接</string>
+
+</resources>
+

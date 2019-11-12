@@ -1,0 +1,152 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        /* 列表 */
+        .title span {
+            font-size: 16px;
+        }
+
+        span {
+            text-align: center;
+            word-wrap: break-word;
+            word-break: normal;
+        }
+
+        .list span {
+            font-size: 14px
+        }
+
+        .c21 {
+            color: #212121;
+        }
+
+        .c5c {
+            color: #5C5C5C
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>活动商品</div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <li class="title bg_hui paddt15 paddb15 paddl10 paddr10 flex-between">
+            <span style="width: 30% ">活动名称</span>
+            <span style="width: 20% ">活动商品</span>
+            <span style="width: 25%" onclick="model.px(this,1)">销量
+                <img src="./img/shop/jgsx.png" alt="" width="8" data=''>
+            </span>
+            <span style="width: 25%" onclick="model.px(this,2)">销售额
+                <img src="./img/shop/jgsx.png" alt="" width="8" data=''></span>
+        </li>
+        <div id='list'></div>
+
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+        model.init();
+    }
+    function pageresume() {
+        model.init();
+    }
+    var model = {
+        opt: {
+
+        },
+        init: function () {//
+            Comm.loading(true);
+            var url = '/bussiness/data/activity';
+            AJAX.POST(url, model.opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    if (res.data) $("#list").html(template("mainTpl", res.data))
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        px: function (a, type) {//排序  
+            if (type == '1') {// 销量排序
+                var f = $(a).find('img').attr('data');
+                if (f == '') {
+                    model.opt.orderType = '2';
+                    $(a).addClass('colordd').find('img').attr("src", "./img/shop/jiag.png").attr('data', '2');
+                } else if (f == '2') {
+                    model.opt.orderType = '1';
+                    $(a).addClass('colordd').find('img').attr("src", "./img/shop/jiage.png").attr('data', '1');
+                } else if (f == '1') {
+                    model.opt.orderType = '';
+                    $(a).removeClass('colordd').find('img').attr("src", "./img/shop/jgsx.png").attr('data', '');
+                }
+            } else if (type == '2') {//销售额排序
+                var f = $(a).find('img').attr('data');
+                if (f == '') {
+                    model.opt.orderType = '4';
+                    $(a).addClass('colordd').find('img').attr("src", "./img/shop/jiag.png").attr('data', '4');
+                } else if (f == '4') {
+                    model.opt.orderType = '3';
+                    $(a).addClass('colordd').find('img').attr("src", "./img/shop/jiage.png").attr('data', '3');
+                } else if (f == '3') {
+                    model.opt.orderType = '';
+                    $(a).removeClass('colordd').find('img').attr("src", "./img/shop/jgsx.png").attr('data', '');
+                }
+
+            }
+            model.init(type);
+        },
+    }
+    template.defaults.imports.resactivityType = function (v) {
+        // 1 预定 2 竞拍  4 搭配销售 8 团购 16 店铺买赠 32 满减 64 预售 128 秒杀 256 积分
+        var str = '';
+        switch (v) {
+            case '1': str = '预定'; break;
+            case '2': str = '竞拍'; break;
+            case '4': str = '搭配销售'; break;
+            case '8': str = '团购'; break;
+            case '16': str = '店铺买赠'; break;
+            case '32': str = '满减'; break;
+            case '64': str = '预售'; break;
+            case '128': str = '秒杀'; break;
+            case '256': str = '积分'; break;
+        }
+        return str;
+    };
+</script>
+
+
+<script type="text/html" id="mainTpl">
+            {{each $data as v k}}
+            <li class="list paddt15 paddb15 paddl10 paddr10 flex-between bottomBorder"
+                onclick="Comm.go('activityDetail.html?activityType='+{{v.activityType}})">
+                <span style="width: 30%" class="c5c">{{resactivityType(v.activityType)}}</span>
+                <span style="width: 20%" class="c5c">{{v.goodsNum}}</span>
+                <span style="width: 25%" class="c5c">{{v.num}}</span>
+                <span style="width: 25%" class="c5c">&yen;{{v.price}}</span>
+            </li>
+            {{/each}}
+
+</script>
+
+</html>

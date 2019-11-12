@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>商品报损</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        .navTitle {
+            font-weight: normal;
+        }
+
+        /* header */
+        /* section */
+        .cellContent {
+            height: 50px;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        .head,
+        .head>img {
+            height: 40px;
+            width: 40px;
+        }
+
+        .head {
+            overflow: hidden;
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+            color: #999;
+        }
+
+        .cellContent input,
+        #wx_id,
+        #sex,
+        #sj_id {
+            color: black;
+        }
+
+        .isInvoice {
+            width: 40px;
+            float: right;
+        }
+
+        /* footer */
+        .save {
+            height: 45px;
+            line-height: 45px;
+            border-radius: 10px;
+        }
+
+        #list span {
+            display: inline-block;
+            width: 30%;
+            text-align: center;
+        }
+
+        #list input {
+            display: inline-block;
+            width: 30%;
+            text-align: center;
+        }
+
+        .border {
+            border: 1px solid #EBEBEB;
+            border-radius: 20px;
+            width: 90px;
+        }
+
+        #numberBox {
+            border-radius: 5px;
+            background-color: #fff;
+            padding: 20px;
+            position: relative;
+        }
+
+        textarea {
+            border: 0px;
+            width: 100%;
+            height: 100px;
+            padding: 5px;
+        }
+
+        .closeimg {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">商品报损</div>
+        </div>
+    </header>
+    <section id='' class="bg_hui ">
+        <div class="_paddl15 bg_white ">
+            <div class="  cellContent  bottomBorder ">
+                <div class="paddl15 label f16  indicator icon_pre icon_name ">商品名称</div>
+                <!-- <input type="text" maxlength="" readonly name="goodsName" data-reg='' placeholder="" id="goodsName"
+                    value=""> -->
+                <div name="goodsName" id="goodsName"></div>
+            </div>
+        </div>
+        <div id="list"></div>
+    </section>
+    <footer class="shared paddl15 paddt5 paddb5 paddr15">
+        <div class="bgdd-ef save center colorfff f16" onclick="model.save()">提交</div>
+    </footer>
+    <!-- 数量输入框 -->
+    <div id="numberBox" wtd="addNumber" class="bottomShadow">
+        <div>
+            <div class="center lh30 f18" id="tkTitle">报损数量</div>
+            <input type="number" class="lh40 border mart10 marb20 center f18" id="num" style="width: auto;" number
+                onkeyup="model.onkeyup(this)" />
+            <div>
+                <button style="border: 0px;width: 150px;" onclick="qkaddsubWin(this)">确定</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/dict.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<script src="../inc/upimg/upload.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo"),
+        goodsId = Comm.query("goodsId");
+
+    function pageresume() {
+    }
+
+    function pageload() {
+        model.init()
+        GDict.init(function () {
+            d = GDict.get("baosunyy")
+            $.each(d, function (i, v) {
+                model._why.push({
+                    text: v.dictname,
+                    i: v.dictid
+                })
+
+            })
+            model.why = new Commpicker("选择供应商类别", [model._why], function (obj, name, sid) {
+                console.info(obj, name, sid, $("#whyReasons"))
+                $("#whyReasons").val(name).attr("data", sid);
+            })
+        })
+    }
+    var model = {
+        _why: [],
+        _upimgNum: 0,
+        upimg: function () {//
+            var uploader = new imgUploader("conimg", 5 - model._upimgNum, "imgupimg");
+            uploader.success = function () {
+                if (this.imgList.length > 0) {
+                    $.each(this.imgList, function (i, v) {
+                        $("#conimg").prepend(template('imgTpl', {
+                            src: v
+                        }))
+                        Comm.iosInput();
+                        model._upimgNum++;
+                    })
+                }
+                if (model._upimgNum == 5) {
+                    $("#upm").hide();
+                } else {
+                    $("#upm").show().find('.moxie-shim').width(80).height(80);
+                }
+                var basepics = [];
+                $("#conimg .upimg").each(function (i, e) {
+                    basepics.push($(e).attr("data"));
+                })
+                $("#shopPicture").val(basepics.join(","))
+                model.upimg()
+            }
+        },
+        init: function () {
+            var opt = {
+                goodsId: goodsId
+            }
+            AJAX.POST("/bussiness/goods/getById", opt, function (res) {
+                if (res.code == 1) {
+                    $("#goodsName").html(res.data.goodsName)
+                    if (res.data.ifFlowerCategory == "1") {
+                        $("#list").html(template("singularTpl", res.data.skus))
+                    } else {
+                        $("#list").html(template("complexTpl", res.data.skus))
+                    }
+                    model.upimg();
+                    Comm.iosInput();
+                }
+            })
+        },
+        save: function () {
+            var data = Check.submit("POST")
+            if (!data) {
+                return
+            }
+            var opt = {
+                stocks: []
+            },
+                flag = false;
+            var pics = [];
+            $("#conimg .upimg").each(function (i, e) {
+                pics.push($(e).attr("data"));
+            })
+            if(pics.length=="0"){
+                Comm.message("请上传报损图片~")
+                return
+            }
+            $.each($("#list [name=num]"), function (i, v) {
+                var num = $(v).html().trim();
+                if (num == "" || num == "0") flag = true;
+                opt.stocks.push({
+                    shunStock: num,
+                    goodsSkuId: $(v).attr("data"),
+                    resonsId: $("#whyReasons").attr("data"),
+                    info: $("#info").val(),
+                    pics:pics.join(","),
+                })
+            })
+            opt.stocks = JSON.stringify(opt.stocks)
+            if (flag) {
+                Comm.message('请设置报损数量~')
+                return
+            }
+            console.info(opt)
+            AJAX.POST("/bussiness/goods/updateStockShun", opt, function (res) {
+                if (res.code == 1) {
+                    Comm.message("设置成功~")
+                    Comm.close()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        onkeyup: function (el) {
+            var reg = /^\d+$/;
+            var flag = reg.test(el.value);
+            if (!flag) {
+                Comm.message("请输入正整数~")
+                el.value = el.value.slice(0, el.value.length - 1)
+            }
+        },
+        choiceWhy: function () {
+            model.why.show()
+        }
+    }
+    // 弹出数量输入框
+    function addsub(a, v) {
+        this.divnum = a;
+        var num = $(a).text().trim();
+        if (num == "0") {
+            num = ''
+        }
+        Comm.showWindow('addNumber', true)
+        $("#WTDBOX #num").val(num);
+
+    }
+    function qkaddsubWin(a) {
+        console.info($(a).parent().siblings("input"))
+        var num = $(a).parent().siblings("input").val() * 1;
+        var stock = $(".num").attr("stock");
+        if (num > 0) {
+
+            Comm.showWindow(false)
+            if (num > stock) {
+                Comm.message("超出最大库存数量")
+                return
+            }
+            $(this.divnum).html(num)
+
+        } else {
+            Comm.message('输入数量必须大于0')
+        }
+    }
+    // 加减框
+    function addNum(a, i) {//加减
+        var num = $(a).parent().find('.num').html().trim() * 1 + i;
+        var stock = $(a).parent().find('.num').attr("stock");
+        if (num >= 0) {
+            if (num > stock) {
+                Comm.message("超出最大库存数量")
+                return
+            }
+            $(a).parent().find('.num').html(num);
+        }
+    }
+
+    //移除凭证
+    function removeimg(a) {
+        $(a).parent().remove();
+        model._upimgNum--;
+        $("#upm").show().find('.moxie-shim').width(80).height(80);
+        if (model._upimgNum != 5) {
+            $("#upm").removeClass("hide")
+        }
+        model.upimg()
+
+    }
+</script>
+<script type="text/html" id="singularTpl">
+
+    <div class="paddl15 bg_white " onclick="model.choiceWhy()">
+        <div class="cellContent indicator bottomBorder ">
+            <div class="label f16  indicator icon_pre icon_name ">报损原因</div>
+            <input type="text"  readonly name="whyReasons" data-reg='empty' placeholder="请选择报损原因" id="whyReasons"
+                value="" data="" style="text-align:right;width:auto;background-color:white" >
+        </div>
+    </div>
+    {{each $data as v i}}
+    <div class="paddl15 bg_white ">
+        <div class="cellContent  bottomBorder ">
+            <div class="label f16  indicator icon_pre icon_name ">报损数量(当前库存:{{v.stock}})</div>
+            <!-- <input type="text" maxlength="11" readonly name="stock" data-reg='' placeholder="" id=""
+                value="" style="max-width:80px;text-align:right"> -->
+                <div class="fr dflex lh25 border">
+                    <div onclick="addNum(this,-1)" class="paddl5 paddr5" style="padding-bottom:3px">
+                        <img src="img/cart-jian.png" width="12">
+                    </div>
+                    <span class="num" onclick="addsub(this,'3')" value="0" name="num"  data="{{v.goodsSkuId}}" stock="{{v.stock}}">
+0
+                    </span>
+                    <!-- <input class="num" onclick="addsub(this,'3')" value="0" name="num"  data="{{v.goodsSkuId}}" stock="{{v.stock}}" /> -->
+                    <input type="text" class="hide" readonly placeholder="请输入报损数量" name="stock" value="" data="{{v.goodsSkuId}}" data-reg='' />
+                    <div onclick="addNum(this,1)" class="paddl5 paddr5" style="padding-bottom:3px">
+                        <img src="img/cart-jia.png" width="12">
+                    </div>
+                </div>
+        </div>
+    </div>
+    {{/each}}
+    <!-- 商品图片 -->
+    <div class="paddl15 bg_white bottomBorder" onclick="">
+        <div class="cellContent    ">
+            <div class="label f16  indicator icon_pre icon_name ">报损图片</div>
+        </div>
+        <div class="  paddr10">
+            <div class="clearfix  paddt10" id="conimg">
+                <div class="left marr10 marb10" id="upm">
+                    <img src="./img/xztp.png" width="80" height="80" id="imgupimg" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="paddl10  mart5 paddr10" >
+        <textarea placeholder="请输入详情..." class="bg_white f14 " id="info" name="info" data-reg='empty'></textarea>
+    </div>
+    
+</script>
+<script type="text/html" id="complexTpl">
+    <div class="paddl15 bg_white " onclick="model.choiceWhy()">
+        <div class="cellContent indicator bottomBorder ">
+            <div class="label f16  indicator icon_pre icon_name ">报损原因</div>
+            <input type="text"  readonly name="whyReasons" data-reg='empty' placeholder="请选择报损原因" id="whyReasons"
+            value="" data="" style="text-align:right;width:auto;background-color:white" >
+        </div>
+    </div>
+    <div class="mart5 flex-between bg_white paddl15 paddr15 bottomBorder" style="height:50px">
+        <span>规格</span>
+        <span>当前库存</span>
+        <span>报损数量</span>
+    </div>
+    {{each $data as v i}} 
+    <div class="flex-between bg_white paddl15 paddr15 bottomBorder" style="height:50px">
+        <span>{{v.keyValue}}</span>
+        <span>{{v.stock}}</span>
+        <!-- <input value="0" type="text" maxlength="11"  name="num" data-reg='empty' data="{{v.goodsSkuId}}"/> -->
+        <span type="text" maxlength="11"  name="num" data-reg='empty' data="{{v.goodsSkuId}}" onclick="addsub(this,'3')" style="min-width:30px">0</span>
+    </div>
+    {{/each}}
+    <!-- 商品图片 -->
+    <div class="paddl15 bg_white bottomBorder" onclick="">
+        <div class="cellContent    ">
+            <div class="label f16  indicator icon_pre icon_name ">报损图片</div>
+        </div>
+        <div class="  paddr10">
+            <div class="clearfix  paddt10" id="conimg">
+                <div class="left marr10 marb10" id="upm">
+                    <img src="./img/xztp.png" width="80" height="80" id="imgupimg" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="paddl10  mart5 paddr10" >
+        <textarea placeholder="请输入详情..." class="bg_white f14 " id="info" name="info" data-reg='empty'></textarea>
+    </div>
+</script>
+<script id="imgTpl" type="text/html">
+    <div class= "left marr10 marb10" style="position:relative;">
+        <img src="./img/close.png" width="20" class="closeimg" onclick="removeimg(this)" />
+        <img class="upimg" src="{{OSS(src,'d')}}" width="80" height="80" data="{{src}}"/>
+    </div>
+</script>
+
+</html>

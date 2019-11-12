@@ -1,0 +1,323 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        .navTitle {
+            font-weight: normal;
+        }
+
+        .navItemIcon {
+            background: inherit;
+        }
+
+        .goodimg {
+            width: 90px;
+            height: 90px;
+            border-radius: 5px;
+        }
+
+        /* 列表 */
+
+        .listinfo {
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .listinfo>p {
+            /* width: 100% */
+        }
+
+        .dfleximg {
+            width: 6px;
+            height: 11px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>参与竞采</div>
+        </div>
+    </header>
+
+    <section class='' id='box'>
+        <span class="f12 paddt10 paddb10 paddl15 block" style="background: #FFF2EB;color:#E66416"
+            id="jcNum">可参与商品(0)</span>
+        <div class="bg_hui" id="list">
+
+        </div>
+    </section>
+    <footer>
+        <div class="left verticalP" style="width:70%;line-height: 44px;">
+            <span class="colordd f16 bold" style="padding-left: 20px;" id='count'>合计：0</span>
+            <span class="vertical cartNum  colorfff t-a-c hide" id="cartNum"></span>
+        </div>
+        <div class="right" style="width:30%">
+            <button style="width: 100%;border:0px;border-radius: 0px;" onclick="model.godetail()"
+                class="f18">提交</button>
+        </div>
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script src='../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+        GDict.init(function () {
+            model.getGoodsList()
+        })
+
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        jincaiName: Comm.db("jincaiName"),
+        jinNum:Comm.query("jinNum"),
+        opt: {
+            stockxu: "0",
+            timexu: '0',
+            goodsName: Comm.db("jincaiName"),
+            state: '1',
+        },
+        getGoodsList: function () {// 获取可参与的商品
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/bussiness/goods/listAndSkus',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.opt;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    console.info(d.data)
+                    $.each(d.data, function (i, v) {
+                        if (v.descript != '') {
+                            try {
+                                d.data[i].descript = JSON.parse(v.descript)
+                            } catch (error) {
+                                d.data[i].descript = {}
+                            }
+                        }
+
+                    })
+                    $("#jcNum").html("可参与商品(" + d.data.length + ")")
+                    var h = template('goodTpl', d.data);
+                    refresh.appendHtml(h);
+                };
+            } else {
+                // model.opt.keyword = keyword;
+                model.mere.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+        addNum: function (a, i, skuid, price) {
+            //加减
+            // 
+            var num =
+                $(a)
+                    .parent()
+                    .find("input")
+                    .val() *
+                1 +
+                i;
+            if (num >= 0) {
+                $(a)
+                    .parent()
+                    .find("input")
+                    .val(num);
+                model.jcPush(skuid, price, num)
+            }
+            model.count()
+        },
+        inputNum: function (obj, type,skuid, price) {//判断输入数字
+            var str = $(obj).val();
+            //console.info(str)
+            if (str <= 0) {
+                Comm.message("请输入大于0的值~")
+                $(obj).val('');
+                model.count()
+                return
+            }
+            if (type == "1") {
+                if (str.indexOf(".") != "-1") {
+                    Comm.message("请输入整数~")
+                    $(obj).val('');
+                    model.count()
+                    return
+                }
+            } else if (type == "2") {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val('')
+                        model.count();
+                        return
+                    }
+                }
+            }
+            model.jcPush(skuid, price, str)
+            model.count()
+        },
+        count: function () {//计算 竞彩总价
+            var l = $('[name=skuName]');
+            var price = num = 0;
+
+            $.each(l, function (i, v) {
+                price += Number($(v).attr("price")) * Number($(v).find("[name=jcNum]").val());
+
+            })
+            $("#count").html("合计：" + price)
+        },
+        arr: [],//参与竞彩的商品
+        jcPush: function (skuid, price, num) {//竞彩push
+
+            model.arr = $.grep(model.arr, function (v, i) {
+                return v.goodsSkuId != skuid
+            })
+            if(num=='0')return
+            model.arr.push({
+                goodsSkuId: skuid,
+                jinNum: num,
+                singlePrice: price,
+            })
+        },
+        godetail: function () { // 提交竞彩
+            Comm.loading(true);
+            var _num=0;
+            $.each(model.arr,function(i,v){
+                _num+=v.jinNum*1;
+            })
+            if(_num*1>model.jinNum*1){
+                Comm.message("超出竞彩数量~");
+                Comm.loading(false);
+                return
+            }
+            if(_num=='0'){
+                Comm.message("请至少选择一个参与竞采的商品~");
+                Comm.loading(false);
+                return
+            }
+            var url = '/bussiness/jincai/add'
+            opt = {
+                jinCaiId: Comm.query("jinCaiId"),
+                goodses: JSON.stringify(model.arr)
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("提交成功~");
+                    Comm.close()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+    }
+    template.defaults.imports.resetNum = function (v) {
+        if (!v) {
+            return ""
+        }
+        return Number(v);
+    };
+</script>
+
+<script type="text/html" id="goodTpl">
+    {{each $data v k }}
+    <div class="clearfix pad10 marb5 bg_white" name="listinfo" data="{{v.goodsId}}" style="padding-right:0px">
+        <div style="" class="verticalP">
+            <!-- <div class='quan decir inblock left' style="margin-top:55px" onclick="model.checked(this)"></div> -->
+            <div class="fl center marr10  clearFloat" style=";position:relative" >
+                <img src="{{OSS(v.img)}}" class="goodimg" onerror="app.errorimg(this)"> 
+            </div>
+            <div class="listinfo clearFloat">
+                <p class="wordW f16" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')" style="width: calc(100% - 30px);">
+                    <span class="f16 bold c333333" >{{v.goodsName}}&nbsp;{{v.versionNumber}}</span>
+                </p>
+                <p class="lh20 wordW2" style="max-height: 40px;" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                    {{if(v.grade&&v.grade!='-1')}}
+                    <span class="color999 f12 inblock">等级:{{getItemName(v.grade)}}</span> {{/if}} {{if(v.maturity&&v.maturity!='-1')}}
+                    <span class="color999 f12 inblock">成熟度:{{getItemName(v.maturity)}}</span> {{/if}} {{if(v.color&&v.color!='-1')}}
+                    <span class="color999 f12 inblock">颜色:{{getItemName(v.color)}}</span> {{/if}}
+                     {{if(v.speci*1>0)}}
+                    
+                    <span class="color999 f12 inblock">规格:{{(v.speci)}}/{{v.company}}</span>
+                     {{/if}}
+                     {{if(v.weight>0)}}
+                    <span class="color999 f12 inblock">重量:{{(v.weight)}}g</span> 
+                    {{/if}} 
+                    {{if(v.keyValue)}}
+                    <span class="color999 f12 inblock hide">规格:{{(v.keyValue)}}</span>
+                     {{/if}}
+                </p>
+                <p class="lh20 wordW2 " _style="width:calc(100% - 40% - 5px)">
+                    {{if v.descript.length!='0'}}
+                    <span class=" inblock wordW" style="width:calc(100%)">
+                    {{each v.descript as m n}}
+                    <span class="color999 f12">{{m.keyName}}:{{m.value}}</span> {{/each}}
+                    </span>
+                    {{/if}}
+                </p>
+                <p class="hide" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                    <span class="f12 colorred borred">团</span>
+                    <span class="f12 colorred borred">秒杀</span>
+                    <span class="f12 colorred borred">预售</span>
+                </p>
+                <!-- <div class="" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                        <span class="f12 colordd" style="">&yen;<span name="jcPrice" class="f16 colordd" style="vertical-align: bottom;">{{v.price|resetNum}}</span></span>
+                        <span class="inblock marl30 right marr15"> 
+                                <span class="f12 marl5 c21">数量：</span>
+                                <img src="img/cart-jian.png" width="12" style="" onclick="model.addNum(this,-1,{{v.goodsId}})">
+                                <input type="number" name="jcNum" class="num t-a-c" id="" style="height:17px;width:35px;background:#F2F2F2;padding-right:0px;vertical-align: bottom;" class="inblock t-a-c" placeholder="{{v.num||'0'}}" value="{{v.num||'0'}}"  data-reg="empty" onchange="model.inputNum(this,1)">
+                                <img src="img/cart-jia.png" width="12" style="" onclick="model.addNum(this,1,{{v.goodsId}})">
+                            </span>
+                </div> -->
+            </div>
+        </div>
+        <!-- 规格 -->
+        {{each v.skus as m n }}
+                <div class="mart5 bottomBorder paddb5 " name="skuName" data="{{m.goodsSkuId}}" price="{{m.price}}" style="max-height:45px">
+                    <p class="{{!m.keyValue?'hide':''}}">
+                        <span>规格：{{m.keyValue}}</span>
+                    </p>
+                    <p>
+                        <span style="width:60%" class="inblock">
+                            <span style="" class="inblock ">价格：&yen;{{m.price}}</span>
+                            <span _style="width:25%" class="inblock ">库存：{{m.stock}}</span>
+                        </span>
+                        <span class="inblock   marr15 " style="vertical-align: inherit;" > 
+                                <span class="f12 _marl5 c21">数量：</span>
+                                <img src="img/cart-jian.png" width="12" style="" onclick="model.addNum(this,-1,{{m.goodsSkuId}},{{m.price}})">
+                                <input type="number" name="jcNum" class="num t-a-c" id="" style="height:17px;width:35px;background:#F2F2F2;padding-right:0px;vertical-align: bottom;" class="inblock t-a-c" placeholder="{{v.num||'0'}}" value="{{v.num||'0'}}"  data-reg="empty" onchange="model.inputNum(this,1,{{m.goodsSkuId}},{{m.price}})">
+                                <img src="img/cart-jia.png" width="12" style="" onclick="model.addNum(this,1,{{m.goodsSkuId}},{{m.price}})">
+                            </span>
+                    </p>
+                </div>
+        {{/each}}
+    </div>
+    {{/each}}
+</script>
+
+</html>

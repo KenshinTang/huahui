@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>商品管理</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        .navTitle {
+            font-weight: normal;
+        }
+
+        .navItemIcon {
+            background: inherit;
+        }
+
+        .searchBar {
+            margin: 0 auto;
+        }
+
+        .sousuoText {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            display: inline-block;
+        }
+
+        .searchBar {
+            margin: 0 auto;
+        }
+
+        .searchBar input {
+            width: 95%;
+            padding-left: 30px;
+            line-height: 30px;
+            height: 30px;
+            font-size: 14px;
+            color: #8891A7;
+            background-color: #F2F6F7;
+            border-radius: 18px;
+            background-image: url('img/search.png');
+            background-repeat: no-repeat;
+            background-size: 14px;
+            background-position: 10px center;
+            margin: 0 auto;
+            margin-left: 2.5%;
+        }
+
+        .pad10ed {
+            padding: 10px 10px 1 0px 10px;
+        }
+
+        .active {
+            display: inline-block;
+            /*border-bottom: 3px solid #DD1474;*/
+            color: #DD1474;
+        }
+
+        .goodimg {
+            width: 90px;
+            height: 90px;
+            border-radius: 5px;
+        }
+
+        .borred {
+            border: 1px solid #DD1474;
+            padding: 0 5px;
+            border-radius: 5px;
+        }
+
+        #WTDBOXTD {
+            width: 100%;
+            position: absolute;
+            right: 0px;
+            /* top: 0px; */
+            bottom: 0px;
+            padding: 0px 10px;
+        }
+
+        #sinbox {
+            /* height: 100%; */
+            padding: 0px;
+            background-color: rgba(221, 122, 122, 0);
+        }
+
+        span.line {
+            width: calc(32% - 10px);
+            display: inline-block;
+            text-align: center;
+            border-radius: 15px;
+            background-color: #F5F5F5;
+            margin-bottom: 10px;
+            margin-left: 10px;
+            line-height: 25px;
+        }
+
+        span.cur {
+            color: #DD1474;
+            border: 1px solid #DD1474;
+            background-color: #FFEBF4;
+        }
+
+        .bgF5F5F5 {
+            background-color: #F5F5F5;
+            border-radius: 20px;
+        }
+
+        .spgl {
+            width: 30px;
+            display: inline-block;
+            position: absolute;
+            right: 0px;
+            top: 50%;
+            padding: 0px 15px 0px 15px;
+            box-sizing: content-box;
+            transform: translateY(-50%);
+        }
+
+        .btn-list {
+            width: 100%;
+            display: flex;
+            /* flex-direction: row-reverse; */
+            justify-content: flex-end;
+        }
+
+        .btn-list div {
+            width: 70px;
+            text-align: center;
+            padding: 2px 5px;
+            border: 1px solid #f2f2f2;
+            margin-left: 10px;
+            border-radius: 15px;
+        }
+
+        .btn {
+            border: 0;
+            padding: 0 5px;
+            border-radius: 5px;
+            line-height: normal;
+            height: auto;
+            width: auto;
+            font-size: 12px;
+        }
+
+        .Tbtn,
+        .close {
+            border-radius: 5px;
+            background-color: white;
+        }
+
+        .Tbtn p,
+        .close p {
+            padding: 10px 0px;
+        }
+
+        .lowerShelf {
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            border-radius: 50%;
+            background: rgba(00, 00, 00, 0.5);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px
+        }
+
+        /* 列表 */
+
+        .listinfo {
+            /* height: 90px; */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .listinfo>p {
+            /* width: 100% */
+        }
+
+        .dfleximg {
+            width: 6px;
+            height: 11px;
+        }
+
+        /* foot */
+
+        /* foot */
+
+        .foot {
+            width: 100%;
+            height: 50px;
+            line-height: 40px;
+            /* display: flex;
+            justify-content: space-between; */
+            /* position: absolute; */
+            /* bottom:53px; */
+        }
+
+        .foot-left {
+            width: 40%;
+        }
+
+        .check-text {
+            /* width: 100px; */
+            height: 40px;
+        }
+
+        .foot-right {
+            width: 20%;
+            border-radius: 5px;
+            color: #fff;
+            margin-right: 5px;
+        }
+
+        /* 添加商品 */
+        .addGood {
+            width: 45px;
+            height: 45px;
+            position: absolute;
+            z-index: 9999;
+            bottom: 60px;
+            left: calc(100% - 55px);
+            font-size: 13px;
+            padding-top: 3px;
+            background: url("./img/tjsp.png") no-repeat;
+            background-size: contain;
+        }
+
+        .searchBar input {
+            width: 80%;
+            padding-left: 30px;
+            line-height: 30px;
+            height: 30px;
+            font-size: 14px;
+            color: #8891A7;
+            background-color: #F2F6F7;
+            border-radius: 18px;
+            background-image: url('img/search.png');
+            background-repeat: no-repeat;
+            background-size: 14px;
+            background-position: 10px center;
+            margin: 0 auto;
+            margin-left: 2.5%;
+        }
+
+        /* color */
+        .color333 {
+            color: #333333;
+        }
+
+        .c21 {
+            color: #212121;
+        }
+
+        /* foot cart */
+        footer {
+            height: 44px;
+            overflow: initial !important;
+            z-index: 10001;
+            background: #ffffff;
+        }
+
+        .cartNum {
+            top: 4px;
+            left: 35px;
+            border-radius: 50%;
+            width: 17px;
+            height: 17px;
+            line-height: 17px;
+            background: #F80C01;
+            font-size: 10px;
+        }
+
+        .inblock {
+            padding-right: 0px
+        }
+
+        /* 弹框 */
+        #WTDBOXTD {
+            padding: 0px 0px;
+            bottom: 44px;
+        }
+    </style>
+</head>
+
+<body style="position: relative">
+    <header class="bg_hui">
+        <div class="navBar bottomShadow bg_white" style="padding: 0;box-shadow: none;position: relative;" name="search">
+            <div class="navBackIcon" _onclick="Comm.close()" onclick="Comm.gotop('index.html')"></div>
+            <div class="nav-title block searchBar" style="width: calc(100% - 100px);height: 44px;position: relative;"
+                id="searchBar">
+                <form action="javascript:return true;" onsubmit="model.inpueSerch()">
+                    <input id="id_searchInput" type="search" placeholder="请输入商品名称">
+                </form>
+                <div class="navItemIcon marl5 marr10 colorred" onclick="model.inpueSerch()"
+                    style="position: absolute;right:calc(5% + 10px);top:0px">搜索</div>
+            </div>
+            <!-- <div class='navTitle'>新建订单</div> -->
+            <span class="vertical f14 colordd" style="right:10px" onclick="Comm.go('newOrderList.html?t=1')"
+                id='orderList'>订单列表</span>
+        </div>
+        <div class="bg_hui paddt10 paddb10 paddl15 verticalP" style="" id="title">
+            <span class="color999">当前为：全部分类</span>
+            <img src="./img/close.png" alt="" style="width: 15px;height: 15px;border-radius: 50%;display: none"
+                onclick="model.regoodsList(this)">
+            <img class="vertical" style="right: 10px;" onclick="Comm.go('class.html?type=4')" src="./img/wer.png"
+                width="20" />
+        </div>
+    </header>
+    <section class="mescroll bg_hui" id="box">
+        <div class="list" id="list">
+
+        </div>
+    </section>
+    <div id="skuBox" wtd="skuBoxWTD" class="bottomShadow">
+
+    </div>
+    <footer>
+        <div class="left verticalP" style="width:70%;line-height: 44px;">
+            <img src="./img/gwc.png" alt="" style="width: 40px;top:15px;left:10px;" class="vertical "
+                onclick='model.showCart()'>
+            <span class="colordd f14 bold" style="padding-left: 60px;" id='cartPrice'>合计：0</span>
+            <span class="vertical cartNum  colorfff t-a-c hide" id="cartNum"></span>
+        </div>
+        <div class="right" style="width:30%">
+            <button style="width: 100%;border:0px;border-radius: 0px;" onclick="model.godetail()">创建订单</button>
+        </div>
+    </footer>
+
+    <div id="cartBox" wtd="cartBoxWTD" class="bottomShadow">
+    </div>
+
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/art-template.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<script>
+    var userinfo = Comm.db("userinfo"),
+        isSearch = Comm.query("search"),
+        shopName = Comm.db("_cataName"),
+        state = Comm.query("state"),
+        isback = Comm.query("isback"),
+        t = Comm.query("t"),
+        categoryId = Comm.query("cid");
+
+
+    function pageload() {
+        // screeningTime = new Datepicker("选择时间", function (a, b, c) {
+        //     $("#WTDBOX #start").val(b);
+        //     $("#screeningTime").find("span").addClass("active")
+        //     $("#screeningTime").find("img").attr('src', 'img/shop/dps.png')
+        //     model.check = {
+        //         elm: $("#screeningTime"),
+        //         i: 6
+        //     }
+        //     model.opt.time = b;
+        //     model.search();
+        // })
+        GDict.init(function () {
+            model.getcar()
+
+
+        })
+        if (t == '5') {
+            $('footer').hide();
+            $("#orderList").hide();
+            $("#searchBar").find("input").css("width", "100%");
+            $("#searchBar").find("div").css("right", "0px");
+
+            Comm.resizeSection()
+        }
+        //console.info(shopName)
+        if (shopName) {
+            $("#title").find("span").html("当前为：" + shopName)
+            $("#title").find("img").show()
+        }
+        // pageresume()
+    }
+
+    function pageresume() {
+        // 
+        function androidback() {
+            Comm.close(); 
+        }
+        model.cartGoodsId = Comm.db("cartGoodsId");
+        // model.getcar()
+        model.search()
+        model.countCartNum()
+        
+    }
+    function androidback() {
+            Comm.close(); 
+    }
+    var model = {
+        cartGoodsId: Comm.db("cartGoodsId"),
+        opt: {
+            categoryId: Comm.query("cid"),
+            stockxu: '0',
+            timexu: '0',
+            state: 1
+        },
+        optList: {
+            categoryId: categoryId
+        },
+        listNum: function () {//查询销售中 已下架的商品数量
+            var url = '/bussiness/goods/listNum',
+                opt = model.optList;
+            AJAX.POST(url, opt, function (res) {
+                if (res.code == 1) {
+                    if (res.data) {
+                        $("#upperLower").html(template('upperLowerTpl', res.data));
+                        model.defFoot(3)
+                    }
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        detail: function () {//默认上级搜索商品名
+            AJAX.POST("/bussiness/bussiness/detail", {
+                customerId: userinfo.customerId
+            }, function (res) {
+                if (res.code == 1) {
+                    model.state = res.data.state
+                    if (isSearch == "1") {
+                        var sear = Comm.db("serchtext")
+                        model.inpueSerch(sear)
+                    }
+                }
+            })
+        },
+        search: function () {
+            // var keyword = $("#id_searchInput").val();
+            $("#id_searchInput").val("")
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/bussiness/goods/list',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.opt;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    var temp = null;
+                    model.data = d.data;
+                    if (model.cartGoodsId) temp = model.cartGoodsId;
+                    $.each(model.data, function (i, v) {
+                        if (v.descript != '') {
+                            try {
+                                model.data[i].descript = JSON.parse(v.descript)
+                            } catch (error) {
+                                model.data[i].descript = {}
+                            }
+                        }
+                        model.data[i].t = t
+                        $.each(temp, function (m, n) {
+                            if (v.goodsId == n.goodsId && n.ifFlowerCategory == '1') {
+                                model.data[i].isadd = 1;
+                                model.data[i].price = n.price;
+                                model.data[i].num = n.num;
+                            }
+                        })
+                    })
+                    console.info(model.data)
+                    var h = template('goodTpl', model.data);
+                    refresh.appendHtml(h);
+                };
+            } else {
+                // model.opt.keyword = keyword;
+                model.mere.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+        inpueSerch: function (v) {
+            //console.info(v)
+            if (v) {
+                model.opt.goodsName = v;
+                model.search()
+
+            } else {
+                model.opt.goodsName = $("#id_searchInput").val();
+                // if (!model.opt.goodsName) {
+                //     Comm.message("请输入搜索内容~")
+                //     return
+                // }
+                model.search()
+            }
+        },
+        no: function () {
+            Comm.message("暂未开放,敬请期待~")
+        },
+        cleanDB: function () {
+            Comm.db("category", null)
+            Comm.db("categoryId", null)
+            Comm.db("ifFlower", null)
+        },
+        regoodsList: function (el) {
+            // alert(5)
+            $("#title").find("span").html("当前为：全部分类")
+            $(el).hide();
+            model.optList.categoryId = '';
+            model.opt.categoryId = '';
+            categoryId = '';
+            model.getcar();
+        },
+        addCartGoods: function (obj) { //列表添加
+            // type 1 添加 2 删除 elm 节点 goodsName 商品名 goodsId 商品id price 商品价格
+            if(obj&&obj.stock=="0"){
+                Comm.message("库存不足~");
+                return;
+            }
+            model._goodsId = obj.goodsId;
+            Comm.loading(true);
+            var arr = [];
+            if (model.cartGoodsId) {
+                arr = model.cartGoodsId;
+            }
+            if (obj.type == '1') {
+                var url = '/bussiness/goods/getById';
+                opt = {
+                    goodsId: obj.goodsId,
+                };
+                AJAX.POST(url, opt, function (res) {
+                    Comm.loading(false);
+                    if (res.code == 1) {
+                        var d = res.data;
+                        if (res.data.ifFlowerCategory == 1) {
+                            arr.push({
+                                "goodsId": d.goodsId,
+                                "goodsName": d.goodsName,
+                                "goodsSkuId": d.skus[0].goodsSkuId,
+                                "num": 1,
+                                'img': d.img,
+                                'ifFlowerCategory': d.ifFlowerCategory,
+                                "price": d.skus[0].price[d.skus[0].price.length - 1].price,
+                                "bussinessId": userinfo.bussinessId,
+                            });
+                            if (obj.type == '1') {
+                                $(obj.elm).addClass('hide');
+                                $(obj.elm).parent().find('div[name=isadd]').addClass('hide').next().removeClass('hide')
+                            } else {
+                                arr = $.grep(arr, function (v, i) {
+                                    if (obj.goodsSkuId) {
+                                        return v.goodsSkuId != obj.goodsSkuId
+                                    }
+                                    if (obj.goodsId) {
+                                        return v.goodsId != obj.goodsId
+                                    }
+
+                                })
+                            }
+                            model._elm = $(obj.elm).parents("[name=listinfo]");
+                            model.cartGoodsId = JSON.stringify(arr);
+                            model.cartGoodsId = arr;
+                            Comm.db("cartGoodsId", model.cartGoodsId);
+                            model.countCartNum({ "type": 1, "goodsSkuId": d.skus[0].goodsSkuId });
+                        } else {
+                            model.tempdata = d;
+                            model.showSku(d);
+
+                        }
+
+
+                    } else {
+                        Comm.message(res.msg)
+                    }
+                })
+            } else {
+                if (obj.type == '1') {
+                    $(obj.elm).addClass('hide');
+                    $(obj.elm).parent().find('div[name=isadd]').addClass('hide').next().removeClass('hide')
+                } else {
+                    $.each(arr, function (i, v) {
+                        if (v.goodsSkuId == obj.goodsSkuId) {
+                            model.jianor(v, 1)
+                        }
+                    })
+                    arr = $.grep(arr, function (v, i) {
+                        if (obj.goodsSkuId) {
+                            return v.goodsSkuId != obj.goodsSkuId
+                        }
+                        if (obj.goodsId) {
+                            return v.goodsId != obj.goodsId
+                        }
+
+                    })
+                }
+                model.cartGoodsId = JSON.stringify(arr);
+                model.cartGoodsId = arr;
+                Comm.db("cartGoodsId", model.cartGoodsId)
+                //console.info(arr)
+                model.countCartNum();//1 表示删除
+                Comm.loading(false)
+            }
+
+
+        },
+        addsku: function (obj) {//规格 添加
+            //console.info("xx", obj)
+            if(obj.stock=="0"){
+                Comm.message("库存不足~");
+                return;
+            }
+            model._isdianjiFrom ='3';
+            var _id = "";
+            var arr = [];
+            if (model.cartGoodsId) {
+                arr = model.cartGoodsId;
+            }
+            $.each(model.tempdata.skus, function (i, v) {
+                if (i == obj.index) {
+                    _id = v.goodsSkuId;
+                    arr.push({
+                        "goodsId": v.goodsId,
+                        "goodsName": model.tempdata.goodsName,
+                        "goodsSkuId": v.goodsSkuId,
+                        "keyValue": v.keyValue,
+                        "num": 1,
+                        'img': v.pics,
+                        'ifFlowerCategory': model.tempdata.ifFlowerCategory,
+                        "price": v.price[v.price.length - 1].price,
+                        "bussinessId": userinfo.bussinessId
+                    });
+                }
+            })
+            if (obj.type == '1') {
+                $(obj.elm).addClass('hide');
+                $(obj.elm).parent().find('div[name=isadd]').addClass('hide').next().removeClass('hide')
+            } else {
+                arr = $.grep(arr, function (v, i) {
+                    return v.goodsId != obj.goodsId
+                })
+            }
+            model.cartGoodsId = JSON.stringify(arr);
+            model.cartGoodsId = arr;
+            Comm.db("cartGoodsId", model.cartGoodsId)
+            model.countCartNum({ "type": 1, "goodsSkuId": _id });
+        },
+        cartDianji: function (a, i, goodsId, t) {//
+            Comm.loading(true);
+            var yuanNum = $(a).parent().find("input").val() * 1;
+            var url = '/bussiness/order/skkuId',
+                opt = {
+                    goodsSkuId: goodsId
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    var stock = yuanNum * 1 + res.data.stock * 1;
+                    model.addNum(a, i, goodsId, t, yuanNum, stock);
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        addNum: function (a, i, goodsId, t, cnum, _stock) {//加减
+            // t 1 页面点击 2 购物点击 3 规格点击  
+            model._a = a;
+            model._isdianjiFrom = t;
+            if (t == '2') {
+                var stock = _stock;
+            } else {
+                var yuanNum = $(a).parent().find("input").val() * 1;
+                var stock = $(a).parent().attr("stock") * 1 + yuanNum * 1;
+            }
+
+            var num =
+                $(a)
+                    .parent()
+                    .find("input")
+                    .val() *
+                1 +
+                i;
+                model._tempNum=num;
+            if (num*1 > stock*1) {
+                Comm.message("超过最大库存~~")
+                if(yuanNum)$(a).val(yuanNum)
+                else $(a).val(cnum)
+                
+                return
+            }
+            if (num > 0) {
+                
+                if (t == '1') {
+                    model.countCartNum({ 'goodsId': goodsId, 'num': num, "type": '2' });
+                }
+                if (t == '2') {
+                    model.countCartNum({ 'goodsSkuId': goodsId, 'num': num, "type": '2' });
+                }
+                if (t == '3') {
+                    model.countCartNum({ 'goodsSkuId': cnum, 'num': num, "type": '2' });
+                }
+
+            } else {
+                if (t == '1') {
+                    var elm = $(a).parents('[name=listinfo]');
+                    $(elm).find('img[name=isadd]').removeClass('hide');
+                    $(elm).find('div[name=isadd]').removeClass("hide").next().addClass('hide');
+                    var _id = "";
+                    $.each(model.cartGoodsId, function (i, v) {
+                        if (v.goodsId == goodsId) _id = v.goodsSkuId;
+                    })
+                    model.addCartGoods({ "type": 2, "goodsSkuId": _id });
+                } else if (t == '2') {
+                    $(a).parents('[name=cartlist]').remove()
+                    model.addCartGoods({ "type": 2, "goodsSkuId": goodsId });
+                    model.showCart();
+                    // model.search()
+                } else if (t == '3') {
+                    var elm = $(a).parents('[name=listinfo]');
+                    $(elm).find('img[name=isadd]').removeClass('hide');
+                    $(elm).find('div[name=isadd]').removeClass("hide").next().addClass('hide');
+                    model.addCartGoods({ "type": 2, "goodsId": goodsId ,"goodsSkuId":cnum});
+                   
+                }
+            }
+            model.resCartNumP(goodsId, num, t)
+        },
+        inputNum: function (obj, type, goodsId, num, t) {//判断输入数字   elm  类型 商品id 上次值
+            if (t) model._isdianjiFrom = t;
+            var str = $(obj).val();
+            // var yuanNum =$(obj).attr("yuanNum")*1; //加入的值
+            if (num == str) return
+            var stock = $(obj).parent().attr("stock") * 1 + num * 1;
+            //console.info(str)
+            if (str <= 0) {
+                Comm.message("请输入大于0的值~")
+                $(obj).val(num)
+                return
+            }
+            if (type=="1"&&str > stock) {
+                Comm.message("超过最大库存~~")
+                $(obj).val(num)
+                return
+            }
+            if (type == "1") {
+                if (str.indexOf(".") != "-1") {
+                    Comm.message("请输入整数~")
+                    $(obj).val(num)
+                    return
+                }
+            } else if (type == "2") {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val(num)
+                        return
+                    }
+                }
+            }
+            if (type == '1') {
+                t=="3"? model.countCartNum({ 'goodsSkuId': goodsId, 'num': str, "type": '1' }): model.countCartNum({ 'goodsId': goodsId, 'num': str, "type": '1' });
+               
+            } else {
+                model.countCartNum({ 'goodsSkuId': goodsId, 'price': str, "type": '1' })
+            }
+
+        },
+        showCart: function () {//弹出购物车
+            Comm.showWindow('cartBoxWTD', true)
+            if (model.cartGoodsId && model.cartGoodsId.length != '0') {
+                $('#WTDBOXTD #cartBox').html(template('cartTpl', [{ type: '1', "data": model.cartGoodsId }]))
+            } else {
+                $('#WTDBOXTD #cartBox').html(template('cartTpl', [{ type: '2' }]))
+            }
+            $("#WTDBOXTD").css({ "bottom": '44px', "padding": '0px 0px', "transform": "translateY(0%)" })
+        },
+        showSku: function (d) {//弹出规格
+            Comm.showWindow('skuBoxWTD', true)
+            $.each(d.skus, function (i, v) {
+                v.price = $.grep(v.price, function (k, l) {
+                    return l == '0';
+                })
+            })
+            $.each(d.skus, function (i, v) {
+                var temp = model.cartGoodsId;
+                $.each(temp, function (m, n) {
+                    // 
+                    if (v.goodsSkuId == n.goodsSkuId) {
+
+                        v.isadd = 1;
+                        v.price[v.price.length - 1].price = n.price;
+                        v.num = n.num;
+                    }
+                })
+            })
+            console.info("渲染", d)
+            $("#WTDBOXTD #skuBox").html(template('skuTpl', d))
+            $("#WTDBOXTD").css({ "bottom": '50%', "padding": '0px 10px', "transform": "translateY(50%)" })
+
+        },
+        countCartNum: function (obj, type) {//计算购物车数量 和 价格  type=1 表示删除
+            var n = 0;
+            var price = 0;
+            console.info(obj)
+            if (obj) {
+                $.each(model.cartGoodsId, function (i, v) {
+                    if (obj.goodsSkuId) { //存在sku
+                        if (v.goodsSkuId == obj.goodsSkuId) {
+                            if (obj.num) v.num = obj.num;
+                            else if (obj.price) v.price = obj.price;
+                            model.jianor(v)
+                        }
+                    } else if (obj.goodsId) {
+                        if (v.goodsId == obj.goodsId) {
+                            if (obj.num) v.num = obj.num;
+                            else if (obj.price) v.price = obj.price;
+                            model.jianor(v)
+                        }
+                    }
+
+                })
+                Comm.db("cartGoodsId", model.cartGoodsId);
+                // if(!obj.goodsSkuId||!obj.goodsId) model.showSku(model.tempdata)
+            }
+           
+            if (model.cartGoodsId) {
+                $.each(model.cartGoodsId, function (i, v) {
+                    n += Number(v.num)
+                    price += (Number(v.price) * 1000 * Number(v.num))
+                })
+            }
+            price = price / 1000;
+            // 
+            if (n > 0) {
+                $("#cartNum").removeClass('hide')
+            } else {
+                $("#cartNum").addClass('hide')
+            }
+            $("#cartNum").html(n > 99 ? '99' : n);
+            $("#cartPrice").html('合计：' + price);
+
+        },
+        jianor: function (opt, t) {//刷新线上库存
+            var _opt = JSON.parse(JSON.stringify(opt));
+            Comm.loading(true);
+            var url = '/bussiness/order/jianor';
+            if (t) {
+                _opt.num = 0;
+            }
+            console.info(_opt)
+            var des = JSON.stringify(_opt);
+            _opt.des = des;
+            AJAX.POST(url, _opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    $(model._a)
+                    .parent()
+                    .find("input")
+                    .val(model._tempNum);
+                    model.search();
+                    if (model._isdianjiFrom == "3") {
+                        model._isdianjiFrom = "";
+                        model.addCartGoods({ type: 1, goodsId: model._goodsId })
+                    }
+                } else {
+                }
+            })
+        },
+        getcar: function () {//
+            Comm.loading(true);
+            var url = '/bussiness/order/getcar',
+                opt = {
+                    bussinessId: userinfo.bussinessId
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    var arr = [];
+                    $.each(res.data, function (i, v) {
+                        arr.push(JSON.parse(v.des))
+                    })
+                    model.cartGoodsId = arr;
+                    Comm.db("cartGoodsId", (model.cartGoodsId));
+                    model.search();
+                    model.countCartNum();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        cartDom: function (n) {//购物车模版渲染
+            //console.info(model.cartGoodsId)
+            if (n > 0) {
+                $('#cartBox').html(template('cartTpl', [{ type: '1', "data": model.cartGoodsId }]))
+            } else {
+                $('#cartBox').html(template('cartTpl', [{ type: '2' }]))
+            }
+        },
+        resCartNumP: function (goodsId, num, t) {//购物车修改更新页面数据
+            // t 1 页面点击 2 购物点击 3 规格点击 
+            // 
+            var a = null;
+            if (t == '2') {
+                $.each(model.cartGoodsId, function (i, v) {
+                    if (v.goodsSkuId == goodsId) {
+                        a = v.goodsId
+                    }
+                })
+            }
+            var l = $("section").find("[name=listinfo]");
+            $.each(l, function (i, v) {
+                if ($(v).attr('data') == a) {
+                    if (num > 0) {
+                        $(v).find('[name=num]').val(num)
+                    } else {
+                        $(v).find('[name=isadd]').removeClass('hide').next().addClass('hide')
+                    }
+                }
+            })
+        },
+        delCart: function () {//清空购物车
+            model.refusejia();
+        },
+        refusejia: function () {//清空购物车线上库存
+            Comm.loading(true);
+            var url = '/bussiness/order/refusejia',
+                opt = {
+                    bussinessId: userinfo.bussinessId
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("清空成功~");
+                    model.cartGoodsId = [];
+                    Comm.db("cartGoodsId", model.cartGoodsId);
+                    model.countCartNum();
+                    model.showCart();
+                    model.search();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        godetail: function () {//创建订单
+            if (model.cartGoodsId && model.cartGoodsId.length > 0) {
+                Comm.db("choice_newOrder", null);
+                Comm.db("loc_addAddress", null);
+                Comm.db("loc_aadd", null);
+                Comm.go("newOrderDetail.html")
+            } else {
+                Comm.message("至少添加一件商品~")
+            }
+        },
+        goLease: function (goodsId) {
+            if (t == '5') {
+                // Comm.db("leaseGoodsId",goodsId);
+                Comm.go("./addGoods.html?t=4&goodsId=" + goodsId)
+            }
+        },
+
+
+    }
+</script>
+<script id="upperLowerTpl" type="text/html">
+        <div class="lh30" onclick="model.qh(this,3)">
+            <span class="" name="shelf" id="upper">销售中({{jia||'0'}})</span>
+            </div >
+        <div class="lh30" onclick="model.qh(this,4)">
+            <span class="" name="shelf" id="lower">已下架({{xia||'0'}})</span>
+        </div>
+</script>
+<script id="goodTpl" type="text/html">
+    {{each $data v k }}
+    <div class="clearfix paddl15 paddr15 paddb15 paddt15 marb5 bg_white" name="listinfo" data="{{v.goodsId}}" style="padding-right:0px" onclick="model.goLease('{{v.goodsId}}')">
+        <div _style="height:90px " class="verticalP">
+            <!-- <div class='quan decir inblock left' style="margin-top:55px" onclick="model.checked(this)"></div> -->
+            <div class="fl center marr10  clearFloat" style=";height:90px;position:relative" >
+                <img src="{{OSS(v.img)}}" class="goodimg" onerror="app.errorimg(this)"> 
+            </div>
+            <div class="listinfo clearFloat " >
+                <p class="wordW f16" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')" style='min-height:21px'>
+                    <span class="f16 bold color333" >{{v.goodsName}} {{v.versionNumber}}</span>
+                </p>
+                <p class="lh20 wordW2" style="max-height: 40px;" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                    {{if(v.grade)}}
+                    <span class="color999 f12 inblock">等级:{{(v.grade)}}</span> {{/if}} {{if(v.maturity)}}
+                    <span class="color999 f12 inblock">成熟度:{{(v.maturity)}}</span> {{/if}} {{if(v.color)}}
+                    <span class="color999 f12 inblock">颜色:{{(v.color)}}</span> {{/if}}
+                     {{if(v.speci*1>0)}}
+                    
+                    <span class="color999 f12 inblock">规格:{{(v.speci)}}/{{v.company}}</span>
+                     {{/if}}
+                     {{if(v.weight>0)}}
+                    <span class="color999 f12 inblock">重量:{{(v.weight)}}g</span> 
+                    {{/if}} 
+                    {{if(v.keyValue)}}
+                    <span class="color999 f12 inblock">规格:{{(v.keyValue)}}</span>
+                     {{/if}}
+                </p>
+                <p class="lh20 wordW2 hide " _style="width:calc(100% - 40% - 5px)">
+                    {{if v.descript&&v.descript.length!='0'}}
+                    <span class=" inblock wordW" style="width:calc(100%)">
+                    {{each v.descript as m n}}
+                    <span class="color999 f12">{{m.keyName}}:{{m.value}}</span> {{/each}}
+                    </span>
+                    {{/if}}
+                </p>
+                <p  class="lh20 wordW2 ">
+                    <span class="color999 f12" name="stockText">库存：{{v.stock}}</span>
+                </p>
+                <p class="hide" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                    <span class="f12 colorred borred">团</span>
+                    <span class="f12 colorred borred">秒杀</span>
+                    <span class="f12 colorred borred">预售</span>
+                </p>
+                <div class="{{v.isadd=='1'?'hide':''}} verticalP" name='isadd'>
+                    <span class="c21 f12">价格：</span> <span class="f12 c21 bold ">&yen;{{v.price}}</span>
+                    <!-- <span class="c21 f12">库存：</span> <span class="f12 c21 bold ">&yen;{{v.stock}}</span> -->
+                    <!-- <img src="./img/tiajia.png" name='isadd' alt="" style="width:20px;top:calc(100% - 10px);right:10px;" class="vertical {{v.isadd=='1'?'hide':''}} {{v.t=='5'?'hide':''}}" onclick="model.addCartGoods({'type':1,'elm':this,'goodsId':'{{v.goodsId}}'})"> -->
+                </div>
+                <div class="{{v.isadd!='1'?'hide':''}}" >
+                    <div class="inblock " style="width:40%">
+                            <span class="c21 f12">价格：</span> 
+                            <!-- <span class="f12 c21 bold ">&yen;{{v.price}}</span> -->
+                            <input type="number" name="" id="" style="height:17px;width:50px;border:1px solid #F2F2F2;vertical-align:bottom" class="inblock t-a-c" placeholder="{{v.num||'1'}}" value="{{v.price}}"  data-reg="empty" onchange="model.inputNum(this,2,'{{v.goodsSkuId}}','{{v.price}}')">
+                    </div>
+                    <div class="inblock">
+                        <span class="inblock" name="stockNum" stock="{{v.stock}}"> 
+                            <span class="f12 marl5 c21">数量：</span>
+                            <img src="img/cart-jian.png" width="12" style="" onclick="model.addNum(this,-1,{{v.goodsId}},1,'{{v.num||1}}')">
+                            <input type="number" name="num" id="" style="height:17px;width:35px;background:#F2F2F2" class="inblock t-a-c" placeholder="{{v.num||'1'}}" value="{{v.num||'1'}}"  data-reg="empty" onchange="model.inputNum(this,1,'{{v.goodsId}}','{{v.num||1}}')">
+                            <img src="img/cart-jia.png" width="12" style="" onclick="model.addNum(this,1,{{v.goodsId}},1,'{{v.num||1}}')">
+                        </span>
+                    </div>
+                </div>
+            </div>
+             <img src="./img/tiajia.png" name='isadd' alt="" style="width:20px;top:calc(100% - 10px);right:10px;" class="vertical {{v.isadd=='1'?'hide':''}} {{v.t=='5'?'hide':''}}" onclick="model.addCartGoods({'type':1,'elm':this,'goodsId':'{{v.goodsId}}','stock':'{{v.stock}}'})">
+            <!-- <span class="color999 vertical f12 {{v.isadd!='1'?'hide':''}}"  style=";top:calc(100% - 10px);right:10px;">已添加</span> -->
+        </div>
+    </div>
+    {{/each}}
+</script>
+
+<!-- 购物车渲染模版 -->
+
+<script type="text/html" id="cartTpl">
+    <div class="paddt5 paddb15 paddl15 paddr15 white">
+            <div class="" style="height:30px;line-height: 30px">
+                <img class="left inblock" src="./img/xjddan.png" alt="" style="width: 14px;height:15px;margin-top: 8px;margin-right: 5px">
+                <span class="left color333 f14 bold ">已选商品</span>
+                <span class="right color999 f12" onclick="model.delCart()">清空购物车</span>
+                <img class="right inblock" src="./img/del.png" onclick="model.delCart()" alt="" style="width: 14px;height:15px;margin-top: 8px;margin-right: 5px">
+            </div>
+            <div style="overflow-y: scroll;height: 180px;">
+               {{each $data as v k}}
+                    {{if v.type=='1'}}
+                        {{each v.data as n m}}
+                        <div class="paddt10 paddb10" style="display:flex;" name="cartlist">
+                            <span class="color333 f16 lh25 t-a-l wordW" style="flex:2">{{n.goodsName}}
+                            {{if n.keyValue}}({{n.keyValue}}){{/if}}
+                            </span>
+                            <span class='colordd f16 lh25'style="flex:1">&yen;{{n.price}}</span>
+                            <span class="inblock" style="flex:1.3;width:auto">
+                                    <img src="img/sjian.png"  style="width: 25px" onclick="model.cartDianji(this,-1,{{n.goodsSkuId}},2)">
+                                    <input type="number" name="" readonly id="" style="height:25px;width:calc(100% - 60px);vertical-align: bottom;" class="inblock t-a-c f16 color333" placeholder="" value="{{n.num||'1'}}"  data-reg="empty" >
+                                    <img src="img/tiajia.png"  style="width: 25px" onclick="model.cartDianji(this,1,{{n.goodsSkuId}},2)">
+                            </span>
+                        </div>
+                        {{/each}}
+                    {{else}}
+                        <img src='../img/wjg.png' alt='' style='width:140px;margin:0 auto' class="block paddt10 paddb10">
+                        <span class="color999">暂无购买记录，请尽快添加</span>
+                    {{/if}}
+                {{/each}}
+            </div>
+    </div>
+</script>
+<!-- 选择规格弹出 -->
+<script type="text/html" id="skuTpl">
+    <div class="paddt5 paddb15 paddl15 paddr15 white">
+           <div class="clearfix paddt20  paddr15 paddb10 marb5 bg_white" name="" data="{{goodsId}}" style="border-radius: 10px;">
+                <div style="" class="verticalP _bottomBorder">
+                    <div class="fl center marr10  clearFloat" style=";position:relative" >
+                        <img src="{{OSS(img)}}" class="goodimg" onerror="app.errorimg(this)" style="width:90px;height:90px"> 
+                    </div>
+                    <div class="listinfo clearFloat t-a-l" style=";height:90px">
+                        <p class="wordW f16">
+                            <span class="f16 bold c333333" >{{goodsName}}</span>
+                        </p>
+                        <p class="lh20 wordW2 " style="min-height: 40px;" >
+                                {{if(grade!="-1")}}
+                                <span class="color999 f12 inblock">等级：{{getItemName(grade)}}</span> {{/if}} {{if(maturity!="-1")}}
+                                <span class="color999 f12 inblock">成熟度：{{getItemName(maturity)}}</span> {{/if}} {{if(color!="-1")}}
+                                <span class="color999 f12 inblock">颜色：{{getItemName(color)}}</span> {{/if}} {{if(speci>0)}}
+                                <span class="color999 f12 inblock">规格：{{(speci)}}/{{company}}</span> {{/if}} {{if(weight>0)}}
+                                <span class="color999 f12 inblock">重量：{{weight}}g</span> {{/if}} {{if(keyValue)}}
+                                <span class="color999 f12 inblock">规格：{{keyValue}}</span> {{/if}}
+                         </p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {{each skus as v k}}
+            <div class="t-a-l bottomBorder paddb5 paddt5 verticalP ">
+                    <p class="wordW f16 marb5" >
+                            <span class="f16  c333333" >规格：{{v.keyValue}}</span>
+                            <span class="f16  c333333" >库存：{{v.stock}}</span>
+                    </p>
+                    {{each v.price as m n}}
+                        <div class="{{v.isadd=='1'?'hide':''}} "  name='isadd'>
+                            <span class="c21 f16">价格：</span> <span class="f16 c21  ">&yen;{{m.price}}</span>
+                        </div>
+                    
+                        <div class="{{v.isadd!='1'?'hide':''}}" >
+                            
+                            <div class="inblock " style="width:40%">
+                                    <span class="c21 f16">价格：</span> 
+                                    <input type="number" name="" id="" class='f16' style="height:20px;width:50px;border:1px solid #F2F2F2;vertical-align:bottom" class="inblock t-a-c" placeholder="{{m.price||'1'}}" value="{{m.price}}"  data-reg="empty" onchange="model.inputNum(this,2,'{{m.goodsSkuId}}','{{m.price}}')">
+                            </div>
+                            <div class="inblock">
+                                <span class="inblock" stock="{{v.stock}}"> 
+                                    <span class="f16 marl5 c21">数量：</span>
+                                    <img src="img/cart-jian.png" width="12" style="" onclick="model.addNum(this,-1,'{{v.goodsId}}',3,'{{v.goodsSkuId}}')">
+                                    <input type="number" name="num" id="" style="height:20px;width:35px;background:#F2F2F2" class="f16 inblock t-a-c" placeholder="" yuanNum="{{v.num||'1'}}" value="{{v.num||'1'}}"  data-reg="empty" onchange="model.inputNum(this,1,'{{m.goodsSkuId}}','{{v.num}}',3)">
+                                    <img src="img/cart-jia.png" width="12" style="" onclick="model.addNum(this,1,'{{v.goodsId}}',3,'{{v.goodsSkuId}}')">
+                                </span>
+                            </div>
+                        </div>
+                        {{/each}}
+                        <img src="./img/tiajia.png" name='isadd' alt="" style="width:20px;right:10px;top:33px" class="vertical {{v.isadd=='1'?'hide':''}}" onclick="model.addsku({'type':1,'elm':this,'index':{{k}},'stock':'{{v.stock}}'})">
+            </div>
+            {{/each}}
+    </div>
+</script>
+
+<script type="text/html" id="navTpl">
+    <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">商品类别</div>
+</script>
+
+</html>

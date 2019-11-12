@@ -1,0 +1,807 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        section header {
+            background-image: url('./img/order/ddxqbj.png');
+            background-size: 100% 100%;
+        }
+
+        section .navBackIcon {
+            background-image: url('../img/back_w.png');
+        }
+
+        .navTitle {
+            color: #fff;
+        }
+
+        button {
+            background: inherit;
+            border: 1px solid #ebebeb;
+            border-radius: 3px;
+            color: #222;
+            width: auto;
+            min-width: 80px;
+            max-width: 110px;
+            ;
+            height: auto;
+            line-height: 20px;
+            font-size: 14px;
+            padding: 5px 8px;
+            margin-bottom: 10px;
+        }
+
+        button.red {
+            border: 1px solid #DD1474;
+            color: #DD1474;
+        }
+
+        button.w110 {
+            width: 110px;
+        }
+
+        button.return {
+            margin-bottom: 0px;
+            border-radius: 20px;
+        }
+
+        .mymsbtn {
+            font-size: 12px;
+            border-radius: 2px;
+            padding: 0px 2px;
+            line-height: 20px;
+            height: 20px;
+        }
+
+        .cancelCommodity {
+            position: absolute;
+            right: 0px;
+            bottom: 5px;
+            border-radius: 5px;
+            border: 1px solid #d2caca;
+            padding: 3px 5px;
+        }
+
+        .bordert {
+            /* display: flex;
+            flex-wrap:wrap;
+            justify-content: flex-start; */
+        }
+
+        .border {
+            border: 1px solid #EBEBEB;
+            border-radius: 20px;
+            min-width: 90px;
+        }
+
+        #WTDBOX button {
+            background: -webkit-linear-gradient(right, #EE900E, #DD1474);
+            color: #fff;
+            line-height: 30px;
+            border-radius: 20px;
+            width: calc(100% - 30px);
+            font-size: 16px;
+        }
+
+        /* li */
+        ul {
+            padding-left: 20px;
+
+        }
+
+        li {
+            list-style: disc;
+            display: list-item;
+
+        }
+
+        /* 收起 展开 */
+        .retract>img {
+            width: 10px;
+            height: 10px;
+            transform: rotate(90deg)
+        }
+
+        /* 维护 */
+        .maintain>div {
+            display: flex;
+            line-height: 44px;
+        }
+
+        .maintain span {
+            flex: 1;
+            text-align: center;
+        }
+
+        .completed>span {
+            color: #333333;
+            font-size: 12px;
+
+        }
+
+        .beging>span {
+            color: #DD1474;
+            font-size: 12px;
+        }
+
+        .noStart>span {
+            color: #999999;
+            font-size: 12px;
+        }
+
+        .beging [name='btn'] {
+            background: #FFE8F3;
+            border-radius: 3px;
+            color: #DD1474;
+            font-size: 12px;
+            padding: 3px 10px;
+        }
+
+        /* color */
+        .c5c {
+            color: #5C5C5C;
+        }
+
+        .c1a {
+            color: #1A191E;
+        }
+
+        /* 原因图片 */
+        .reasonImg {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        .reasonImg img {
+            width: 80px;
+            height: 80px;
+            padding: 5px;
+        }
+
+        .hhmmss span {
+            color: #DA251C;
+        }
+
+        /*  WTDBOXTD */
+        #WTDBOXTD {
+            width: 70%;
+        }
+
+        #sinbox input {
+            width: 65%;
+            border: 1px solid #e2e2e2;
+        }
+
+        .picker {
+            z-index: 10001 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+    </header>
+
+    <section class='' id=''>
+
+    </section>
+    <footer>
+
+    </footer>
+    <div id="sinbox" wtd="handelwtd" class="bottomShadow">
+        <div class="center lh30 f18 bottomBorder" id="tkTitle">养护申请处理</div>
+        <div>
+            <div class="paddt10 paddb10 t-a-r">
+                <label for="price" class='lh25'>价格：</label><input type="number" class="lh25" id=" " name="price"
+                    placeholder="请填写价格" data=" " value="" data-reg='' onchange="model.ifNum(this)" />
+            </div>
+            <div class="paddt10 paddb10 t-a-r">
+                <label for="fuTime" class='lh25'>服务日期：</label><input type="text" class="lh25" id=" " name="fuTime"
+                    placeholder="请填写服务日期" data=" " value="" data-reg='' readonly onclick="model.choiceTime(this)" />
+            </div>
+            <div>
+                <button style="border: 0px;width: 150px;" onclick="model.save(this)">确定</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script src="../inc/picker.min.js"></script>
+<script>
+
+    function pageload() {
+        model.faTimePicker = new Datepicker("发货时间", function (a, b, c) {
+            $(model.elm).val(b);
+        });
+        model.getStaff();
+        model.getPayTime();
+
+    }
+    function pageresume() {
+		var _editID = Comm.db("_editID");
+		 Comm.db("_editID",null);
+		if(_editID) model.otherOrderId = _editID;
+        model.init()
+    }
+    var model = {
+        t: Comm.query('t'),//1 订单来源 2 计划来源 3 修改来源
+        otherOrderId: Comm.query('otherOrderId'),
+        maintenPlanId: Comm.query('maintenPlanId'),
+        getPayTime: function () {
+            Comm.loading(true);
+            var url = '/api/config/bykeys',
+                opt = {
+                    keys: "cancel_order"
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    model.cancel_order = res.data[0].value;
+                } else {
+                    Comm.message(res.msg)
+                }
+                model.getTxTime()
+            })
+        },
+		getTxTime: function () {
+		    Comm.loading(true);
+		    var url = '/api/config/bykeys',
+		        opt = {
+		            keys: "txxqsj"
+		        };
+		    AJAX.POST(url, opt, function (res) {
+		        Comm.loading(false);
+		        if (res.code == 1) {
+		            model.txxqsj=res.data[0].value;
+		        } else {
+		            Comm.message(res.msg)
+		        }
+		        model.init()
+		    })
+		},
+        retract: function (elm) {//展开  收起
+            var _f = $(elm).attr("data");// 0  收起状态 1  展开状态
+            if (_f == '0') {
+                $(elm).attr("data", '1').find("span").html("收起");
+                $(elm).find("img").css("transform", "rotate(90deg)");
+
+            } else if (_f == '1') {
+                $(elm).attr("data", '0').find("span").html("展开");
+                $(elm).find("img").css("transform", "rotate(270deg)");
+            }
+            $("[name=listInfo]").toggleClass("hide")
+        },
+        init: function () {//
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/detail'
+            opt = {
+                otherOrderId: model.otherOrderId
+            };
+            if (model.t == '2') {
+                url = '/bussiness/lease/order/shendetail';
+                opt = {
+                    maintenPlanId: model.maintenPlanId
+                }
+            }
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    res.data._t = model.t;
+                    res.data.isDq = model.calcTime(res.data);
+                    var now = new Date();
+                    res.data.starts = (hhmmss.todate(res.data.addTime).getTime() - now.getTime()) / 1000;
+                    res.data.ends = (hhmmss.todate(res.data.addTime).getTime() + (model.cancel_order * 60 * 1000) - now.getTime()) / 1000;
+                    // res.data._count = app.Subtract(res.data.allPrice,res.data.bond);
+                    res.data._count = ((res.data.allPrice*1000 - res.data.bond*1000)/1000).toFixed(2);
+                
+                    console.info(res.data);
+                    $("section").html(template("mainTpl", res.data));
+                    if (model.t == '2') {
+                        $(".navTitle").html("申请详情")
+                    }
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+            hhmmss.init('head', '支付超时');
+        },
+        getStaff: function () {//获取养护人
+            Comm.loading(true);
+            var opt = {
+                type: '1',
+                userType: '1',
+            }
+            var url = '/common/staff/getStaff';
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    model.staff = [];
+                    $.each(res.data, function (i, v) {
+                        model.staff.push({
+                            "i": v.staffId,
+                            'text': v.userName
+                        })
+                    })
+                    model.choiceStaff = new Commpicker("请选服务者", [model.staff], function (obj, name, sid) {
+                        Comm.loading(true);
+                        var url = '/bussiness/lease/order/yanghu'
+                        opt = {
+                            maintenPlanId: model._maintenPlanId,
+                            yangId: sid
+                        };
+                        if (opt.yangId<0) {
+                            Comm.message("请选择服务人员~");
+                            Comm.loading(false);
+                            return
+                        }
+                        AJAX.POST(url, opt, function (res) {
+                            Comm.loading(false);
+                            if (res.code == 1) {
+                                Comm.message("已指派服务人员成功~");
+                                model.init();
+
+                            } else {
+                                Comm.message(res.msg)
+                            }
+                        })
+                    });
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        yanghu: function (maintenPlanId) {//养护
+            model._maintenPlanId = maintenPlanId;
+            model.choiceStaff.show()
+        },
+        refuse: function (otherOrderId) {//取消订单
+            Comm.loading(true);
+            var url = '/common/otherorder/refuse'
+            opt = {
+                otherOrderId: otherOrderId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("订单取消成功~");
+                    model.init()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        jiedan: function (otherOrderId) {//租赁接单
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/jiedan'
+            opt = {
+                otherOrderId: otherOrderId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("接单成功~");
+                    model.init()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        editOrder: function (otherOrderId) {//修改订单
+            event.stopPropagation();
+            Comm.db("otherorderdetails", null);
+            Comm.go('editOrder.html?otherOrderId=' + otherOrderId)
+        },
+        fa: function (otherOrderId) {//
+            event.stopPropagation();
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/fa'
+            opt = {
+                otherOrderId: otherOrderId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("成功发货~");
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        queHui: function (otherOrderId) {//确认回收
+            event.stopPropagation();
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/queHui'
+            opt = {
+                otherOrderId: otherOrderId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("回收成功~");
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        receivables: function (otherOrderId, elm) {//确认收款
+            event.stopPropagation();
+            // var ends = $(elm).parents(".list").find(".hhmmss").attr("data");
+            // if(ends*1<0){
+            //     Comm.message("")
+            // }
+            Comm.Mess.confirm("是否确认已收到补款？", Comm.setcb(function (a) {
+                if (a == "1") {
+                    Comm.loading(true);
+                    var url = '/bussiness/lease/order/que'
+                    opt = {
+                        otherOrderId: otherOrderId
+                    };
+                    AJAX.POST(url, opt, function (res) {
+                        Comm.loading(false);
+                        if (res.code == 1) {
+                            Comm.message("提交成功~");
+                            model.init();
+                        } else {
+                            Comm.message(res.msg)
+                        }
+                    })
+                }
+            }))
+
+        },
+        remind: function (otherOrderId) {//提醒续期
+            event.stopPropagation();
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/tiXu'
+            opt = {
+                otherOrderId: otherOrderId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("已提醒用户~");
+                    // model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        handle: function (elm, maintenPlanId, t) {//立即处理
+            
+            event.stopPropagation();
+            model._maintenPlanId = model.maintenPlanId;
+            model._t = t;
+            Comm.showWindow("handelwtd", true);
+            if (t == '2') $("#WTDBOXTD  #tkTitle").html("养护申请处理");
+            if (t == '3') $("#WTDBOXTD  #tkTitle").html("更换申请处理");
+        },
+        choiceTime: function (elm) {//选择服务时间
+            model.elm = elm;
+            model.faTimePicker.show()
+        },
+        ifNum: function (a) {//判断数字
+            var num = $(a).val();
+            if (num * 1 <= 0) {
+                Comm.message("请输入大于0的数~");
+                $(a).val("");
+                return;
+            }
+            if (num.indexOf(".") != "-1") {
+                var arr = num.split(".")
+                if (arr[1].length > "2") {
+                    Comm.message("请输入不超过两位小数~")
+                    $(a).val("")
+                    return
+                }
+            }
+        },
+        save: function () {//保存养护  更换申请 
+            var data = Check.submit("POST");
+            if (!data) {
+                Comm.loading(false)
+                return
+            }
+            if (data.price == '') {
+                Comm.message("请输入价格~");
+                return;
+            }
+            if (data.faTime == '') {
+                Comm.message("请选择服务日期~");
+                return;
+            }
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/yangListChu',
+                opt = {
+                    maintenPlanId: model._maintenPlanId,
+                    needPrice: data.price,
+                    fuTime: data.fuTime
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                Comm.showWindow();
+                if (res.code == 1) {
+                    if (model._t == '2') Comm.message("养护申请处理成功~");
+                    else Comm.message("更换申请处理成功~");
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        calcTime: function (data) {//计算到期时间
+            var tt = new Date(data.startTime);
+            var endstart = tt.setMonth(tt.getMonth() + data.cycle * 1);
+            var now = new Date();
+            var nowTime = now.getTime();
+            var diff = model.txxqsj * 24 * 60 * 60 * 1000;
+            var nowDiff = endstart - nowTime;
+            var str = '0';
+            if (nowDiff > diff) {
+                str = '0';
+            }
+            else if (nowDiff < diff && nowDiff > 0) {
+                str = '1';
+            }
+            else if (nowDiff <= '0') {
+                str = '2';
+            }
+            return str;//0 未到期 1 临近到期 2 已到期
+            // return 1;//0 未到期 1 临近到期 2 已到期
+        }
+    }
+    template.defaults.imports.resState = function (v, type) {
+        v = String(v);
+        var str = '';
+        if (model.t == '1'||model.t=='3') {
+            switch (v) {
+                case '2': type == '1' ? str = '待接单' : str = "请尽快接单"; break;
+                case '5': type == '1' ? str = '待发货' : str = "请尽快发货"; break;
+				 case '6': type == '1' ? str = '待收货' : str = "等待用户收货"; break;
+                case '8': type == '1' ? str = '已取消' : str = "订单已取消"; break;
+                case '9': type == '1' ? str = '已完成' : str = "订单已完成"; break;
+                case '16': type == '1' ? str = '订单已修改' : str = "订单已修改,等待用户支付"; break;
+                case '18': type == '1' ? str = '服务中' : str = "服务中的订单"; break;
+            }
+        } else {
+            switch (v) {
+                case '1': type == '1' ? str = '待处理' : str = "请尽快处理申请"; break;
+                case '2': type == '1' ? str = '支付完成' : str = "支付完成"; break;
+                case '3': type == '1' ? str = '支付失败' : str = "支付失败"; break;
+                case '4': type == '1' ? str = '已完成' : str = "订单已完成"; break;
+                case '5': type == '1' ? str = '待支付' : str = "已处理，等待用户进行支付"; break;
+            }
+        }
+
+        return str;
+    }
+    template.defaults.imports.resetFwq = function (start, cycle, type) {
+        var tt = new Date(start);
+        var endstart = tt.setMonth(tt.getMonth() + cycle * 1);
+        var endDate = new Date(endstart);
+        var end = endDate.toLocaleDateString();
+        end = end.replace(/\//gi, '-');
+        if (type == '1') return start + "至" + end;
+        else return end;
+
+
+    };
+    template.defaults.imports.sx = function (arr) {
+        var index = 0;
+        var max_length = arr.length;
+        var _arr = [];
+        var _index = 0;
+        $.each(arr, function (i, v) {
+            if (v.state == '2') {
+                index = i;
+                return false;
+            }
+        })
+        if (index <= 2) {
+            _arr = arr.slice(0, 5);
+        } else if (index > 2 && index < (max_length - 5)) {
+            _arr = arr.slice(index - 2, index + 3);
+        } else {
+            _arr = arr.slice(max_length - 5);
+        }
+        $.each(_arr, function (i, v) {
+            if (v.state == '2') {
+                v._state = '1';
+                _index = i;
+                return false;
+            } else {
+                v._state = '0';
+            }
+        })
+        return _arr;
+    }
+</script>
+
+<script type="text/html" id="mainTpl">
+    <header id='head'>
+        <div class="navBar">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle colorfff">订单详情</div>
+        </div>
+        <div class="pad10 mart10 marb10">
+            <p class="f24 colorfff state">{{resState(state,1)}}</p>
+        </div>
+        <div class="radius5 bottomShadow bg_white marl10 marr10 pad10" style="padding-bottom:0px">
+            <div class='item'>
+                {{if _t=='1'||_t=='3'}}
+                <span class="bold f16">{{resState(state,2)}}</span>
+                {{else}}
+                <span class="block colordd f16 ">申请时间:{{addTime}}</span>
+                {{/if}}
+                <!-- 补款信息 -->
+                {{if needPayCash*1>0&&start=='2'}}
+                <div class="flex-between mart15 item">
+                    <span class="f12" style="color:#DA251C">需补款{{needPayCash}}元，等待客户支付</span>
+                    {{if(ends>0&&starts<=0)}} 
+                    <span  class="lh20  hhmmss" data="{{ends}}">
+                        <span class="f12  ">倒计时</span>
+                        <span class="f12 hh" id="hh">00</span>
+                        <span class="f12 ">:</span>
+                        <span class="f12 mm" id="mm">00</span>
+                        <span class="f12 ">:</span>
+                        <span class="f12 ss" id="ss">00</span>
+                    </span>
+                    {{/if}}
+                    {{if ends*1 < 0 &&starts*1 < 0}}
+                    <span class="f12 hhmmss" data='{{ends}}' style="color:#DA251C">支付超时</span>
+                    {{/if}}
+                </div>
+                {{/if}}
+                
+                {{if isDq=='2'}}
+                <span class="block colordd f12 mart10">服务已到期</span>
+                {{else if isDq=='1'}}
+                {{else if isDq=='0'}}
+                    {{if state=='18'}}
+                    <span class="block colordd f12 mart10">{{resetFwq(startTime,cycle,2)}} 服务到期</span>
+                    {{/if}}
+                {{/if}}
+               
+            </div>
+            <div class="bordert paddt10 mart10 _flex-center">
+                {{if _t=='1'}}
+                    {{if state=='2'}}
+                    <button onclick="model.refuse('{{otherOrderId}}')" class="">取消订单</button>
+                    <button onclick="model.editOrder('{{otherOrderId}}')" class="">修改订单</button>
+                    <button onclick="model.jiedan('{{otherOrderId}}')" class="">接单</button>
+                    {{else if state=='5'}}
+                    <button onclick="model.fa('{{otherOrderId}}')" class="">发货</button>
+                    {{else if state=='16'}}
+                    {{if needPayCash*1!='0'}}
+                    <button onclick="model.receivables('{{otherOrderId}}',this)" class="">确认已收款</button>
+                    {{/if}}
+                    {{else if state=='18'}}
+                        {{if isDq=='1'}}
+                        <button onclick="model.remind('{{otherOrderId}}')" class="">提醒续期</button>
+                        {{else if isDq=='2'}}
+                        <button onclick="model.queHui('{{otherOrderId}}')" class="">确认回收</button>
+                        {{/if}}
+                    {{/if}}
+                {{/if}}
+                {{if _t=='2'}}
+                    {{if state=='1'}}
+                    <button onclick='model.handle(this,{{maintenPlanId}},{{type}})' class="">立即处理</button>
+                    {{else state=='2'}}
+                    <!-- <button onclick='model.handle(this,{{maintenPlanId}})' class="">养护</button> -->
+                    {{/if}}
+                {{/if}}
+                <a  href="tel:{{carPhone||''}}" data="{{carPhone}}" style="display:inline-block">
+                    <button class="">联系客户</button>
+                </a>
+            </div>
+        </div>
+    </header>
+    <div class="main mart15 ">
+        <div class="pad10 bg_white">
+            <div class="flex-between">
+                <span class="f18 c21 bold">{{descript}}</span>
+                <span class="retract" onclick="model.retract(this)" data="1">
+                    <span class="f12 colordd ">收起</span>
+                    <img src="./img/ddfh.png" alt="" class="">
+                </span>
+            </div>
+            <ul class="mart15 " name="listInfo">
+                {{each otherorderdetails as v k}}
+                <li class='lh25 '>
+                    <span class="c333 f16 wordW inline-block"
+                        style="max-width: 40%">{{v.goodsName}}</span>
+                    <span class="f12 color999">({{v.nowNum}})</span>
+                    <span class="c5c f14 fr">&yen;{{v.singlePrice *v.nowNum*1}}</span>
+                </li>
+                {{/each}}
+            </ul>
+        </div>
+        {{if maintenplans&&maintenplans.length!='0'}}
+        {{set data = sx(maintenplans)}}
+        <div class="pad10 bg_white maintain" name="maintain">
+            <div class="" style="background: #F4F4F4">
+                <span class="c1a f14 ">时间</span>
+                <span class="c1a f14 ">计划内容</span>
+                <span class="c1a f14 ">状态</span>
+                <span class="c1a f14 ">操作</span>
+            </div>
+            {{each data as m n}}
+            <div class="bottomBorder {{m._state=='0'?'completed':m._state=='1'?'beging':'noStart'}}">
+                <span class="c1a ">{{m.fuTime}}</span>
+                <span class="c1a ">{{m.type=='1'?'日常养护':m.type=='2'?'申请养护':m.type=='3'?'更换申请':m.type=='4'?'月花服务':''}}</span>
+                <span class="c1a ">{{m.state=='1'?'申请中':m.state=='2'?'待完成':m.state=='3'?'失败':m.state=='4'?'完成':m.state=='5'?'待支付':''}}</span>
+                <span class="c1a ">
+                    {{if m.state=='2'&&m._state=='1'}}
+                    <span name='btn' onclick="model.yanghu('{{m.maintenPlanId}}')">养护</span>
+                    {{/if}}
+                </span>
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
+        <div class="linebod"></div>
+        <div class="pad10 bg_white">
+            <div class="lh25">
+                <span class="bold">租赁周期：</span><span class="v-a-b">{{resetFwq(startTime,cycle,1)}}</span>
+
+            </div>
+            <div class="lh25">
+                <span class="bold">养护频率：</span><span class="v-a-b">1月{{pinNum}}次</span>
+            </div>
+        </div>
+
+        <div class="linebod"></div>
+        <div class="pad10 bg_white">
+            <p>
+                <img src="./img/order/kfdz.png" height="15" class="marr5 ">
+                <span class="f14 ">{{carName}}</span>
+                <span class="f14 colordd marl5">{{carPhone}}</span>
+            </p>
+            <p class="f12 paddl20 mart15 c333">
+
+                地址：{{carAddress}}
+
+            </p>
+        </div>
+        {{if reason}}
+        <div class="linebod"></div>
+        <div class="pad10 bg_white">
+            <div>
+                <p class='bold paddt10 paddb10 '>申请原因：</p>
+                <span class='f14'>{{reason||''}}</span>
+                <div class="reasonImg paddt10">
+                    {{each reasonImgs as v k}}
+                    <img src="{{OSS(v.url)}}" alt="" >
+                    {{/each}}
+                    
+                </div>
+            </div>
+        </div>
+        {{/if}}
+        <div class="linebod"></div>
+        <div class="pad10 bg_white">
+            <div class="lh30">
+                <span class=" c21 bold f14">订单金额</span>
+                <span class="fr c21 bold f14">&yen;{{_count}}</span>
+            </div>
+            <div class="lh30">
+                <span class=" c21 bold f14">保证金</span>
+                <span class="fr c21 bold f14">&yen;{{bond}}</span>
+            </div>
+        </div>
+    </div>
+</script>
+
+</html>

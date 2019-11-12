@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <title>验证手机号</title>
+    <link rel="stylesheet" href="../css/g.css">
+    <link rel="stylesheet" href="../css/comm.css">
+    <style>
+                .topView {
+            padding: 15px 0px;
+        }
+
+        .topView>div {
+            height: 25px;
+            line-height: 25px;
+        }
+
+        .cell {
+            height: 60px;
+            line-height: 60px;
+        }
+
+        input {
+            height: 36px;
+            margin: 15px;
+            font-size: 15px;
+        }
+
+        input[type="tel"] {
+            width: calc(100% - 1305x);
+        }
+
+        section .button {
+            color: #DD1474;
+            width: 90px;
+            height: 30px;
+            line-height: 30px;
+            background: white;
+            font-size: 13px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #DD1474;
+            float: right;
+            margin-right: 15px;
+        }
+
+        button[disabled] {
+            background-color: #E2E2E2 !important;
+            border: white solid 1px !important;
+        }
+
+        .topView>div {
+            padding-left: 30px;
+        }
+
+        .nextStep {
+            margin: 50px 25px;
+            border-radius: 5px;
+        }
+		.btn {
+			margin: 10px auto;
+			border-radius: 5px;
+			text-align: center;
+			border:none;
+		}
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">验证手机号</div>
+        </div>
+    </header>
+    <section class="bg_lgray">
+        <div class="topView bg_lgray">
+            <div class="col_gray">系统需向您的手机号：</div>
+            <div class="col_gray">
+                <span class="oldNo colorred" id="tel" ></span> ,请在3分钟内输入验证码
+            </div>
+        </div>
+
+        <div class="cell bg_white">
+            <input type="tel" placeholder="请输入验证码" class="fl" id="yzm" maxlength="4">
+            <button type="button" class="fr code colorfont button" onclick="getCode(this,2)">获取验证码</button>
+        </div>
+        <div class="center mart20">
+            <button class="btn" onclick="next()" _onclick="Comm.go('telBindNew1.html')">下一步</button>
+        </div>
+    </section>
+
+
+</body>
+<script src="../inc/g.js"></script>
+<script src="../inc/z.js"></script>
+<script src="../inc/comm.js"></script>
+<script>
+    var user = Comm.db('userinfo');
+    var v = Comm.query("v") ? Comm.query("v") : "5";
+
+    function pageload() {
+        initUserInterface();
+    }
+    //初始化界面
+    function initUserInterface() {
+        var tel = document.getElementById('tel').innerText = user.phone;
+    }
+    //获取验证码
+    function getCode(t) {
+        var type = v;
+        console.info(type)
+        app.timeCountDown(t, user.phone, type);
+    }
+
+    function next() {
+        var code = $("#yzm").val().replace(/[\D]/g, '');
+        if (code.length != 4) {
+            Comm.message("验证码为4位数字");
+            return;
+        }
+        AJAX.GET("/common/sms/checkMsg?phone=" + user.phone + '&type=' + v + '&code=' + code, function (res) {
+            if (res.code == 1) {
+                gourl(code)
+            } else {
+                Comm.message(res.msg);
+            }
+        })
+    }
+
+    function gourl(code) {
+        if (v === "2") {
+            Comm.go('modifyPsw.html'); //修改密码
+        }
+        if (v === "3") {
+            Comm.go('telBindNew1.html?code=' + code); //修改手机号
+        }
+        if (v === "5") {
+            Comm.go('setPayPassword.html'); //修改支付密码
+        }
+    }
+</script>
+
+</html>

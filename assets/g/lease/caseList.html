@@ -1,0 +1,92 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../../css/g.css'>
+    <link rel='stylesheet' href='../../css/comm.css'>
+    <style>
+        #list{
+            flex-wrap:wrap;
+            justify-content:space-between;
+        }
+        #list .img{
+            width: 170px;
+            height: 105px;
+        }
+        #list > div{
+            display: inline-block;
+            width: 170px
+        }
+        .textinfo{
+            width: 100%;
+        }
+        .del{
+            width: 30px;
+            top:15px;
+            left: 0px;
+            padding: 2px ;
+            background: #00000050;
+        }
+        /* footer */
+        footer button{
+            border-radius: 5px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>案列管理</div>
+        </div>
+    </header>
+
+    <section class='bg_hui ' id='box'>
+        <div class="paddt10 paddb10 flex marauto pad10" id='list'>
+            <div class="bg_white marb10 verticalP">
+                <img src="http://huahuiapp.oss-cn-shenzhen.aliyuncs.com/img/2019-06/1561525329094.jpg/250" alt="" class='img'>
+                <p class='textinfo f14 c21 wordW mart10 paddl10'>婚庆</p>
+                <p class='textinfo f12 color999 wordW mart5 marb10 paddl10'>婚庆现场布置婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现...</p>
+                <img src="../img/delw.png" alt="" class='vertical del' >
+            </div>
+            <div class="bg_white marb10 verticalP">
+                <img src="http://huahuiapp.oss-cn-shenzhen.aliyuncs.com/img/2019-06/1561525329094.jpg/250" alt="" class='img'>
+                <p class='textinfo f14 c21 wordW mart10 paddl10'>婚庆</p>
+                <p class='textinfo f12 color999 wordW mart5 marb10 paddl10'>婚庆现场布置婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现...</p>
+                <img src="../img/delw.png" alt="" class='vertical del' >
+            </div>
+            <div class="bg_white marb10 verticalP">
+                <img src="http://huahuiapp.oss-cn-shenzhen.aliyuncs.com/img/2019-06/1561525329094.jpg/250" alt="" class='img'>
+                <p class='textinfo f14 c21 wordW mart10 paddl10'>婚庆</p>
+                <p class='textinfo f12 color999 wordW mart5 marb10 paddl10'>婚庆现场布置婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现场布置婚庆现婚庆现...</p>
+                <img src="../img/delw.png" alt="" class='vertical del' >
+            </div>
+        </div>
+    </section>
+    <footer class="paddt5 paddb5 t-a-c">
+        <button class="f18" onclick="Comm.go('./addcase.html')">上传案列</button>
+    </footer>
+</body>
+<script src='../../inc/z.js'></script>
+<script src='../../inc/g.js'></script>
+<script src='../../inc/comm.js'></script>
+<script src='../../inc/art-template.js'></script>
+<script>
+   
+    function pageload() {
+       
+    }
+    function pageresume() {
+ 
+    }
+    var model={
+    }
+</script>
+
+</html>

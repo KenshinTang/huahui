@@ -1,0 +1,70 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        img{
+            display: block;
+            width: 253px;
+            height: 156px;
+            margin: 130px  auto 0px ;
+
+        }
+        .oldGoods,.newGoods{
+            display: block;
+            margin: 0 auto;
+            border-radius: 5px;
+            width: 80%;
+            font-size: 18px;
+        }
+        .oldGoods{
+            margin-top: 80px;
+        }
+        .newGoods{
+            background: white;
+            color:black;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon'  onclick="Comm.close()"  _onclick="Comm.go('./goodsList.html')"></div>
+            <div class='navTitle'>添加商品</div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <img src="./img/tjiasp.png" alt="" class="">
+        <button class="oldGoods "onclick="Comm.go('class.html?type=5')">从在售商品中选择</button>
+        <button class="newGoods bottomShadow" onclick="Comm.go('./addGoods.html?t=4')">新建租赁商品</button>
+    </section>
+    <footer>
+        
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script>
+   
+    function pageload() {
+       
+    }
+    function pageresume() {
+ 
+    }
+    var model={
+    }
+</script>
+
+</html>

@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>申请成为供应商</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        .navTitle {
+            font-weight: normal;
+        }
+        /* 选择项样式 */
+        
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+        
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+            /* color: #999; */
+        }
+        
+        .cellContent input:disabled {
+            background: none;
+        }
+        
+        .cellContent input[type=button] {
+            /* color: #CCCCCC; */
+            background-color: white;
+            margin-right: 5px;
+        }
+        
+        #reason {
+            width: 180px;
+        }
+        /* 上传身份证 */
+        
+        .cardBox {
+            width: 48%;
+            height: 120px;
+            border: 1px dashed #c1bdbd;
+        }
+        
+        .cardBox img {
+            width: 100%;
+            height: 120px;
+            ;
+        }
+        
+        .upbtn {
+            width: 60px;
+            height: 60px;
+            line-height: 55px;
+            font-size: 40px;
+            color: white;
+            border-radius: 50%;
+            background: -webkit-linear-gradient(bottom, #dd1669, #ef940b);
+            background: -o-linear-gradient(top, #dd1669, #ef940b);
+            background: -moz-linear-gradient(top, #dd1669, #ef940b);
+            background: linear-gradient(top, #dd1669, #ef940b);
+        }
+        
+        .img {
+            width: 45px;
+            height: 45px;
+        }
+        
+        .mainBusiness {
+            width: 95%;
+        }
+        
+        .typeList {
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            align-items: flex-start;
+            padding: 0px 2% 20px 2%;
+        }
+        
+        .typeList span {
+            display: inline-block;
+            width: 30%;
+            margin: 15px 1.5%;
+            text-align: center;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 15px;
+            border: 1px solid #f2f2f2;
+            background: #f2f2f2;
+        }
+        
+        .typeBtn span {
+            width: 40%;
+            height: 45px;
+            border-radius: 30px;
+            line-height: 45px;
+        }
+        
+        .cancel {
+            border: 1px solid #f2f2f2;
+            background: #f2f2f2;
+        }
+        /* 原因输入框 */
+        
+        #message {
+            width: 100%;
+            height: 70px;
+            border: 0px;
+        }
+        /* 重新配货 */
+        
+        .top-9 {
+            top: -9px;
+        }
+        
+        .list {
+            padding-left: 15px;
+        }
+        /* 提交 */
+        
+        .sumbit,
+        .save {
+            height: 45px;
+            line-height: 45px;
+            border-radius: 5px;
+        }
+        /* 重置弹框样式 */
+        
+        #WTDBOXTD {
+            width: 90%;
+        }
+        
+        #sinbox {
+            border-radius: 15px;
+        }
+        /* 图片样式 */
+        
+        #upHalfPhoto img,
+        #upBusinessPhoto img,
+        #upDoorPhoto img {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .closeimg {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+        }
+        
+        .bgdd-ef {
+            background: -webkit-linear-gradient(left, #dd1669, #ef940b)!important;
+            background: -o-linear-gradient(right, #dd1669, #ef940b)!important;
+            background: -moz-linear-gradient(right, #dd1669, #ef940b)!important;
+            background: linear-gradient(right, #dd1669, #ef940b)!important;
+        }
+    </style>
+</head>
+
+<body style="position:relative">
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">申请成为供应商</div>
+        </div>
+    </header>
+    <section id='' class="bg_hui" style="position:relative">
+
+
+    </section>
+    <footer class="shared paddl15 paddt5 paddb5 paddr15">
+        <div class="bgdd-ef sumbit center colorfff f14" onclick="submitted(1)">提交申请</div>
+        <div class="bgdd-ef save center colorfff f14 hide" onclick="submitted(2)">保存</div>
+    </footer>
+    <div id="sinbox" wtd="mtype">
+
+    </div>
+
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<script src="../inc/dict.js"></script>
+<script src="../inc/upimg/upload.js"></script>
+<script src="../inc/art-template.js"></script>
+<script type="text/javascript" src="../inc/area.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo"),
+        type = Comm.query("type"),
+        _suppliers = [], //供应商类别
+        _mainBusiness = [], //主营类型
+        _mainGoods = [],
+        _detail = null,
+        temp = [],
+        iNum = 0,
+        nNum = 0;
+
+    function pageload() {
+        Comm.loading(true)
+            //获取供应商资料数据 
+
+        model.getType()
+        model.getAll();
+        upimg = function(id, show, hide) {
+            id = new imgUploader(id);
+            id.success = function(d) {
+                var cimgUrl = this.imgList.length > 0 ? this.imgList[0] : 'img/error.png';
+                var ossUrl = Comm.OSS.getImgUrl(cimgUrl);
+                $(this.dom).removeClass("paddt10")
+                $(this.dom).find(hide).addClass("hide");
+                $(this.dom).find(show).removeClass("hide");
+                $(this.dom).find('input').attr("data", cimgUrl).val(cimgUrl)
+            }
+        }
+    }
+
+    function pageresume() {
+        model.loc_check = Comm.db('loc_check');
+        if (model.loc_check) {
+            var str = model.loc_check.detail
+            $("#coordinate").val(str);
+            model.coordinate = model.loc_check.lat + "," + model.loc_check.lng
+            model.coaddress = model.loc_check.pro + model.loc_check.city + model.loc_check.dis + model.loc_check.detail
+        }
+
+    }
+
+
+    //移除凭证
+    function removeimg(a) {
+        var flag = $(a).parents("#baseBox")
+        console.info(flag)
+        $(a).parent().remove();
+
+        if (flag.length > 0) {
+            nNum--;
+            $("#base").show().find('.moxie-shim').width(80).height(80);
+            if (nNum != 5) {
+                $("#base").removeClass("hide")
+            }
+            model.baseimg(nNum)
+        } else {
+            iNum--;
+            $("#upm").show().find('.moxie-shim').width(80).height(80);
+            if (iNum != 5) {
+                $("#upm").removeClass("hide")
+            }
+            model.upimg(iNum)
+        }
+    }
+    //选择供应商类型
+    changeSuppliers = function() {
+            _suppliers = [{
+                i: "1",
+                text: "公司"
+            }, {
+                i: "2",
+                text: "基地"
+            }, {
+                i: "3",
+                text: "个体"
+            }]
+            suppliers = new Commpicker("选择供应商类别", [_suppliers], function(obj, name, sid) {
+                $("#suppliers").val(name).attr("data", sid);
+                if (sid == "1" || sid == "2") {
+                    $("#upBusinessPhoto").parent().removeClass("hide")
+                    $("#businessLicense").attr("data-reg", 'empty')
+                    if (sid == "2") {
+                        $("#jdimg").removeClass("hide")
+                        $("#basePicture").attr("data-reg", 'empty')
+                        model.baseimg()
+                    } else {
+                        $("#jdimg").addClass("hide")
+                        $("#basePicture").attr("data-reg", '')
+                    }
+                    model.bussinessimg()
+                } else {
+                    $("#upBusinessPhoto").parent().addClass("hide")
+                    $("#businessLicense").attr("data-reg", '')
+                    $("#jdimg").addClass("hide")
+                    $("#basePicture").attr("data-reg", '')
+                }
+            });
+            suppliers.show();
+        }
+        // 提交申请
+    submitted = function(flag) {
+
+        var data = Check.submit('POST')
+        if (!data) {
+            return
+        }
+        data.category = $("#suppliers").attr("data"); //供应商类别
+        data.managerAddress = $("#managerAddress").attr("data"); //地址
+        data.mainGoods = _mainGoods.join(); //主营类型
+        // data.shopImg = $("#shopPicture").val();//商品图片
+        // data.abbrPic = $("#basePicture").val();//基地图片
+        data.customerId = userinfo.customerId;
+        data.bussinessId = userinfo.bussinessId;
+        data.coordinate = model.coordinate; //自提经纬度
+        data.coaddress = model.coaddress; //自提地址
+        //商品图片
+        var shopImg = [];
+        $("#conimg .upimg").each(function(i, e) {
+            shopImg.push($(e).attr("data"));
+        })
+        data.shopImg = shopImg.join(",")
+            //基地图片
+        var abbrPic = [];
+        $("#baseBox .upimg").each(function(i, e) {
+            abbrPic.push($(e).attr("data"));
+        })
+        data.abbrPic = abbrPic.join(",")
+
+
+
+        if (!$('#isread').hasClass('checkcir')) {
+            return Comm.message('同意服务协议才可操作');
+        }
+        var url = '/bussiness/bussiness/updateMessage'
+        if (flag == "2") {
+            url = "/bussiness/bussiness/update"
+        }
+        AJAX.POST(url, data, function(res) {
+            Comm.db("loc_check", null)
+            if (res.code == 1) {
+                Comm.message("等待后台审核资料")
+                setTimeout(function() {
+                    Comm.gotop("index.html")
+                }, 600)
+
+            } else {
+                Comm.message(res.msg)
+            }
+
+        })
+    }
+    var model = {
+        _area: [],
+        getAll: function() {
+            AJAX.GET("/common/areaAddr/getAll", function(res) {
+                if (res.code == 1) {
+                    for (var i = 0; i < res.data.length; i++) {
+                        var e = res.data[i];
+                        if (e.pId == "0") {
+                            e.c = [];
+                            e.i = e.areaId
+                            e.n = e.areaName
+                            model.getData(e, res.data)
+                            model._area.push(e);
+                        }
+                    }
+                    _area = model._area;
+                    Area.init(function() {
+                        model.City = new Areapicker("选择地区", function(obj, name, sid) {
+                            $("#managerAddress").val(name).attr("data", sid);
+                            // getSchoolName(_schoolopt)
+                        });
+                    })
+                }
+
+            })
+        },
+        getData: function(pe, d) {
+            var t = [];
+            if (d) {
+                for (var i = 0; i < d.length; i++) {
+                    var e = d[i];
+                    if (e.pId == pe.areaId) {
+                        e.c = [];
+                        e.i = e.areaId
+                        e.n = e.areaName
+                        model.getData(e, d)
+                        pe.c.push(e)
+                    }
+                }
+            }
+        },
+        getType: function() { //得到一级类别
+            AJAX.GET('/common/category/getAll', function(d) {
+                if (d.code == 1) {
+                    model._getType = [];
+                    for (var i = 0; i < d.data.length; i++) {
+                        var e = d.data[i];
+                        if (e.pId == "0") {
+                            e.children = [];
+                            model._getType.push(e);
+                        }
+                    }
+                    $("#sinbox").html(template("mType-tpl", model._getType))
+                }
+                model.detail()
+            })
+        },
+        type: function(v) {
+            if (type == "1" && userinfo.ifDetail != '0') {
+                document.title = '商家中心';
+                $(".navTitle").html("商家中心");
+                $(".save").removeClass("hide")
+                $(".sumbit").addClass("hide")
+                if (v.category == "3") {
+                    $("#upBusinessPhoto").parent().addClass("hide")
+                    $("#businessLicense").attr("data-reg", '')
+                }
+                if (v.category == "3" || v.category == "1") {
+                    $("#jdimg").addClass("hide")
+                    $("#basePicture").attr("data-reg", '')
+                }
+
+            }
+        },
+        detail: function() {
+            AJAX.POST("/bussiness/bussiness/detail", {
+                customerId: userinfo.customerId
+            }, function(res) {
+                Comm.loading(false)
+                
+                if (res.code == 1) {
+                    // $("#suppliers").attr("data", res.data.category).val(res.data.category == 1 ? "公司" : res.data.category == 2 ? "基地" : "个体")
+                    // $("#peopleName").val(res.data.peopleName)
+                    // $("#peoplephone").val(res.data.peoplephone)
+                    $("section").html(template("mainTpl", res.data))
+                    Comm.iosInput();
+                    model._shopImg = res.data.shopImg;
+                    model._abbrpic = res.data.abbrPic;
+                    model.coordinate = res.data.coordinate; //自提经纬度
+                    model.coaddress = res.data.coaddress; //自提地址
+                    model.upimg(model._shopImg.length)
+                    model.shopImg()
+                    model.type(res.data)
+                    model.bussinessimg();
+                    model.baseimg(model._abbrpic.length)
+                    if (res.data.category == "2") {
+                        model.retBaseImg()
+                    }
+
+                    model.resetMain(res.data.mainGoods)
+                } else {
+                    $("section").html(template("mainTpl"))
+                    Comm.iosInput();
+                    model.upimg()
+                }
+                if (!Comm.w9()) {
+                    pageresume();
+                }
+                AJAX.GET('/admin/article/detail?articleId=80', function(a) {
+                    if (a.code == 1) {
+                        $(".xy span.colorred").html(a.data.articlename)
+                    }
+                })
+            })
+        },
+        // 获取城市
+        changeCity: function() {
+            model.City.show();
+        },
+        bussinessimg: function() {
+            //上传营业执照
+            return
+            var upBusinessPhoto = new imgUploader("upBusinessPhoto");
+            upBusinessPhoto.success = function(d) {
+                var cimgUrl = this.imgList.length > 0 ? this.imgList[0] : 'img/error.png';
+                var ossUrl = Comm.OSS.getImgUrl(cimgUrl);
+                $(this.dom).removeClass("paddt10")
+                $(this.dom).find("input").addClass("hide");
+                $(this.dom).find("img").removeClass("hide");
+                $(this.dom).find('input').attr("data", cimgUrl).val(cimgUrl)
+            }
+        },
+        upimg: function(num) {
+            // 上传身份证明
+            var cardimg1 = new imgUploader("cardimg1");
+            cardimg1.success = function(d) {
+                var cimgUrl = this.imgList.length > 0 ? this.imgList[0] : 'img/error.png';
+                var ossUrl = Comm.OSS.getImgUrl(cimgUrl);
+                $(this.dom).removeClass("paddt10")
+                $(this.dom).find("div").addClass("hide");
+                $(this.dom).find("img").removeClass("hide");
+                $(this.dom).find('input').attr("data", cimgUrl).val(cimgUrl)
+            }
+            var cardimg2 = new imgUploader("cardimg2");
+            cardimg2.success = function(d) {
+                    var cimgUrl = this.imgList.length > 0 ? this.imgList[0] : 'img/error.png';
+                    var ossUrl = Comm.OSS.getImgUrl(cimgUrl);
+                    $(this.dom).removeClass("paddt10")
+                    $(this.dom).find("div").addClass("hide");
+                    $(this.dom).find("img").removeClass("hide");
+                    $(this.dom).find('input').attr("data", cimgUrl).val(cimgUrl)
+                }
+                //上传手持半身照
+            var upHalfPhoto = new imgUploader("upHalfPhoto");
+            upHalfPhoto.success = function(d) {
+                    var cimgUrl = this.imgList.length > 0 ? this.imgList[0] : 'img/error.png';
+                    var ossUrl = Comm.OSS.getImgUrl(cimgUrl);
+                    $(this.dom).removeClass("paddt10")
+                    $(this.dom).find("input").addClass("hide");
+                    $(this.dom).find("img").removeClass("hide");
+                    $(this.dom).find('input').attr("data", cimgUrl).val(cimgUrl)
+                }
+                // 上传门头照
+            var upDoorPhoto = new imgUploader("upDoorPhoto");
+            upDoorPhoto.success = function(d) {
+                    var cimgUrl = this.imgList.length > 0 ? this.imgList[0] : 'img/error.png';
+                    var ossUrl = Comm.OSS.getImgUrl(cimgUrl);
+                    $(this.dom).removeClass("paddt10")
+                    $(this.dom).find("input").addClass("hide");
+                    $(this.dom).find("img").removeClass("hide");
+                    $(this.dom).find('input').attr("data", cimgUrl).val(cimgUrl)
+                }
+                // 上传商品图片
+            if (!num) {
+                num = 5
+            } else {
+                num = 5 - num
+            }
+            var uploader = new imgUploader("conimg", num, "imgupimg");
+            uploader.success = function() {
+                if (this.imgList.length > 0) {
+                    $.each(this.imgList, function(i, v) {
+                        $("#conimg").prepend(template('imgTpl', {
+                            src: v
+                        }))
+                        Comm.iosInput();
+                        iNum++;
+                    })
+                }
+                // var cimgUrl = this.imgList.length > 0 ? this.imgList[0] : 'img/error.png';
+                // $("#conimg").prepend(template('imgTpl', {
+                //     src: cimgUrl
+                // }))
+                // iNum++;
+                if (iNum == 5) {
+                    $("#upm").hide();
+                } else {
+                    $("#upm").show().find('.moxie-shim').width(80).height(80);
+                }
+                var basepics = [];
+                $("#conimg .upimg").each(function(i, e) {
+                    basepics.push($(e).attr("data"));
+                })
+                $("#shopPicture").val(basepics.join(","))
+                model.upimg(iNum)
+            }
+        },
+        baseimg: function(num) { //基地图片
+            if (!num) {
+                num = 5
+            } else {
+                num = 5 - num
+            }
+            var baseloader = new imgUploader("baseBox", num, "baseupimg");
+            baseloader.success = function() {
+                if (this.imgList.length > 0) {
+                    $.each(this.imgList, function(i, v) {
+                        $("#baseBox").prepend(template('imgTpl', {
+                            src: v
+                        }))
+                        Comm.iosInput();
+                        nNum++;
+                    })
+                }
+                var basepics = [];
+                // var cimgUrl = this.imgList.length > 0 ? this.imgList[0] : 'img/error.png';
+                // $("#baseBox").prepend(template('imgTpl', {
+                //     src: cimgUrl
+                // }))
+                // nNum++;
+                if (nNum == 5) {
+                    $("#base").hide();
+                } else {
+                    $("#base").show().find('.moxie-shim').width(80).height(80);
+                }
+                $("#baseBox .upimg").each(function(i, e) {
+                    basepics.push($(e).attr("data"));
+                })
+                $("#basePicture").val(basepics.join(","))
+                model.baseimg(nNum)
+            }
+        },
+        // 选择主营类别
+        mainBusiness: function() {
+            Comm.showWindow('mtype', true);
+            model.choiceMainBusiness()
+        },
+        //主营类型选择function
+        choiceMainBusiness: function() {
+            // 
+            // if (_mainGoods.length == 0) {
+            //     temp = _mainGoods;
+            // }
+            if (_mainGoods.length != 0) {
+                $.each($("#WTDBOXTD  .typeList").find('span'), function(i, v) {
+                    $.each(_mainGoods, function(n, m) {
+                        // 
+                        $(v).attr("data") == m ? $(v).addClass("bgdd-ef colorfff") : false;
+                    })
+                })
+            }
+            // _mainGoods = [];
+            $(".typeList").on("click", "span", function(e) {
+                $(this).toggleClass("bgdd-ef colorfff")
+            })
+        },
+        // 取消弹框
+        cancel: function() {
+            Comm.showWindow()
+        },
+        //确认主营类型
+        confirm: function(a) {
+            console.info($(a).parent().siblings(".typeList").find("span"));
+            var _list = $(a).parent().siblings(".typeList").find("span");
+            $.each(_list, function(i, v) {
+                if ($(v).hasClass("bgdd-ef")) {
+                    var _a = $(v).attr("data");
+                    if (_mainGoods.indexOf(_a) == -1) {
+                        _mainGoods.push(_a)
+                    }
+
+                }
+            })
+            $("#mainGoods").val(model.getMainValue(_mainGoods)).attr("data", _mainGoods.join(","))
+            Comm.showWindow()
+        },
+        //根据主营ID查value
+        getMainValue: function(opt) {
+            var _text = [];
+            $.each(opt, function(i, v) {
+                $.each(model._getType, function(n, m) {
+                    if (v == m.categoryId) {
+                        console.info(m.categoryName)
+                        _text.push(m.categoryName);
+                    }
+                })
+            })
+            return _text.join()
+        },
+        //修改入驻商品图片
+        shopImg: function() {
+            var str = [];
+            if (model._shopImg.length > 0) {
+                $.each(model._shopImg, function(i, v) {
+                    $("#conimg").prepend(template('imgTpl', {
+                        src: v.url
+                    }))
+                    str.push(v.url)
+                    iNum++;
+                    if (i >= 4) {
+                        $("#upm").addClass("hide")
+                    }
+                })
+            }
+            $("#shopPicture").val(str.join(","))
+        },
+        //修改基地图片
+        retBaseImg: function() {
+            var str = [];
+            if (model._abbrpic.length > 0) {
+                $.each(model._abbrpic, function(i, v) {
+                    $("#baseBox").prepend(template('imgTpl', {
+                        src: v.url
+                    }))
+                    str.push(v.url)
+                    nNum++;
+                    if (i >= 4) {
+                        $("#base").addClass("hide")
+                    }
+                })
+            }
+            $("#basePicture").val(str.join(","))
+        },
+        // 确认阅读用户协议
+        isread: function(el) {
+            $(el).toggleClass("decir checkcir");
+            if ($(el).hasClass("checkcir")) {
+                $(el).attr("data", "isread")
+            } else {
+                $(el).attr("data", "")
+            }
+        },
+        resetMain: function(opt) {
+            var str = [];
+            opt = opt.split(",")
+                // _mainGoods = opt.split(",");
+                // _text = opt.split(",");
+            $.each(opt, function(i, v) {
+                $.each(model._getType, function(n, m) {
+                    if (v == m.categoryId) {
+                        console.info(m.categoryName)
+                        str.push(m.categoryName);
+                    }
+                })
+            })
+            str = str.join(",")
+            $("#mainGoods").val(str)
+        }
+    }
+    template.defaults.imports.getMainValue = function(opt) {
+        if (opt == "") {
+            return ""
+        }
+        var str = [];
+        opt = opt.split(",")
+        _mainGoods = opt;
+        $.each(opt, function(i, v) {
+            $.each(model._getType, function(n, m) {
+                if (v == m.categoryId) {
+                    console.info(m.categoryName)
+                    str.push(m.categoryName);
+                }
+            })
+        })
+        str = str.join(",")
+        return str
+    }
+    template.defaults.imports.resetcoaddress = function(opt) {
+        if (!opt) {
+            return ""
+        }
+        var index = opt.indexOf("区")
+        var str = opt.slice(index + 1)
+        return str
+    }
+</script>
+<script id="imgTpl" type="text/html">
+    <div class="left marr10 marb10" style="position:relative;">
+        <img src="./img/close.png" width="20" class="closeimg" onclick="removeimg(this)" />
+        <img class="upimg" src="{{OSS(src,'d')}}" width="80" height="80" data="{{src}}" />
+    </div>
+</script>
+<script id="mType-tpl" type="text/html">
+    <div class="mainBusiness  " id="mainBusiness">
+        <div class="center paddt20 paddb20">
+            <span class=" f16">选择主营类型</span>
+        </div>
+        <div class="typeList  paddb20" id="typeList">
+            {{each $data as v i}}
+            <span class="" data='{{v.categoryId}}'>{{v.categoryName}}</span> {{/each}}
+        </div>
+        <div class="typeBtn flex-around paddt10 paddb20">
+            <span class="cancel inblock center" id="cancel" onclick="model.cancel()">取消</span>
+            <span class="bgdd-ef confirm inblock colorfff center" id="confirm" onclick="model.confirm(this)">确定</span>
+        </div>
+    </div>
+</script>
+<!-- main -->
+<script id="mainTpl" type="text/html">
+    <div class=" marb5"></div>
+    <!-- 选择供应商类别 -->
+    <div class="paddl15 bg_white " onclick="changeSuppliers()">
+        <div class="cellContent  indicator bottomBorder ">
+            <div class="label f14 icon_pre  ">供应商类别</div>
+            <input type="text" id="suppliers" name="suppliers" readonly placeholder="请选择供应商类别" data="{{category||''}}" value="{{category=='1'?'公司':''}}{{category=='2'?'基地':''}}{{category=='3'?'个体':''}}" data-reg='empty' />
+        </div>
+    </div>
+    <!-- 负责人姓名 -->
+    <div class="paddl15 bg_white " onclick="">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">负责人姓名</div>
+            <input type="text" id="peopleName" name="peopleName" placeholder="请输入联系人" data="" value="{{peopleName||''}}" data-reg='empty' />
+        </div>
+    </div>
+    <!-- 联系电话 -->
+    <div class="paddl15 bg_white " onclick="">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">联系电话</div>
+            <input type="tel" maxlength="11" id="peoplephone" name="peoplephone" placeholder="请输入联系方式" data="" value="{{peoplephone||''}}" data-reg='m' />
+        </div>
+    </div>;
+    <!-- 上传身份证 -->
+    <div class=" marb5"></div>
+    <div class=" paddt10 paddl15 paddb10 white " style="">
+        <div class=" paddr15 " style="height:100%;">
+            <div class="label f14 icon_pre bold ">身份证照片</div>
+        </div>
+        <div class="  paddr10">
+            <div class="clearfix  paddt10 _flex-between">
+                <div class="cardBox left {{idcardImageFront?flase:'paddt10'}}" id="cardimg1" _onclick="upimg('cardimg1','img','div')">
+                    <div class="upbtn center marauto {{idcardImageFront?'hide':''}}">+</div>
+                    <div class="colordd  center f18 mart10 {{idcardImageFront?'hide':''}}">身份证正面照</div>
+                    <img src="{{OSS(idcardImageFront,'d')||''}}" alt="" class="{{idcardImageFront?false:'hide'}}" onerror="app.herrorimg(this)">
+                    <input type="text" readonly id="idcardImageFront" name="idcardImageFront" placeholder="请上传身份证正面" data="{{idcardImageFront||''}}" value="{{idcardImageFront||''}}" data-reg='empty' class="hide" />
+                </div>
+                <div class="cardBox right {{idcardImageCounter?flase:'paddt10'}}" id="cardimg2" _onclick="upimg('cardimg2','img','div')">
+                    <div class="upbtn center marauto {{idcardImageCounter?'hide':''}}">+</div>
+                    <div class="colordd  center f18 mart10 {{idcardImageCounter?'hide':''}}">身份证反面照</div>
+                    <img src="{{OSS(idcardImageCounter,'d')||''}}" alt="" class="{{idcardImageCounter?false:'hide'}}" onerror="app.herrorimg(this)">
+                    <input type="text" readonly id="idcardImageCounter" name="idcardImageCounter" placeholder="请上传身份证反面" data="{{idcardImageCounter||''}}" value="{{idcardImageCounter||''}}" data-reg='empty' class="hide" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 上传半身照 -->
+    <div class="mart5"></div>
+    <div class="paddl15 bg_white " _onclick="upimg('upHalfPhoto','img','input')">
+        <div class="cellContent  indicator bottomBorder " id="upHalfPhoto">
+            <div class="label f14 icon_pre  ">手持身份证半身照</div>
+            <img src="{{OSS(idcardHand,'d')||''}}" alt="" class="{{idcardHand?false:'hide'}}" onerror="app.herrorimg(this)">
+            <input type="text" readonly disabled id="idcardHand" name="idcardHand" placeholder="请上传半身照" data="{{idcardHand||''}}" value="{{idcardHand||''}}" data-reg='empty' style="max-width: 45%;" class="{{idcardHand?'hide':''}}" />
+        </div>
+    </div>
+    <!-- 上传营业执照 -->
+    <!-- <div class="paddl15 bg_white  {{businessLicense?'false':'hide'}}" _onclick="upimg('upBusinessPhoto','img','input')">
+        <div class="cellContent  indicator bottomBorder " id="upBusinessPhoto">
+            <div class="label f14 icon_pre  ">营业执照</div>
+            <img src="{{OSS(businessLicense)||''}}" alt="" class="{{businessLicense?false:'hide'}}" onerror="app.herrorimg(this)">
+            <input type="text" readonly disabled id="businessLicense" name="businessLicense" placeholder="请上传营业执照" data="{{businessLicense||''}}" value="{{businessLicense||''}}"
+                data-reg='' class="{{businessLicense?'hide':''}}"/>
+        </div>
+    </div> -->
+    <!-- 店铺门头照片 -->
+    <div class="mart5"></div>
+    <div class="paddl15 bg_white " _onclick="upimg('upDoorPhoto','img','input')">
+        <div class="cellContent  indicator bottomBorder " id="upDoorPhoto">
+            <div class="label f14 icon_pre  ">店铺门头照片</div>
+            <img src="{{OSS(headPic,'d')||''}}" alt="" class="{{headPic?false:'hide'}}" onerror="app.herrorimg(this)">
+            <input type="text" readonly disabled id="headPic" name="headPic" placeholder="请上传店铺门头照片" data="{{headPic||''}}" value="{{headPic||''}}" data-reg='empty' class="{{headPic?'hide':''}}" />
+        </div>
+    </div>
+    <!-- 店铺简称 -->
+    <div class="paddl15 bg_white " onclick="">
+        <div class="cellContent   bottomBorder ">
+            <div class="label f14 icon_pre  ">店铺简称</div>
+            <!-- <div class="img" ></div> -->
+            <input type="text" id="shopAddr" name="shopAddr" placeholder="请输入店铺简称" data="" value="{{shopAbbr||''}}" data-reg='empty' />
+        </div>
+    </div>
+    <!-- 经营所在地址 -->
+    <div class="paddl15 bg_white " onclick="model.changeCity()">
+        <div class="cellContent  indicator bottomBorder ">
+            <div class="label f14 icon_pre  ">经营所在地址</div>
+            <!-- <div class="img" ></div> -->
+            <input type="button" readonly id="managerAddress" name="managerAddress" placeholder="请输入经营所在地址" data="{{manageAddress||''}}" value="{{getFullName(manageAddress)}}" data-reg='empty' />
+        </div>
+    </div>
+    <!-- 自提地址 -->
+    <div class="paddl15 bg_white " onclick="Comm.go('./map.html')">
+        <div class="cellContent indicator  bottomBorder ">
+            <div class="label f14 icon_pre  ">自提地址</div>
+            <!-- <div class="img" ></div> -->
+            <input type="button" readonly id="coordinate" name="coordinate" placeholder="请输入自提地址" data="{{coordinate}}" value="{{coaddress|resetcoaddress}}" data-reg='empty' />
+        </div>
+    </div>
+    <!-- 主营商品 -->
+    <div class="paddl15 bg_white " onclick="model.mainBusiness()">
+        <div class="cellContent  indicator bottomBorder ">
+            <div class="label f14 icon_pre  ">主营商品</div>
+            <!-- <div class="img" ></div> -->
+            <input type="button" id="mainGoods" name="mainGoods" readonly placeholder="请选择主营商品" data="{{mainGoods||''}}" value="{{mainGoods|getMainValue}}" data-reg='empty' />
+        </div>
+    </div>
+    <!-- 基地图片 -->
+    <div class="paddl15 bg_white bottomBorder {{abbrPic?'_hide':'hide'}}" onclick="" id="jdimg">
+        <div class="cellContent    ">
+            <div class="label f14 icon_pre  ">基地图片</div>
+        </div>
+        <div class="  paddr10">
+            <div class="clearfix  paddt10" id="baseBox">
+                <div class="left marr10 marb10" id="base">
+                    <img src="./img/xztp.png" width="80" height="80" id="baseupimg" />
+                </div>
+            </div>
+        </div>
+        <input class="hide" type="text" id="basePicture" name="" placeholder="请上传基地图片" data="" value="" data-reg='empty' />
+    </div>
+    <!-- 商品图片 -->
+    <div class="paddl15 bg_white bottomBorder" onclick="">
+        <div class="cellContent    ">
+            <div class="label f14 icon_pre  ">商品图片</div>
+            <!-- <div class="img" ></div> -->
+            <!-- <input type="text" id="businessPhoto" name="businessPhoto"  placeholder="" data="" value="请选择" data-reg='empty' /> -->
+        </div>
+        <div class="  paddr10">
+            <div class="clearfix  paddt10" id="conimg">
+                <div class="left marr10 marb10" id="upm">
+                    <img src="./img/xztp.png" width="80" height="80" id="imgupimg" />
+                </div>
+            </div>
+        </div>
+        <input class="hide" type="text" id="shopPicture" name="" placeholder="请上传商品图片" data="" value="" data-reg='empty' />
+
+    </div>
+    <!-- 入驻协议 -->
+    <div class="paddl15  paddt20 paddb15" onclick="">
+        <div class="circular decir inblock" id="isread" onclick="model.isread(this)"></div>
+        <div class="inblock xy">
+            <span>我已阅读并且同意</span>
+            <span onclick="Comm.go('ab.html?id=80')" class="colorred"></span>
+        </div>
+    </div>
+</script>
+
+</html>

@@ -1,0 +1,282 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        /* color */
+        .c87 {
+            color: #878787;
+        }
+
+        /*  */
+        .br10 {
+            display: inline-block;
+            border-radius: 10px;
+            padding: 3px 9px;
+            background: #F4F4F4;
+            color:#878787;
+        }
+
+        .active {
+            background: -webkit-linear-gradient(left, #dd1669, #ef940b);
+            background: -o-linear-gradient(right, #dd1669, #ef940b);
+            background: -moz-linear-gradient(right, #dd1669, #ef940b);
+            background: linear-gradient(right, #dd1669, #ef940b);
+            color:white;
+        }
+        /* 列表 */
+        .title span {
+            font-size: 16px;
+        }
+
+        span {
+            text-align: center;
+            word-wrap: break-word;
+            word-break: normal;
+        }
+
+        .list span {
+            font-size: 14px
+        }
+
+        .c21 {
+            color: #212121;
+        }
+
+        .c5c {
+            color: #5C5C5C
+        }
+        /* time */
+        #sinbox {
+            width: 100%;
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            padding: 0px;
+        }
+
+        #sinbox .item {
+            padding: 0px 10px;
+            line-height: 50px;
+        }
+
+        #sinbox .tb {
+            height: 50px;
+            line-height: 50px;
+        }
+
+        #sinbox .tb .td {
+            width: 50%;
+            float: left;
+            background-color: #EBEBEB;
+        }
+
+        #sinbox .tb .r {
+            width: 50%;
+            height: 50px;
+            float: left;
+            color: #fff;
+            border-radius: 0px;
+        }
+
+        #sinbox .item input {
+            width: 100px;
+        }
+
+        .picker {
+            z-index: 1300 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>活动商品明细</div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <div class="pad10 flex-between bottomBorder bg_hui">
+            <span class="c333 f14" name='nowdate'>本月</span>
+            <div onclick="Comm.showWindow('sinboxTemp',true);">
+                <span class="c333 f14 ">筛选</span>
+                <img src="./img/gdfl.png" alt="" width="8">
+            </div>
+        </div>
+        <!-- 图表 -->
+        <div></div>
+        <!-- 列表  -->
+        <div>
+                <li class="title bg_hui paddt15 paddb15 paddl10 paddr10 flex-between">
+                    <span style="width: 40% ">商品名称</span>
+                    <span style="width: 25%" onclick="model.px(this,1)">销量
+                            <img src="./img/shop/jgsx.png" alt="" width="8" data=''>
+                        </span>
+                        <span style="width: 25%" onclick="model.px(this,2)">销售额
+                            <img src="./img/shop/jgsx.png" alt="" width="8" data=''></span>
+                </li>
+                <div id='list'>
+
+                </div>
+        </div>
+    </section>
+    <footer>
+
+    </footer>
+    <div id="sinbox" wtd="sinboxTemp">
+            <div class="item">
+                <div class="colorb5 left">时间筛选：</div>
+                <div class="tleft">
+                    <input readonly id="start" placeholder="开始时间" onclick="datePickerstart.show();" class='colordd' />
+                    <span>至&nbsp;</span>
+                    <input id="end" readonly onclick="datePickerend.show();" placeholder="结束时间" class='colordd' />
+                </div>
+                <div class="cls"></div>
+            </div>
+            <div class="tb">
+                <div class="td f16 " onclick="model.reset()">重置</div>
+                <div class="td f16 r btn" onclick="model.okref()">确定</div>
+                <div class="cls"></div>
+            </div>
+        </div>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src="../inc/picker.min.js"></script>
+<script src='../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+        model.getMonthStartDateAndDateRange();
+        model.restime();
+        model.init();
+    }
+    function pageresume() {
+        model.init();
+    }
+    var model = {
+        opt: {
+            activityType:Comm.query('activityType'),
+        },
+        getMonthStartDateAndDateRange: function () {
+            // 获取当前月的第一天  
+            var start = new Date();
+            start.setDate(1);
+            // 获取当前月的最后一天  
+            var date = new Date();
+            var currentMonth = date.getMonth();
+            var nextMonth = ++currentMonth;
+            var nextMonthFirstDay = new Date(date.getFullYear(), nextMonth, 1);
+            var oneDay = 1000 * 60 * 60 * 24;
+            var end = new Date(nextMonthFirstDay - oneDay);
+            model.opt.startTime = app.formatDate(start, 'Y-m-d'); // 日期变换  
+            model.opt.endTime = app.formatDate(end, 'Y-m-d'); // 日期变换
+            // $('[name=nowdate]').html(model.opt.startTime + "至" + model.opt.endTime);
+        },
+        restime: function () {//
+            datePickerstart = new Datepicker("开始时间", function (a, b, c) {
+                $("#WTDBOX #start").val(b);
+                model.startTime = b;
+            });
+            datePickerend = new Datepicker("结束时间", function (a, b, c) {
+                $("#WTDBOX #end").val(b);
+                model.endTime = b;
+            });
+        },
+        resWTD: function () {//
+
+        },
+        reset: function () {//
+            model.startTime = '';
+            model.endTime = "";
+            $("#WTDBOX #start").val(model.start);
+            $("#WTDBOX #end").val(model.end);
+        },
+        okref: function () {//选择时间
+            if (!model.startTime) {
+                Comm.message("请选择开始时间~");
+                return
+            }
+            if (!model.endTime) {
+                Comm.message("请选择结束时间~");
+                return
+            }
+            var v1 = new Date(model.startTime);
+            var v2 = new Date(model.endTime);
+            if (v1.getTime() > v2.getTime()) {
+                Comm.message("结束时间小于开始时间~");
+                return
+            }
+            if (model.endTime && model.startTime) {
+                model.opt.startTime = model.startTime;
+                model.opt.endTime = model.endTime;
+                $('[name=nowdate]').html(model.opt.startTime + "至" + model.opt.endTime);
+                Comm.showWindow();
+                model.init();
+            }
+        },
+        init :function(){//
+            Comm.loading(true);
+            var url = '/bussiness/data/activitydetail';
+            AJAX.POST(url, model.opt, function (res) {
+            Comm.loading(false);
+                if(res.code == 1) {
+                   $("#list").html(template("mainTpl",res.data))
+               } else {
+                    Comm.message(res.msg)
+                }
+                model.startTime = '';
+                model.endTime = '';
+            })
+        },
+        px: function (a, type) {//排序  
+            if (type == '1') {// 销量排序
+                var f = $(a).find('img').attr('data');
+                if (f == '') {
+                    model.opt.orderType = '2';
+                    $(a).addClass('colordd').find('img').attr("src", "./img/shop/jiag.png").attr('data', '2');
+                } else if (f == '2') {
+                    model.opt.orderType = '1';
+                    $(a).addClass('colordd').find('img').attr("src", "./img/shop/jiage.png").attr('data', '1');
+                } else if (f == '1') {
+                    model.opt.orderType = '';
+                    $(a).removeClass('colordd').find('img').attr("src", "./img/shop/jgsx.png").attr('data', '');
+                }
+            } else if (type == '2') {//销售额排序
+                var f = $(a).find('img').attr('data');
+                if (f == '') {
+                    model.opt.orderType = '4';
+                    $(a).addClass('colordd').find('img').attr("src", "./img/shop/jiag.png").attr('data', '4');
+                } else if (f == '4') {
+                    model.opt.orderType = '3';
+                    $(a).addClass('colordd').find('img').attr("src", "./img/shop/jiage.png").attr('data', '3');
+                } else if (f == '3') {
+                    model.opt.orderType = '';
+                    $(a).removeClass('colordd').find('img').attr("src", "./img/shop/jgsx.png").attr('data', '');
+                }
+
+            }
+            model.init(type);
+        },
+    }
+</script>
+
+<script type="text/html" id="mainTpl">
+    {{each $data as v k}}
+    <li class="list paddt15 paddb15 paddl10 paddr10 flex-between bottomBorder">
+            <span style="width: 40%" class="c5c">{{v.goodsName}}</span>
+            <span style="width: 25%" class="c5c">{{v.num}}</span>
+            <span style="width: 25%" class="c5c">{{v.price}}</span>
+        </li>
+    {{/each}}
+</script>
+</html>

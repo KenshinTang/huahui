@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>权限管理</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        .navTitle{
+            font-weight: normal;
+        }
+        /* header */
+        /* section */
+        .authorityList{
+            border-radius: 3px;
+            position: relative;
+        }
+        .authorityBtn{
+            position: absolute;
+            right: 10px;;
+        }
+        .authorityBtn span{
+            border-radius: 3px;
+        }
+        .authority{
+            background: #e66416;
+            padding: 3px 8px;
+        }
+        .transferAuthority{
+            padding: 3px 8px;
+        }
+        .newPermission{
+            height: 45px;
+            line-height: 45px;
+            border-radius: 10px;
+        }
+        img{
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">权限管理</div>
+        </div>
+    </header>
+    <section id='' class="bg_hui paddl10 paddr10">
+        <div id='super'>
+            
+        </div>
+        <div id="ordinary"></div>
+    </section>
+    <footer class="shared paddl15 paddt5 paddb5 paddr15">
+        <div class="bgdd-ef newPermission center colorfff f16" onclick="model.newP()">新建账号</div>
+    </footer>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="./foot.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<script type="text/javascript" src="../inc/upimg/upload.js"></script>
+
+<script>
+    function pageresume() {
+        model.init();
+    }
+
+    function pageload() {
+        model.init();
+    }
+    var model = {
+        super:[],
+        ordinary:[],
+        init :function(){//
+            model.super=[];
+            model.ordinary=[];
+            Comm.loading(true);
+            var url = '/common/roleManager/list'
+                opt = {
+                    userType:'1',
+                };
+            AJAX.POST(url, opt, function (res) {
+            Comm.loading(false);
+                if(res.code == 1) {
+                    $.each(res.data,function(i,v){
+                       if(v.roleId=='128'){
+                           
+                           model.super.push(v)
+                       }else{
+                          
+                        model.ordinary.push(v)
+                       }
+                    })
+                    model.Rendering()
+               } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        newP :function(){//新建账号
+            Comm.go("newPermission.html")
+        },
+        Rendering :function(){// 渲染管理员
+            if(model.super.length!='0') $("#super").html(template("superTpl",model.super))
+            if(model.ordinary.length!='0') $("#ordinary").html(template("ordinaryTpl",model.ordinary))
+        } 
+    }
+</script>
+
+<script type="text/html" id="superTpl">
+    <div class="color74 paddt10 paddb15 f18">
+        <span class="color74  f16 paddb10 block bold">超级管理员</span>
+        {{each $data as v k }}
+        <div class="authorityList bg_white flex-center paddt15 paddb15  paddl10 bottomShadow">
+            <div class="marr10">
+                <img src="{{OSS(v.avatar)}}" alt="" style="width:40px" onerror="app.herrorimg(this)">
+            </div>
+            <div class="">
+                <p class="paddb5">{{v.customerName}}</p>
+                <p class="f14 color74">{{v.phone}}</p>
+            </div>
+            <div class="authorityBtn">
+                <!-- <span class="authority colorfff  f12">权限</span> -->
+                <span class="transferAuthority colorfff  f12 bgdd" onclick="Comm.go('./transferRole.html?userRelationId='+'{{v.userRelationId}}')">转移权限</span>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</script>
+<script type="text/html" id="ordinaryTpl">
+    <div class="color74 paddt10 paddb15 f16">
+        <span class="color74  f16 paddb10 block bold">成员列表</span>
+        {{each $data as v k }}
+        
+        <div class="authorityList bg_white flex-center paddt15 paddb15  paddl10 bottomShadow">
+            <div class="marr10">
+                <img src="{{OSS(v.avatar)}}" alt="" style="width:40px" onerror="app.herrorimg(this)">
+            </div>
+            <div class="">
+                <p class="paddb5">
+                    <span>{{v.customerName}}</span>
+                    {{if v.roleId=='0'}}
+                    <span class="colordd f12">未激活</span>
+                    {{/if}}
+                </p>
+                <p class="f14 color74">{{v.phone}}</p>
+            </div>
+            <div class="authorityBtn">
+                {{if v.roleId!='0'}}
+                <span class="authority colorfff  f12" onclick="Comm.go('./newPermission.html?userRelationId='+'{{v.userRelationId}}')">权限</span>
+                <span class="transferAuthority colorfff  f12 bgdd" onclick="Comm.go('./transferRole.html?userRelationId='+'{{v.userRelationId}}')" >转移权限</span>
+               {{else}}
+               <span class="transferAuthority colorfff  f12 bgdd" onclick="Comm.go('./newPermission.html?userRelationId='+'{{v.userRelationId}}')">编辑</span>
+                {{/if}}
+            </div>
+        </div>
+        
+        {{/each}}
+    </div>
+</script>
+</html>

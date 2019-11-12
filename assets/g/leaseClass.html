@@ -1,0 +1,357 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        /* search */
+        .navTitle {
+            font-weight: normal;
+        }
+
+        .more {
+            width: 4px;
+            height: 16px;
+            right: 15px;
+        }
+
+        .sousuoText {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            display: inline-block;
+        }
+
+        .searchBar {
+            margin: 0 auto;
+        }
+
+        .searchBar input {
+            width: 95%;
+            padding-left: 30px;
+            line-height: 30px;
+            height: 30px;
+            font-size: 14px;
+            color: #8891A7;
+            background-color: white;
+            border-radius: 3px;
+            background-image: url('./img/search.png');
+            background-repeat: no-repeat;
+            background-size: 14px;
+            background-position: 10px center;
+            margin: 0 auto;
+            margin-left: 2.5%;
+        }
+
+        [name='navlist'] span {
+            font-size: 15px;
+            color: #212121;
+        }
+
+        /* 侧边导航 */
+        #rheight {
+            /* margin-left: 100px; */
+        }
+
+        .active {
+            border-left: 3px solid #DD1474;
+            background-color: #fff;
+        }
+
+        /* 列表 */
+
+        .listinfo {
+            height: 75px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .listinfo>p {
+            /* width: 100% */
+        }
+
+        .dfleximg {
+            width: 6px;
+            height: 11px;
+        }
+
+        .goodimg {
+            width: 75px;
+            height: 75px;
+            border-radius: 5px;
+        }
+
+        .isk {
+            border: 1px solid #E02219;
+            border-radius: 2px;
+            font-size: 12px;
+            color: #DA251C;
+            vertical-align: bottom;
+            transform: scale(.8);
+        }
+
+        /*  */
+        #one {
+            display: inline-block;
+            width: 100px;
+            /* height: 100%; */
+            position: absolute;
+        }
+
+        #rheight {
+            width: calc(100% - 100px)
+        }
+
+        /*  WTDBOXTD */
+        #WTDBOXTD {
+            width: 70%;
+        }
+
+        #sinbox input {
+            /* width: 65%; */
+            border: 1px solid #e2e2e2;
+        }
+
+        .picker {
+            z-index: 10001 !important;
+        }
+
+        .hhmmss span {
+            color: #DA251C;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>选择商品</div>
+        </div>
+        <div class="paddr5 paddl15 bg_hui ">
+            <div class="nav-title block searchBar inblock" style="width: calc(100% - 50px);">
+                <form action="javascript:return true;" onsubmit="model.inSearch()">
+                    <input id="id_searchInput" type="search" placeholder="请输入商品名字">
+                </form>
+            </div>
+            <div class="sousuoText f14  colordd" onclick="model.inSearch()">搜索</div>
+        </div>
+    </header>
+
+    <section class='verticalP' id='box'>
+        <div id='one' class=""></div>
+        <div id="rheight" style="margin-left: 100px;">
+            <span class="f14 c21 padd15 inblock bg_white lh20" id="cname" style="height: 50px"></span>
+            <div id="list" class="bg_hui " style="height: calc(100% - 50px);">
+
+            </div>
+        </div>
+    </section>
+    <footer>
+
+    </footer>
+    <div id="sinbox" wtd="handelwtd" class="bottomShadow">
+        <div class="center lh30 f18 bottomBorder" id="tkTitle">请输入商品数量</div>
+        <div name="addNum">
+            <div class="paddt10 paddb10">
+                <input type="number" class="lh30 t-a-c f14" id=" " name="price" placeholder="请填写商品数量" data=" " value=""
+                    data-reg='' onchange="model.ifNum(this)" />
+            </div>
+            <div>
+                <button style="border: 0px;width: 150px;" onclick="model.save(this)">确定</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script>
+
+    function pageload() {
+        // $("#one").html(template('oneTpl', {}));
+        model.getClass()
+    }
+    function pageresume() {
+
+    }
+    var model = {
+        userinfo: Comm.db("userinfo"),
+        categoryArr: [],
+        getClass: function () {//获取一级分类
+            Comm.loading(true);
+            var url = '/common/categoryUser/getList'
+            opt = {
+                itemId: model.userinfo.bussinessId,
+                itemType: '1',
+                pId: '0'
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    $.each(res.data, function (i, v) {//
+                        model.categoryArr.push({
+                            "i": v.categoryUserId,
+                            "text": v.categoryName,
+                        })
+                    })
+                    $("#one").html(template('oneTpl', model.categoryArr));
+                    if (model.categoryArr && model.categoryArr.length > 0) {
+                        model.opt.categoryId = model.categoryArr[0].i
+                        $("#cname").html(model.categoryArr[0].text)
+                    }
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        ifNum: function (a) {//判断数字
+            var num = $(a).val();
+            if (num * 1 <= 0) {
+                Comm.message("请输入大于0的数~");
+                $(a).val("");
+                return;
+            }
+            if (num.indexOf(".") != "-1") {
+                Comm.message("请输入整数~")
+                $(a).val("")
+                return
+            }
+        },
+        qk: function (a, i, text) {//切换
+            if (!$(a).hasClass('active')) {
+                $(a).parent().find('div').removeClass('active bold')
+                $(a).addClass('active bold')
+                model.opt.categoryId = i;
+                $("#cname").html(text)
+                model.init()
+            }
+        },
+        opt: {
+            userType: 1,
+            goodsType: 1,
+            state: 1
+        },
+        init: function () {// 
+            var str = $("#id_searchInput").val("");
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/common/otherGoods/list',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.opt;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+
+                    if (model.leaseId_arr) {
+                        var arr = JSON.parse(model.leaseId_arr)
+                        d.data.forEach(function (v, i) {
+                            arr.forEach(function (n, m) {
+                                if (v.otherGoodsId == n.otherGoodsId) d.data[i].isadd = '1';
+                            })
+                        });
+                    }
+                    model.opt.goodsName = '';
+                    var h = template('goodTpl', d.data);
+                    refresh.appendHtml(h);
+                };
+            } else {
+                // model.opt.keyword = keyword;
+                model.mere.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+        inSearch: function () {//搜索
+            var str = $("#id_searchInput").val();
+            model.opt.goodsName = str;
+            model.init()
+        },
+        leaseId_arr: Comm.db("leaseId_arr"),
+        addGoodsId: function (id, elm) {//添加租赁商品到套餐
+            model._addId = id;
+            model._addElm = elm;
+            Comm.showWindow('handelwtd', true)
+
+        },
+        save: function (a) {//
+            var num = $(a).parents("[name=addNum]").find("input").val();
+            var arr = [];
+            if (model.leaseId_arr) {
+                arr = JSON.parse(model.leaseId_arr)
+            }
+            arr.push({
+                otherGoodsId: model._addId,
+                num: num
+            });
+            model.leaseId_arr = JSON.stringify(arr);
+            Comm.db("leaseId_arr", JSON.stringify(arr))
+            $(model._addElm).addClass("hide").next().removeClass("hide");
+            Comm.showWindow();
+            console.info(arr)
+
+        },
+    }
+</script>
+<script id="oneTpl" type="text/html">
+    {{each $data v k }}
+    <div class="paddt15 paddb15 center f16 {{k==0?'active bold':''}} " onclick="model.qk(this,{{v.i}},'{{v.text}}')">
+        {{v.text}}
+    </div>
+    {{/each}}
+</script>
+
+<script type="text/html" id="goodTpl">
+            {{each $data as v k}}
+                <div id="children">
+                    <div class="clearfix paddl15 paddr15 paddb10 paddt10 marb5 bg_white" name="listinfo"
+                        data="{{v.otherGoodsId}}" style="padding-right:0px">
+                        <div style="height:75px " class="verticalP">
+                            <!-- <div class='quan decir inblock left' style="margin-top:55px" onclick="model.checked(this)"></div> -->
+                            <div class="fl center marr10  clearFloat" style="height:75px;position:relative">
+                                <img src="{{OSS(v.img)}}"
+                                    class="goodimg" onerror="app.errorimg(this)">
+                            </div>
+                            <div class="listinfo clearFloat">
+                                <p class=" f16" 
+                                    style='min-height:21px'>
+                                    <span class="f16 bold color333  inblock wordW" style="max-width:75%">{{v.goodsName}}</span> {{if v.normalGoodsId&&v.normalGoodsId*1>0}}<span class="isk" onclick="Comm.go('gooddetail.html?id='+{{v.normalGoodsId}})">可出售</span>{{/if}}
+                                </p>
+                                <p class=" wordW" _style="min-height: 40px;"
+                                    >
+
+                                    <span
+                                        class="color999 f12 inblock">{{v.descript}}</span>
+                                </p>
+                                <div class="" name=''>
+                                    <span class="c21 f18 colordd">&yen;{{v.price}}</span> <span
+                                        class="f12 color999  ">元/月</span>
+                                </div>
+                            </div>
+                            <img src="./img/tiajia.png" name='isadd' alt=""
+                                style="width:18px;top:calc(100% - 10px);right:10px;"
+                                class="vertical {{v.isadd=='1'?'hide':''}}"
+                                onclick="model.addGoodsId('{{v.otherGoodsId}}',this)">
+                            <span class="color999 vertical f12 {{v.isadd!='1'?'hide':''}}"
+                                style="top:calc(100% - 10px);right:10px;">已添加</span>
+                        </div>
+                    </div>
+                    {{/each}}
+</script>
+
+</html>

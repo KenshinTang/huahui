@@ -1,0 +1,95 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../../css/g.css'>
+    <link rel='stylesheet' href='../../css/comm.css'>
+    <style>
+        /* search */
+        .navTitle {
+            font-weight: normal;
+        }
+        .more{
+            width:4px;
+            height:16px ;
+            right:15px;
+        }
+        .sousuoText {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            display: inline-block;
+        }
+
+        .searchBar {
+            margin: 0 auto;
+        }
+
+        .searchBar input {
+            width: 95%;
+            padding-left: 30px;
+            line-height: 30px;
+            height: 30px;
+            font-size: 14px;
+            color: #8891A7;
+            background-color: white;
+            border-radius: 3px;
+            background-image: url('../img/search.png');
+            background-repeat: no-repeat;
+            background-size: 14px;
+            background-position: 10px center;
+            margin: 0 auto;
+            margin-left: 2.5%;
+        }
+        /* footer */
+        footer button{
+            border-radius: 5px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>员工管理</div>
+        </div>
+        <div class="paddr5 paddl15 bg_hui ">
+                <div class="nav-title block searchBar inblock" style="width: calc(100% - 50px);">
+                    <form action="javascript:return true;" onsubmit="model.inSearch()">
+                        <input id="id_searchInput" type="search" placeholder="请输入商品名字">
+                    </form>
+                </div>
+                <div class="sousuoText f14  colordd" onclick="model.inSearch()">搜索</div>
+            </div>
+    </header>
+
+    <section class='' id=''>
+
+    </section>
+    <footer class="paddt5 paddb5 t-a-c">
+            <button class="f18" onclick="Comm.go('./addcase.html')">添加员工</button>
+        </footer>
+</body>
+<script src='../../inc/z.js'></script>
+<script src='../../inc/g.js'></script>
+<script src='../../inc/comm.js'></script>
+<script src='../../inc/art-template.js'></script>
+<script>
+   
+    function pageload() {
+       
+    }
+    function pageresume() {
+ 
+    }
+    var model={
+    }
+</script>
+
+</html>

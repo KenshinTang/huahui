@@ -1,0 +1,297 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        /*  */
+        .cellContent {
+            /* height: 50px; */
+            /* justify-content: normal; */
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        /*  */
+        div[name='up'] span,
+        div[name='down'] span {
+            display: block;
+        }
+
+        div[name='up'] {
+            height: 110px;
+            border-radius: 5px;
+        }
+
+        /*  */
+        .navCount {
+            border-radius: 3px;
+            height: 80px;
+        }
+
+        .navCount span {
+            display: block;
+            text-align: center;
+        }
+
+        .listCount {
+            /* height: 65px; */
+        }
+
+        .addXX {
+            border-radius: 13px;
+            height: 25px;
+            line-height: 25px;
+            right: 15px;
+        }
+
+        /*  */
+        .c97 {
+            color: #979899;
+        }
+
+        .c87 {
+            color: #878787;
+        }
+
+        /* time */
+        #sinbox {
+            width: 100%;
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            padding: 0px;
+        }
+
+        #sinbox .item {
+            padding: 0px 10px;
+            line-height: 50px;
+        }
+
+        #sinbox .tb {
+            height: 50px;
+            line-height: 50px;
+        }
+
+        #sinbox .tb .td {
+            width: 50%;
+            float: left;
+            background-color: #EBEBEB;
+        }
+
+        #sinbox .tb .r {
+            width: 50%;
+            height: 50px;
+            float: left;
+            color: #fff;
+            border-radius: 0px;
+        }
+
+        #sinbox .item input {
+            width: 100px;
+        }
+
+        .picker {
+            z-index: 1300 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>财务统计</div>
+        </div>
+    </header>
+
+    <section class='bg_hui' id=''>
+
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script src="../inc/picker.min.js"></script>
+<script>
+
+    function pageload() {
+        model.getMonthStartDateAndDateRange();
+        model.restime();
+        model.init();
+    }
+    function pageresume() {
+        model.start = '';
+        model.end = '';
+        model.init();
+    }
+    var model = {
+        start: "",
+        end: "",
+        opt: {},
+        restime: function () {//
+            datePickerstart = new Datepicker("开始时间", function (a, b, c) {
+                $("#WTDBOX #start").val(b);
+                model.start = b;
+            });
+            datePickerend = new Datepicker("结束时间", function (a, b, c) {
+                $("#WTDBOX #end").val(b);
+                model.end = b;
+            });
+        },
+        resWTD: function () {//
+
+        },
+        reset: function () {//
+            model.start = '';
+            model.end = "";
+            $("#WTDBOX #start").val(model.start);
+            $("#WTDBOX #end").val(model.end);
+        },
+        okref: function () {//收支查询
+            if (!model.start) {
+                Comm.message("请选择开始时间~");
+                return
+            }
+            if (!model.end) {
+                Comm.message("请选择结束时间~");
+                return
+            }
+            var v1 = new Date(model.start);
+            var v2 = new Date(model.end);
+            if (v1.getTime() > v2.getTime()) {
+                Comm.message("结束时间小于开始时间~");
+                return
+            }
+            Comm.showWindow();
+            Comm.go("budget.html?startTime=" + model.start + "&endTime=" + model.end)
+        },
+        init: function () {// 界面初始化
+            Comm.loading(true);
+            var url = '/bussiness/financial/zongshouzhi',
+                opt = {
+
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    res.data._startTime = model.opt.startTime;
+                    res.data._endTime = model.opt.endTime;
+                    $("section").html(template("mainTpl", res.data))
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        getMonthStartDateAndDateRange: function () {
+            // 获取当前月的第一天  
+            var start = new Date();
+            start.setDate(1);
+            // 获取当前月的最后一天  
+            var date = new Date();
+            var currentMonth = date.getMonth();
+            var nextMonth = ++currentMonth;
+            var nextMonthFirstDay = new Date(date.getFullYear(), nextMonth, 1);
+            var oneDay = 1000 * 60 * 60 * 24;
+            var end = new Date(nextMonthFirstDay - oneDay);
+            model.opt.startTime = app.formatDate(start, 'Y-m-d'); // 日期变换  
+            model.opt.endTime = app.formatDate(end, 'Y-m-d'); // 日期变换  
+        },
+    }
+</script>
+<div id="sinbox" wtd="sinboxTemp">
+    <div class="item">
+        <div class="colorb5 left">时间筛选：</div>
+        <div class="tleft">
+            <input readonly id="start" placeholder="开始时间" onclick="datePickerstart.show();" class='colordd' />
+            <span>至&nbsp;</span>
+            <input id="end" readonly onclick="datePickerend.show();" placeholder="结束时间" class='colordd' />
+        </div>
+        <div class="cls"></div>
+    </div>
+    <div class="tb">
+        <div class="td f16 " onclick="model.reset()">重置</div>
+        <div class="td f16 r btn" onclick="model.okref()">确定</div>
+        <div class="cls"></div>
+    </div>
+</div>
+
+<script type="text/html" id="mainTpl">
+    <div class="bg_white mart10 marb10 paddl15 paddr15 paddb20" >
+            <div name="up" class='bgdd-ef paddt30 t-a-c' onclick="Comm.go('orderCount.html?billType=-1')">
+                <span class="f12 colorfff ">本月订金金额（元）</span>
+                <span class='f24 colorfff mart20'>{{allOrder||'0'}}</span>
+            </div>
+            <div name='down' class="mart20 flex-between paddl15 paddr15">
+                <div class="t-a-c" onclick="Comm.go('orderCount.html?billType=0')">
+                    <span class="color999">本月线上订单（元）</span>
+                    <span class='mart15 f18'>{{xianshang||'0'}}</span>
+                </div>
+                <div class="t-a-c" onclick="Comm.go('orderCount.html?billType=1')">
+                    <span class='color999'>本月线下订单（元）</span>
+                    <span class='mart15 f18 '>{{xianxia||'0'}}</span>
+                </div>
+            </div>
+        </div>
+        <div class=" paddr15 paddl15 paddt10 paddb10 bg_white " onclick="Comm.showWindow('sinboxTemp',true);">
+            <div class="cellContent  indicator  ">
+                <div class="label color333 icon_pre f14 ">{{_startTime}}-{{_endTime}}</div>
+            </div>
+        </div>
+        <div class='paddt20 paddb20 paddl15 paddr15 bg_white mart10 '>
+            <div class="navCount flex-around bottomShadow paddt15 " name=''>
+                <div>
+                    <span class='c97 f12'>本月收入</span>
+                    <span class='mart15 f16 bold'>&yen;{{shouru||'0'}}</span>
+                </div>
+                <div>
+                    <span class='c97 f12'>本月支出</span>
+                    <span class='mart15 f16 bold'>&yen;{{zhichu||'0'}}</span>
+                </div>
+                <div>
+                    <span class='c97 f12'>本月结余</span>
+                    <span class='mart15 f16 bold'>&yen;{{jieyu||'0'}}</span>
+                </div>
+            </div>
+            <div class="listCount paddt15 paddb15 paddr15 paddl15 bottomShadow mart30 verticalP" onclick="Comm.go('bookkeepingList.html')">
+                <p class='f14 bold marb10'>线下收支</p>
+                <span class="f12 c87">本月收入：{{xiashouru||'0'}} 本月支出：{{xiazhichu||'0'}}</span>
+                <span class='addXX vertical colorfff f12 bgdd-ef paddl15 paddr15' onclick=" event.stopPropagation();Comm.go('makeNote.html')">记一笔</span>
+            </div>
+            <div class="listCount paddt15 paddb15 paddr15 paddl15 bottomShadow mart15" onclick="Comm.go('orderCount.html?type=1')">
+                <p class='f14 bold marb10'>罚款记录</p>
+                <span class="f12 c87">本月{{faCount||'0'}}笔，共{{faPrice||'0'}}</span>
+            </div>
+            <div class="listCount paddt15 paddb15 paddr15 paddl15 bottomShadow mart15" onclick="Comm.go('orderCount.html?type=2')">
+                <p class='f14 bold marb10'>理赔记录</p>
+                <span class="f12 c87">本月{{peiCount||'0'}}笔，共{{peiPrice||'0'}}</span>
+            </div>
+
+        </div>
+</script>
+
+</html>

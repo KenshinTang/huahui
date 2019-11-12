@@ -1,0 +1,596 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        /* search */
+        .navTitle {
+            font-weight: normal;
+        }
+
+        .more {
+            width: 4px;
+            height: 16px;
+            right: 15px;
+        }
+
+        .sousuoText {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            display: inline-block;
+        }
+
+        .searchBar {
+            margin: 0 auto;
+        }
+
+        .searchBar input {
+            width: 95%;
+            padding-left: 30px;
+            line-height: 30px;
+            height: 30px;
+            font-size: 14px;
+            color: #8891A7;
+            background-color: white;
+            border-radius: 3px;
+            background-image: url('./img/search.png');
+            background-repeat: no-repeat;
+            background-size: 14px;
+            background-position: 10px center;
+            margin: 0 auto;
+            margin-left: 2.5%;
+        }
+
+        [name='navlist'] span {
+            font-size: 15px;
+            color: #212121;
+        }
+
+        /* list */
+        .listinfo {
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .listinfo>p {
+            /* width: 100% */
+        }
+
+        .dfleximg {
+            width: 6px;
+            height: 11px;
+        }
+
+        .goodimg {
+            width: 90px;
+            height: 90px;
+            border-radius: 5px;
+        }
+
+        .lowerShelf {
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            border-radius: 50%;
+            background: rgba(00, 00, 00, 0.5);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px
+        }
+
+        .btn-list button {
+            width: 70px;
+            text-align: center;
+            padding: 4px 10px;
+            border: 1px solid #DCDCDC;
+            margin-left: 10px;
+            border-radius: 3px;
+            line-height: 30px;
+            background: white;
+            color: black;
+            font: 14px bold;
+        }
+
+        /* more */
+        #WTDBOXTD {
+            width: 100%;
+            position: absolute;
+            right: 0px;
+            /* top: 0px; */
+            bottom: 0px;
+            padding: 0px 10px;
+        }
+
+        #sinbox {
+            /* height: 100%; */
+            padding: 0px;
+            background-color: rgba(221, 122, 122, 0);
+        }
+
+        .Tbtn,
+        .close {
+            border-radius: 5px;
+            background-color: white;
+        }
+
+        .Tbtn p,
+        .close p {
+            padding: 10px 0px;
+        }
+
+        .isadd {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        /* WTD */
+
+
+        div[name='info'] input {
+            text-align: right;
+            width: 50%;
+            height: 21px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow verticalP'>
+            <div class='navBackIcon' onclick="Comm.close()" _onclick="Comm.go('./lease_index.html')"></div>
+            <div class='navTitle'>商品管理</div>
+            <img src="./img/spgl_type.png" alt="" id='more' class="vertical more"
+                onclick="Comm.showWindow('WinTemp',true)">
+        </div>
+        <div class="paddr5 paddl15 bg_hui ">
+            <div class="nav-title block searchBar inblock" style="width: calc(100% - 50px);">
+                <form action="javascript:return true;" onsubmit="model.inSearch()">
+                    <input id="id_searchInput" type="search" placeholder="请输入商品名字">
+                </form>
+            </div>
+            <div class="sousuoText f14  colordd" onclick="model.inSearch()">搜索</div>
+        </div>
+        <div class="dflex  bg_white borderb bg_white paddb5 paddt5" name="navlist">
+            <div class="lh30" onclick="model.state.show()" data='1'>
+                <span class="" name="state">商品状态</span>
+                <img src="./img/shop/gdfl.png" style="width:9px;height: 5px;" />
+            </div>
+            <div class="lh30" onclick="model.categoryId.show()" data='2' name="">
+                <span class="" name='categoryId'>商品分类</span>
+                <img src="./img/shop/gdfl.png" style="width:9px;height: 5px;" />
+            </div>
+            <div class="lh30" onclick="model.paixu(this)" data='' name="paixu">
+                <span class="">库存</span>
+                <img src="./img/shop/jgsx.png" height="10" class="dfleximg" />
+            </div>
+        </div>
+    </header>
+
+    <section class='bg_hui' id='box'>
+        <div id="list">
+
+        </div>
+    </section>
+    <footer>
+
+    </footer>
+    <!-- more操作 -->
+    <div id="sinbox" wtd="WinTemp">
+        <div class="Tbtn">
+            <p class="colordd bottomBorder" onclick="model.addGoodsId()">添加商品</p>
+            <p class="colordd bottomBorder" onclick="Comm.showWindow();Comm.go('./addCollocation.html')">添加套餐</p>
+            <p class="colordd bottomBorder" onclick="Comm.showWindow();Comm.go('./leaseAddClass.html')">管理商品分类</p>
+            <p class="colordd bottomBorder" onclick="model.setReportLoss(1)">全部上架</p>
+            <p class="colordd " onclick="model.setReportLoss(2)">全部下架</p>
+        </div>
+        <div class="close mart10 marb5" onclick="Comm.showWindow()">
+            <p class="color999">取消</p>
+        </div>
+    </div>
+    <div id="sku" wtd="skuWTD" class="bottomShadow">
+
+    </div>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script src="../inc/picker.min.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script>
+
+    function pageload() {
+        Comm.db("leaseId_arr", null);
+        if (model.t == '2') {
+            // $("#more").hide();
+        }
+        model.cState()
+
+    }
+    function pageresume() {
+        Comm.showWindow();
+        model.cState();
+        Comm.db("leaseId_arr", null)
+       
+        model.init();
+    }
+    var model = {
+        t: Comm.query('type'),//1 2 修改订单进来
+        otherorderdetails: Comm.db("otherorderdetails"),
+        categoryArr: [],
+        userinfo: Comm.db("userinfo"),
+        addGoodsId :function(){//
+            Comm.showWindow();
+            Comm.go('./addGoodsChoice.html')
+        },
+        cState: function () {
+            model.categoryArr=[];
+            var _d = [{ i: 1, text: "上架" }, { i: 2, text: '下架' }];
+            model.state = new Commpicker("选择商品状态", [_d], function (obj, name, sid) {
+                model.opt.state = sid;
+                $("[name=state]").html(name)
+                model.init()
+            })
+            Comm.loading(true);
+            var url = '/common/categoryUser/getList'
+            opt = {
+                itemId: model.userinfo.bussinessId,
+                itemType: '1',
+                pId: '0'
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    $.each(res.data, function (i, v) {//
+                        model.categoryArr.push({
+                            "i": v.categoryUserId,
+                            "text": v.categoryName,
+                        })
+                    })
+                    model.categoryId = new Commpicker("选择商品分类", [model.categoryArr], function (obj, name, sid) {
+                        model.opt.categoryId = sid;
+                        $("[name=categoryId]").html(name)
+                        model.init()
+                    })
+                    model.init()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        paixu: function (elm) {//排序
+            var _f = $(elm).attr("data");
+            if (_f == '') {
+                $(elm).attr("data", '1');
+                $(elm).find("img").attr('src', "./img/shop/jiage.png");
+                model.opt.paixu = '1';
+            } else if (_f == '1') {
+                $(elm).attr("data", '2');
+                $(elm).find("img").attr('src', "./img/shop/jiag.png");
+                model.opt.paixu = '2';
+            } else if (_f == '2') {
+                $(elm).attr("data", '');
+                $(elm).find("img").attr('src', "./img/shop/jgsx.png");
+                model.opt.paixu = '';
+            }
+            model.init()
+        },
+        opt: {
+            userType: 1,
+            goodsType: 1,
+            state: 1
+        },
+        init: function () {//数据初始化
+            $("#id_searchInput").val("");
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/common/otherGoods/list',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.opt;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    console.info(d.data)
+                    if (model.otherorderdetails) var otherorderdetails = model.otherorderdetails ? JSON.parse(model.otherorderdetails) : [];
+
+                    $.each(d.data, function (i, v) {//
+                        v._t = model.t;
+                        $.each(otherorderdetails, function (n, m) {
+                            if (m.goodsId == v.otherGoodsId) {
+                                v.isadd = '1'
+                            }
+                        })
+                    })
+                    console.info(d.data)
+                    var h = template('mainTpl', d.data);
+                    refresh.appendHtml(h);
+                };
+            } else {
+                // model.opt.keyword = keyword;
+                model.mere.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+        upLow: function (v, otherGoodsId) {//上下架
+            Comm.loading(true);
+            var url = '/common/otherGoods/state'
+            opt = {
+                otherGoodsId: otherGoodsId,
+                state: v
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    if (v == '1') {
+                        Comm.message("上架成功~")
+                    } else {
+                        Comm.message('下架成功~')
+                    }
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        delGoods: function (otherGoodsId) {//删除商品
+            Comm.Mess.confirm("是否删除商品？", Comm.setcb(function (a) {
+                if (a == "1") {
+                    Comm.loading(true);
+                    var url = '/common/otherGoods/delete'
+                    opt = {
+                        otherGoodsId: otherGoodsId
+                    };
+                    AJAX.POST(url, opt, function (res) {
+                        Comm.loading(false);
+                        if (res.code == 1) {
+                            Comm.message("删除成功~")
+                            model.init();
+                        } else {
+                            Comm.message(res.msg)
+                        }
+                    })
+                }
+            }))
+
+        },
+        inSearch: function () {//搜索
+            var str = $("#id_searchInput").val();
+            // if(!str){
+            //     Comm.message("请输入搜索内容~");
+            //     return ;
+            // }
+            model.opt.goodsName = str;
+            model.init()
+        },
+        setReportLoss: function (t) {// 1 上架  2 下架
+            Comm.loading(true);
+            var url = '/common/otherGoods/allState'
+            opt = {
+                userType: "1",
+                goodsType: '1',
+                state: t
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    if (t == '1') Comm.message("全部上架成功~");
+                    else Comm.message("全部下架成功~");
+                    model.init();
+                    Comm.showWindow()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        wtdsku: function (elm, otherGoodsId) {//弹出框
+
+            Comm.loading(true);
+            var url = '/common/otherGoods/detail'
+            opt = {
+                otherGoodsId: otherGoodsId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    model._elm = elm;
+                    model._data = res.data.othergoods;
+                    Comm.showWindow("skuWTD", true);
+                    $("#WTDBOX #sku").html(template("skuTpl", res.data.othergoods))
+                    $("#WTDBOXTD").css({ 'padding': '0px' })
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        inputNum: function (obj, type, price) { //判断输入数字
+            var str = $(obj).val();
+            console.info(str)
+            if (str <= 0) {
+                Comm.message("请输入大于0的值~")
+                $(obj).val("")
+                return
+            }
+            if (type == "1") {
+                if (str.indexOf(".") != "-1") {
+                    Comm.message("请输入整数~")
+                    $(obj).val("")
+                    return
+                }
+            } else if (type == "2") {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val("")
+                        return
+                    }
+                }
+            } else if (type == '9') {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val("")
+                        return
+                    }
+                }
+                if (str > 100) {
+                    Comm.message("超过最大百分比，请重输~")
+                    $(obj).val("")
+                    return
+                }
+            }
+            if (price) {
+                if (str * 1 >= price * 1) {
+                    Comm.message("活动价大于原价，请重输~")
+                    $(obj).val("")
+                    return
+                }
+            }
+        },
+        addLeaseGoods: function () {//确认租赁商品
+            var arr = model.otherorderdetails ? JSON.parse(model.otherorderdetails) : [];
+            var data = Check.submit("POST");
+            if (!data) {
+                return
+            }
+            if (model._data) {
+                var _d = model._data;
+                _d.singlePrice = data.price;
+                _d.nowNum = data.num;
+                arr.push(_d);
+                model.otherorderdetails = JSON.stringify(arr);
+                Comm.db('otherorderdetails', model.otherorderdetails);
+                $(model._elm).addClass("hide");
+                $(model._elm).next().removeClass("hide");
+                Comm.showWindow();
+            }
+        },
+        editGoods :function(otherGoodsId,ifTao){// 编辑商品
+            if(ifTao=='1'){
+
+            }else{
+                Comm.go("addGoods.html?t=4&otherGoodsId="+otherGoodsId)
+            }
+        },
+    }
+</script>
+
+<script type="text/html" id="mainTpl">
+    {{each $data as v k }}
+            <div class="clearfix pad10 marb5 bg_white bottomBorder verticalP" name="listinfo" data="{{v.otherGoodsId}}"
+                style="padding-right:0px">
+                <div style="height:90px">
+                    <!-- <div class='quan decir inblock left' style="margin-top:55px" onclick="model.checked(this)"></div> -->
+                    <div class="fl center marr5 marl5 clearFloat"
+                        style="max-height:90px;min-height:90px;position:relative">
+                        <img src="{{OSS(v.img)}}" class="goodimg" onerror="app.errorimg(this)">
+                        {{if v.state!='1'}}
+                        <div class="lowerShelf colorfff">
+                            已下架
+                        </div>
+                        {{/if}}
+                    </div>
+                    <div class="listinfo clearFloat">
+                        <p class="wordW f16" >
+                            <span class="f16 c333 bold">{{v.goodsName}}</span>
+                        </p>
+                        <p class="lh20 wordW" style="" >
+                            {{if v.ifTao=='1'}}
+                            <span class="color999 f12 inblock">{{v.taoDes}}</span>
+                            {{else}}
+                            <span class="color999 f12 inblock">{{v.descript}}</span>
+                            {{/if}}
+                        </p>
+                        <p class="" >
+                            {{if v.normalGoodsId&&v.normalGoodsId*1>0}}
+                            <span class="f12 colorred borred inblock" onclick="Comm.go('gooddetail.html?id='+{{v.normalGoodsId}})"
+                                style="border:1px solid #DD1474;padding:0px 2px;transform: scale(.8)">可购买</span>
+                                {{/if}}
+                        </p>
+                        <div class="" >
+                            <span class='color999 f12'>价格</span>
+                            <span class="colorred f12 bold ">￥{{v.price}}/月</span>
+                        </div>
+                    </div>
+                </div>
+                {{if v._t=='1'}}
+                <div class="block _all  btn-list mart10 clearfix t-a-r paddr15" style="">
+                    {{if v.state=='1'}}
+                    <button onclick="model.upLow(2,'{{v.otherGoodsId}}')">下架</button>
+                    <button onclick="model.editGoods('{{v.otherGoodsId}}','{{v.ifTao}}')">编辑</button>
+                    {{else if v.state=='2'}}
+                    <button onclick="model.upLow(1,'{{v.otherGoodsId}}')">上架</button>
+                    <button onclick="model.delGoods('{{v.otherGoodsId}}')">删除</button>
+                    {{/if}}
+                </div>
+                {{else if v._t=='2'}}
+                    <img src="./img/tiajia.png" alt="" class="isadd {{v.isadd=='1'?'hide':''}}" style='width:20px' onclick="model.wtdsku(this,'{{v.otherGoodsId}}')">
+                    <span class="color999  f12 isadd {{v.isadd!='1'?'hide':''}}"  >已添加</span>
+                    
+                {{/if}}
+            </div>
+        {{/each}}
+</script>
+
+
+<script type="text/html" id="skuTpl">
+    <div class=" bg_white paddl15 paddr15 paddt15 t-a-l" style='overflow-y:scroll;border-radius: 3px;height:300px;'
+            name='goods' data="{{otherGoodsId}}">
+            <div style="" class="verticalP _bottomBorder">
+                    <div class="fl center marr10  clearFloat" style=";position:relative">
+                        <img src="{{OSS(img)}}" class="goodimg" onerror="app.errorimg(this)" style="width:90px;height:90px">
+                    </div>
+                    <div class=" listinfo clearFloat t-a-l" style=";height:90px">
+                        <p class="wordW f16" >
+                            <span class="f16 bold c333333">{{goodsName}}</span>
+                        </p>
+                        <p class="wordW2 f12 " >
+                            <span class="f12  c333333">描述详情：{{descript}}</span>
+                        </p>
+                        <p class="wordW f12 " >
+                            <span class="f12  c333333">价格：&yen;{{price}}</span>
+                        </p>
+
+                    </div>
+                </div>
+                <div class="mart10  " name="info">
+                    <p class='bottomBorder paddt10 paddb10 flex-between'>
+                        <label for="price" class="f16">租赁价格</label><input type="number" class="f18" id="price"
+                            name="price" placeholder="请输入租赁价格" data=" " value=" " data-reg='empty'
+                            onchange="model.inputNum(this,'2')" />
+                    </p>
+                    <p class='bottomBorder paddt10 paddb10 flex-between'>
+                        <label for="price" class="f16">租赁数量</label><input type="number" class="f18" id="price"
+                            name="num" placeholder="请输入租赁数量" data=" " value=" " data-reg='empty'
+                            onchange="model.inputNum(this,'1')" />
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- 确认按钮 -->
+        <div class="white t-a-c pad10">
+            <button onclick="model.addLeaseGoods()">确认</button>
+        </div>
+</script>
+
+</html>

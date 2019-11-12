@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>我的</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        .colorred {
+            color: #dd1669!important;
+        }
+
+        /* header */
+
+        #user {}
+
+
+        header {
+            background: url("./img/Background.png") no-repeat;
+            background-size: 100% auto;
+            position: relative;
+        }
+
+        .headimg {
+            height: auto;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%)
+        }
+
+        .headimg>img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-left: 15px;
+            margin-top: 10px;
+
+        }
+
+        .myName-box {
+            width: calc(100% - 70px - 40px);
+            /* height: 70px; */
+            padding: 5px 0;
+        }
+
+        .myName-box>div {
+            width: 100%;
+            height: 25px;
+            ;
+        }
+
+        .myName {
+            width: 50%;
+        }
+
+        .myPhone {
+            width: 100%;
+            height: 25px;
+        }
+
+        .myPhone span {
+            display: inline-block;
+        }
+
+        
+        #punchIn {
+            display: inline-block;
+            background: #f2f2f2;
+            width: 80px;
+            height: 26px;
+            opacity: .5;
+            position: absolute;
+            border-radius: 5px;
+        }
+        .punchIntext{
+            position: absolute;
+            display: inline-block;
+            left:6px
+        }
+        .goUser {
+            width: 15px;
+            height: 15px;
+            margin-right: 15px;
+            background-repeat: no-repeat;
+            background-position: right 0px center;
+            background-size: 15px auto;
+            /* background-image: url("./img/grzx.png"); */
+            background-size: contain;
+        }
+
+        .jt {
+            position: absolute;
+            left: 63px;
+            top: 6px;
+            width: 13px;
+            height: 13px;
+            background-repeat: no-repeat;
+            background-position: right 0px center;
+            background-size: 15px auto;
+            background-image: url("./img/mriqd.png");
+            background-size: contain;
+        }
+
+        .gopunchIn {
+            position: relative;
+            right: 30px;
+        }
+
+        /* section */
+
+        section ul li:first-child {
+            border-top: none;
+        }
+
+        section ul li {
+            float: left;
+            height: 60px;
+            line-height: 60px;
+            border-top: 1px solid #EBEBEB;
+        }
+
+        section ul li span {
+            float: left;
+            width: 60px;
+        }
+
+        section ul li span img {
+            display: block;
+            width: 20px;
+            height: 20px;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+
+        section ul li p {
+            margin-left: 60px;
+            background: url(img/identi.png) no-repeat 95% center;
+            background-size: 6px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <header style="">
+
+    </header>
+    <section id='' class=" ">
+        <ul class="clearfix white">
+                <li onclick="app.checkIslogin(true,'connect.html')" >
+                        <span>
+                            <img src="img/dyj.png" alt="">
+                        </span>
+                        <p>连接打印机</p>
+                    </li>
+            <li onclick="app.checkIslogin(true,'attendanceRecord.html')">
+                <span>
+                    <img src="img/kqjl.png" alt="">
+                </span>
+                <p>考勤记录</p>
+            </li>
+            <li onclick="app.checkIslogin(true,'wg.html')">
+                <span>
+                    <img src="img/tsjl.png" alt="">
+                </span>
+                <p>违规记录</p>
+            </li>
+            <li onclick="toShare()">
+                <span>
+                    <img src="img/my-fxapp.png" alt="">
+                </span>
+                <p>分享APP</p>
+            </li>
+            <li onclick="Comm.go('aboutus.html')">
+                <span>
+                    <img src="img/gywm.png" alt="">
+                </span>
+                <p>关于我们</p>
+            </li>
+            <li onclick="Comm.go('ab.html?id=56')">
+                <span>
+                    <img src="img/bzsm.png" alt="">
+                </span>
+                <p>帮助说明</p>
+            </li>
+            <li>
+                <a id="sysphone" style="display: block;">
+                    <span>
+                        <img src="img/lxkf.png" alt="">
+                    </span>
+                    <p>联系客服</p>
+                </a>
+            </li>
+            <li onclick="app.checkIslogin(true,'setting.html')">
+                <span>
+                    <img src="img/setting_b.png" alt="">
+                </span>
+                <p>设置</p>
+            </li>
+        </ul>
+    </section>
+    <footer class="shared"></footer>
+</body>
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="./foot.js"></script>
+<script type="text/javascript" src="../inc/art-template.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/upimg/upload.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo")
+    function pageload() {
+        Comm.loading(true)
+        Foot.init()
+        AJAX.POST("/bussiness/bussiness/detail", { customerId: userinfo.customerId }, function (res) {
+            console.info(res);
+            if (res.code == 1) {
+                userinfo.customerName=res.data.customerName;
+                Comm.db("userinfo",userinfo);
+                $("header").html(template("myTpl", userinfo))
+                // $("section").removeClass("hide")
+                Comm.resizeSection()
+                Comm.loading(false)
+                
+                model.headimg()
+            }
+        })
+        model.sysphone();
+        
+    }
+    var model = {
+        headimg:function(){
+            var uploader = new imgUploader("faceImg");
+            uploader.success = function () {
+                var cimgUrl = this.imgList.length > 0 ? this.imgList[0] : 'img/error.png';
+                userinfo.avatar = cimgUrl;
+                model.editheadimg()
+            }
+        },
+        no: function () {
+            Comm.message("暂未开放，敬请期待!")
+        },
+        sysphone: function () {
+            //获取系统配置
+            AJAX.GET('/api/config/all', function (d) {
+                if (d.code == 1) {
+                    for (var i = 0; i < d.data.length; i++) {
+                        if (d.data[i].key == "sysphone") {
+                            model.sysphone = d.data[i].value;
+                            $("#sysphone").attr('href', "tel:" + model.sysphone)
+                        }
+                    }
+                }
+            })
+        },
+        editheadimg:function(){
+            var opt={
+                customerId:userinfo.customerId,
+                avatar:userinfo.avatar
+            };
+            AJAX.POST("/purchase/user/modifyInfo",opt,function(res){
+                if(res.code==1){
+                    Comm.message("修改成功~")
+                    $("header").html(template("myTpl", userinfo))
+                }
+            })
+        },
+        punch:function(){//上班签到
+            Comm.go('./punchIn.html')
+        }
+    }
+
+    function toShare() {
+        if (!app.isLogin()) {
+            Comm.confirm('您还未登录是否跳转到登录界面？', function (a) {
+                if (a == 1) {
+                    Comm.gotop('login.html')
+                }
+            });
+            return;
+        }
+        var opt = {
+            title: '下载链接'        /*分享标题*/
+            , pic: config.webroot + 'img/login/logo.png'    /*分享图标*/
+            , url: "https://fir.im/gysjd"  /*分享链接 OR app的线上fir下载地址*/
+            , desc: '下载链接'       /*分享描述*/
+        };
+        Comm.shareUrl(opt, function (d) {
+            if (d == 1) {
+                Comm.message("分享成功");
+            }
+        });
+    }
+</script>
+<script type="text/html" id="myTpl">
+    <div id="user" style="height: 135px;" class="">
+        <div _onclick="app.checkIslogin(true,'myUser.html')" class="headimg ">
+            <img src="{{OSS(avatar)}}"  class="fl inblock" id="faceImg" alt="" onerror="app.herrorimg(this)" style="padding-right: 0px">
+            <div class=" inblock myName-box marl10 ">
+                <div class=" colorfff block lh25">
+                    <span class="myName f18 wordW   colorfff    left" id="nickname">{{customerName||'请修改昵称'}}</span>
+                    <!-- <span class="f16 wordW   colorfff    left marl5" id="state">(营业中)</span> -->
+                </div>
+                <div class="myPhone block f14 lh25 mart10" style="position:relative">
+                    <!-- <span class="colorfff " id="punchIn">每日签到</span>
+                    <span class="gopunchIn "></span> -->
+                    <span  id="punchIn" ></span>
+                    <span class="colorfff punchIntext " onclick="model.punch()">每日签到</span>
+                    <span class="jt"></span>
+                </div>
+                <div class="myPhone block f14 lh25 hide">
+                    <span class="colorfff  f12 marr5">资料审核中</span>
+                </div>
+            </div>
+            <!-- <div class="goUser "></div> -->
+        </div>
+    </div>
+</script>
+
+</html>

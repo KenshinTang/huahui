@@ -1,0 +1,101 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        .sumbit,
+        .save {
+            height: 45px;
+            line-height: 45px;
+            border-radius: 5px;
+        }
+
+        #info {
+            width: 100%;
+            height: calc(100% - 10px);
+            border: 0px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>店铺说明</div>
+        </div>
+    </header>
+
+    <section id='' class='mart10'>
+        <textarea name="info" id="info" placeholder="请输入店铺说明..." class='f14' data-reg="empty"></textarea>
+    </section>
+    <footer class="shared paddl15 paddt5 paddb5 paddr15">
+        <div class="bgdd-ef save center colorfff f14 " onclick="model.submitted()">保存</div>
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script>
+    var userinfo = Comm.db("userinfo");
+    function pageload() {
+        model.getType();
+        Comm.loading(true);
+        model.getShuo();
+    }
+    var model = {
+        type:Comm.query("type"),
+        getType :function(){//
+            if(model.type=="2"){
+                $(".navTitle").html("租赁说明");
+                $("#info").attr("placeholder","请输入租赁说明...")
+            }
+        },
+        getShuo: function () {
+            var url = '/bussiness/bussiness/getShuo',
+                opt = {
+                    bussinessId: userinfo.bussinessId,
+                    type:model.type,
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false)
+                if (res.code == 1 ) {
+                   if(res.data) $("#info").val(res.data.shuoming);
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        submitted: function () {
+            var data = Check.submit('POST');
+            if (!data) {
+                return
+            }
+            var url = '/bussiness/bussiness/setShuo',
+                opt = {
+                    shuo: data.info,
+                    type:model.type,
+                };
+            Comm.loading(true)
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("保存成功~")
+                    Comm.close()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+    }
+</script>
+
+</html>

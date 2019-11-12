@@ -1,0 +1,113 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../../css/g.css'>
+    <link rel='stylesheet' href='../../css/comm.css'>
+    <style>
+        /* color */
+        .c87 {
+            color: #878787;
+        }
+
+        /*  */
+        .br10 {
+            display: inline-block;
+            border-radius: 10px;
+            padding: 3px 9px;
+            background: #F4F4F4;
+            color:#878787;
+        }
+
+        .active {
+            background: -webkit-linear-gradient(left, #dd1669, #ef940b);
+            background: -o-linear-gradient(right, #dd1669, #ef940b);
+            background: -moz-linear-gradient(right, #dd1669, #ef940b);
+            background: linear-gradient(right, #dd1669, #ef940b);
+            color:white;
+        }
+        /* 列表 */
+        .title span {
+            font-size: 16px;
+        }
+
+        span {
+            text-align: center;
+            word-wrap: break-word;
+            word-break: normal;
+        }
+
+        .list span {
+            font-size: 14px
+        }
+
+        .c21 {
+            color: #212121;
+        }
+
+        .c5c {
+            color: #5C5C5C
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>单品统计</div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <div class="padd15 flex-between bottomBorder bg_hui">
+            <span class="c333 f14">本月</span>
+            <div>
+                <span class="c333 f14 ">筛选</span>
+                <img src="../img/gdfl.png" alt="" width="8">
+            </div>
+        </div>
+        <!-- 图表 -->
+        <div></div>
+        <!-- 列表  -->
+        <div>
+                <li class="title bg_hui paddt15 paddb15 paddl10 paddr10 flex-between">
+                    <span style="width: 35% ">商品名称</span>
+                    <span style="width: 30%">销量
+                    <img src="../img//shop/jgsx.png" alt="" width="8">
+                    </span>
+                    <span style="width: 35%">销售额
+                            <img src="../img//shop/jgsx.png" alt="" width="8"></span>
+                </li>
+                <li class="list paddt15 paddb15 paddl10 paddr10 flex-between bottomBorder">
+                    <span style="width: 35%" class="c5c">2019.01</span>
+                    <span style="width: 30%" class="c5c">3928</span>
+                    <span style="width: 35%" class="c5c">&yen;94889.00</span>
+                </li>
+        </div>
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../../inc/z.js'></script>
+<script src='../../inc/g.js'></script>
+<script src='../../inc/comm.js'></script>
+<script src='../../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+
+    }
+    function pageresume() {
+
+    }
+    var model = {
+    }
+</script>
+
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>员工管理</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        .navTitle {
+            font-weight: normal;
+        }
+
+        .sousuoText {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            display: inline-block;
+        }
+
+        .searchBar {
+            margin: 0 auto;
+        }
+
+        .searchBar input {
+            width: 95%;
+            padding-left: 30px;
+            line-height: 30px;
+            height: 30px;
+            font-size: 14px;
+            color: #8891A7;
+            background-color: #F2F6F7;
+            border-radius: 18px;
+            background-image: url('img/search.png');
+            background-repeat: no-repeat;
+            background-size: 14px;
+            background-position: 10px center;
+            margin: 0 auto;
+            margin-left: 2.5%;
+        }
+
+        .nav {
+            height: 40px;
+            line-height: 40px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .active {
+            color: #dd1669;
+            border-bottom: 1px solid #dd1669;
+        }
+
+        .activeUnderline {
+            width: 50%;
+            position: relative;
+            top: -10px;
+            border-bottom: 3px solid #dd1669;
+        }
+
+        .text {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar ">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">员工管理</div>
+        </div>
+        <div class="paddr5 paddl15 bg_white ">
+            <div class="nav-title block searchBar inblock" style="width: calc(100% - 50px);height: 40px;">
+                <form action="javascript:return true;" onsubmit="model.inSearch()">
+                    <input id="id_searchInput" type="search" placeholder="请输入员工姓名">
+                </form>
+            </div>
+            <div class="sousuoText f14  colordd" onclick="model.inSearch()">搜索</div>
+        </div>
+        <div class="nav  paddl5 paddr5   flex-around">
+            <div class="nav-list " onclick="model.qh(this,'1')">
+                <div>
+                    <div class=" bold f16 inline-block color77  active">订单处理</div>
+                </div>
+
+            </div>
+            <div class="nav-list" style="position:relative" onclick="model.qh(this,'2')">
+                <div>
+                    <div class=" bold f16 inline-block color77">商品上新</div>
+                </div>
+                <div class="open"></div>
+            </div>
+            <div class="nav-list" onclick="model.qh(this,'3')">
+                <div>
+                    <div class=" bold f16 inline-block color77">设置活动</div>
+                </div>
+            </div>
+            <div class="nav-list" onclick="model.qh(this,'4')">
+                <div>
+                    <div class=" bold f16 inline-block color77">新建订单</div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section id='box' class="bg_hui ">
+        <div id="list">
+
+        </div>
+    </section>
+    <footer class="shared ">
+
+    </footer>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="./foot.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<script type="text/javascript" src="../inc/upimg/upload.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo");
+    // type= Comm.db("")
+
+    function pageresume() {
+    }
+
+    function pageload() {
+        model.search()
+
+    }
+    var model = {
+        data: {
+            customerId: userinfo.customerId,
+            // customerName:userinfo.customerName,
+            type: "1"
+        },
+        qh: function (el, type) {
+            model.data.type = type;
+            $.each($(el).parent().find(".bold"), function (i, v) {
+                $(v).removeClass("active")
+            })
+            $(el).find(".bold").addClass("active")
+            model.search();
+        },
+        search: function () {
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/bussiness/log/list',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.data;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    $.each(d.data,function(i,v){
+                        v._type=model.data.type;
+                    })
+                    var h = template('listTpl', d.data);
+                    refresh.appendHtml(h);
+                };
+            } else {
+                model.mere.refreshOption.refreshParm = model.data;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+        inSearch: function () {
+            model.data.customerName = $("#id_searchInput").val()
+            model.search()
+        },
+        watch :function(type,normalorderId,caoId){
+            if(type=='1'&&normalorderId!="0"){
+                // Comm.go('orderDetail.html?oid=' + normalorderId + "&ifFlower=" + v + "&code=" + code + "&logistType=" + logistType);
+                Comm.go('orderDetail.html?oid=' + normalorderId + "&ifFlower=0");
+            }
+            if(type=="2"){
+                Comm.go("gooddetail.html?id="+caoId)
+            }
+            if(type=='4'){
+                Comm.go('orderDetail.html?oid=' + normalorderId + "&ifFlower=0");
+            }
+        }
+    }
+    template.defaults.imports.resetTime = function (v) {
+        return app.formatDate(v, "Y-m-d H:i:s")
+    }
+    template.defaults.imports.resetType = function (v) {
+        //1 接单 2 拒绝 3发货 4 上新
+        switch (v) {
+            case "1": return "接单";
+            case "2": return "拒绝";
+            case "3": return "发货";
+            case "4": return "上新";
+            case "5": return "设置活动";
+            case "6": return "新建订单";
+        }
+    }
+    template.defaults.imports.resDe = function (v, t) {
+        var arr = v.split(",");
+        if (t == '1'&&arr.length=='3') {
+            for (var i = 0; i < 9; i++) {
+                //2的n - 1次方
+                var a = Math.pow(2, i);
+                //判断是否存在
+                //位运算
+                if ((arr[0] & a) == a) {
+                    //包含
+                    // 1 预定 2 竞拍  4 搭配销售 8 团购 16 店铺买赠 32 满减 64 预售 128 秒杀 256 积分
+                    var str = a == 1 ? "预订" : a == 2 ? '竞拍' : a == 4 ? '搭配销售' : a == 8 ? '团购' : a == 16 ? '店铺买赠' : a == 32 ? '满减' : a == 64 ? '预售' : a == 128 ? '秒杀' : a == 256 ? '积分' : '';
+                }
+            }
+        }
+        if (t == '2'&&arr.length=='3') {
+            var str = arr[1];
+        }
+        if (t == '3'&&arr.length=='3') {
+            var str=arr[2];
+        }
+        return str;
+        
+
+
+    };
+</script>
+
+<script type="text/html" id="listTpl">
+    {{each $data as v i}}
+    <div class="paddr5 paddl5" style="position:relative" onclick="model.watch('{{v._type}}','{{v.normalorderId}}','{{v.caoId}}')">
+            <div class="paddt15 paddb15 paddl10 paddr10 bg_white mart5">
+                <p class="paddb5">{{v.addTime|resetTime}}</p>
+                <p class="paddb5">操作人:{{v.customerName}}</p>
+                {{if v.type=="1"||v.type=="2"||v.type=="3"}}
+                <p class="paddb5">订单编号:{{v.orderNum}}</p>
+                {{else if v.type=="4"}}
+                <p class="paddb5">商品名称:{{v.descript}}</p>
+                {{else if v.type=='5'}}
+                <p class="paddb5">活动类型:{{resDe(v.descript,1)}}</p>
+                <p class="paddb5">活动活动:{{resDe(v.descript,2)}}</p>
+                <p class="paddb5">活动商品:{{resDe(v.descript,3)}}</p>
+                {{else v.type=='6'}}
+                <p class="paddb5">订单编号:{{v.orderNum}}</p>
+                {{/if}}
+                
+            </div>
+            <div class="text f14 colordd">{{v.type|resetType}}</div>
+        </div>
+        {{/each}}
+</script>
+
+</html>

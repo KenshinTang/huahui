@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>设置</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        .navTitle{
+            font-weight: normal;
+        }
+        /* header */
+        /* section */
+        .cellContent {
+            height: 50px;
+        }
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+        .head, .head>img {
+            height: 40px;
+            width: 40px;
+        }
+        .head {
+            overflow: hidden;
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+            color: #999;
+        }
+        .cellContent input, #wx_id, #sex, #sj_id {
+            color: black;
+        }
+        /* footer */
+        .quit {
+            height: 45px;
+            line-height: 45px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">设置</div>
+        </div>
+    </header>
+    <section id='' class="bg_hui ">
+        <div class="paddl15 bg_white ">
+            <div class="cellContent indicator bottomBorder " onclick="Comm.go('telBind.html?v=3')">
+                <div class="label f16  indicator icon_pre icon_name ">手机绑定</div>
+                <input type="tel" maxlength="11" readonly name="phone" data-reg='m' placeholder="" id="phone" value="">
+            </div>
+        </div>
+        <!--************************************************************************-->
+
+        <div class="paddl15 bg_white ">
+            <div class="cellContent indicator" onclick="Comm.go('modifyPsw.html')">
+                <!--telBind.html?v=2-->
+                <div class="label f16 icon_pre icon_wx">修改密码</div>
+                <span class="show-tip">
+                    <i class="show-tips"></i>
+                </span>
+            </div>
+        </div>
+
+        <div class="paddl15 bg_white hide">
+            <div class="cellContent indicator" onclick="Comm.go('telBind.html?v=5')">
+                <div class="label f16 icon_pre icon_telebook ">支付密码</div>
+                <span class="show-tip">
+                    <i class="show-tips">未设置</i>
+                </span>
+            </div>
+        </div>
+        <div class="linebod" style='height:12px'></div>
+    </section>
+    <footer class="shared paddl15 paddt5 paddb5 paddr15">
+        <div class="bgdd-ef quit center colorfff f16" onclick="model.out()">退出登录</div>
+    </footer>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="./foot.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<script type="text/javascript" src="../inc/upimg/upload.js"></script>
+
+<script>
+    var _identity = []; //身份列表
+    var userinfo = Comm.db("userinfo");
+
+    function pageresume() {
+        userinfo = Comm.db("userinfo");
+        pageload()
+    }
+
+    function pageload() {
+        $("#phone").val(userinfo.phone)
+    }
+    var model={
+        out:function() {
+            AJAX.clear();
+            Comm.gotop('login.html');
+        }
+    }
+</script>
+
+</html>

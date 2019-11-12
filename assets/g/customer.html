@@ -1,0 +1,207 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        .search {
+            background: inherit;
+            position: absolute;
+            top: 12px;
+            right: 0px;
+        }
+
+        .searchBar {}
+
+        .searchBar input {
+            width: 80%;
+            padding-left: 30px;
+            line-height: 30px;
+            height: 30px;
+            font-size: 14px;
+            color: #8891A7;
+            background-color: #F2F6F7;
+            border-radius: 18px;
+            background-image: url('img/search.png');
+            background-repeat: no-repeat;
+            background-size: 14px;
+            background-position: 10px center;
+            margin: 0 auto;
+            margin-left: 7.5%;
+        }
+
+        /* 客户列表 */
+        .address .up {
+            border-bottom: 1px solid #eaeaea;
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        .address .down {
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        .save {
+            height: 45px;
+            line-height: 45px;
+            border-radius: 5px;
+        }
+
+        .list {}
+    </style>
+</head>
+
+<body>
+    <header style="">
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>我的客户</div>
+        </div>
+        <div class="nav-title block searchBar bg_hui "
+            style="width: calc(100%);height: 44px;position: relative;padding-top:7px" _onclick="model.searchInp()">
+            <form action="javascript:return true;" onsubmit="model.search()">
+                <input id="id_searchInput" type="search" placeholder="请输入客户姓名,电话" class="white">
+            </form>
+            <div class=" marl5 marr10 colorred search" onclick="model.search()">搜索</div>
+        </div>
+    </header>
+
+    <section class='bg_hui' id='box'>
+        <div id="list">
+
+        </div>
+    </section>
+    <footer class="shared paddl15 paddt5 paddb5 paddr15">
+        <div class="bgdd-ef save center colorfff f16 " onclick="Comm.go('addCustomer.html')">添加客户</div>
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script>
+    var userinfo = Comm.db("userinfo");
+    function pageload() {
+        model.init();
+        model.istype();
+    }
+    function pageresume() {
+        model.init();
+    }
+    var model = {
+        type: Comm.query('t'),
+        opt: {
+            itemId: userinfo.bussinessId,
+            ifDefault: 2,
+            itemType: 2,
+            clientType: 1
+        },
+        istype: function () {//
+
+        },
+        init: function () {
+            if (!model.mere) {
+                // $('header .dflex span').removeClass('active');
+                // $($('header .dflex div')[type]).find('span').addClass('active');
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/common/address/getAddressKe',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.opt
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    // d.data.accpet_time = model.accpet_time;
+                    // d.data.cancel_order = model.cancel_order;
+                    if (model.type == '1') {
+                        $.each(d.data, function (i, v) {//
+                            v.type = model.type;
+                        })
+                    }
+                    refresh.appendHtml(template('mainTpl', d.data));
+                };
+            } else {
+                model.mere.refreshOption.refreshParm = model.opt
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+
+            }
+        },
+        del: function (id) {
+            var url = '/common/address/delAddress'
+            opt = {
+                deliveryAddressId: id
+            };
+            AJAX.POST(url, opt, function (res) {
+                if (res.code == 1) {
+                    Comm.message("删除成功~");
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        search: function () {
+            var str = $("#id_searchInput").val();
+            // if(!str) {
+            //     Comm.message("请输入客户姓名或电话号码~");
+            //     return
+            // }
+            model.opt.search = String(str);
+            model.init()
+
+        },
+        jsGo: function (id) {// 判断修改还是选择
+            if (model.type == '1') {
+                Comm.db('choice_newOrder', id);
+                Comm.close()
+            } else {
+                Comm.go('addCustomer.html?deliveryAddressId=' + id);
+            }
+        }
+    }
+</script>
+<script type="text/html" id="mainTpl">
+    {{each $data as v i}}
+    <div class="address bg_white mart5">
+            <div class="up paddt20 paddb5" onclick="model.jsGo('{{v.deliveryAddressId}}')">
+                <div class="marb5"><span class="f17 ">{{v.userName}}&nbsp;{{v.phone}}</span></div>
+                <div class="wordW2"><span class="f14 color999 lh25">{{v.regionCn}}&nbsp;{{v.address}}</span></div>
+            </div>
+            <div class="down clearfix " >
+
+                <div class="left iserror hide">
+                    <img class="marr10" src="../img/select2-y.png" height="14">
+                    <span class="f14 color999 lh40">默认地址</span>
+                </div>
+
+                <div class="right">
+                    <p class="address-edit inblock">
+                        <img src="img/bji.png" height="14"
+                            onclick="Comm.go('addCustomer.html?deliveryAddressId='+{{v.deliveryAddressId}})">
+                        <span class="f14 color999 lh40"
+                            onclick="Comm.go('addCustomer.html?deliveryAddressId='+{{v.deliveryAddressId}})">编辑</span>
+                    </p>
+                    <p class="address-edit inblock">
+                        <img src="../img/shch.png" height="14" onclick="model.del('{{v.deliveryAddressId}}')">
+                        <span class="f14 color999 lh40" onclick="model.del({{v.deliveryAddressId}})">删除</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+</script>
+
+</html>

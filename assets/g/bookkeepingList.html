@@ -1,0 +1,236 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        .navT{
+            height: 40px;
+            background: #F2F4F7;
+            line-height: 40px;
+        }
+        .qk{
+            width: 45px;
+        }
+        .qk img{
+            width: 16px;
+            transform:translateY(-50%) scale(.7);
+            right:0px
+        }
+        .listInfo{
+            height: 75px;
+        }
+        .listInfo span{
+            display: block;
+        }
+        .price{
+            right:15px;
+        }
+        .c21{
+            color: #212121;
+        }
+        .cff{
+            color: #FF6200;
+        }
+        
+        /* time */
+        #sinbox {
+            width: 100%;
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            padding: 0px;
+        }
+
+        #sinbox .item {
+            padding: 0px 10px;
+            line-height: 50px;
+        }
+
+        #sinbox .tb {
+            height: 50px;
+            line-height: 50px;
+        }
+
+        #sinbox .tb .td {
+            width: 50%;
+            float: left;
+            background-color: #EBEBEB;
+        }
+
+        #sinbox .tb .r {
+            width: 50%;
+            height: 50px;
+            float: left;
+            color: #fff;
+            border-radius: 0px;
+        }
+
+        #sinbox .item input {
+            width: 100px;
+        }
+
+        .picker {
+            z-index: 1300 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow verticalP'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>记账流水</div>
+            <img src="./img/tjguige.png" alt="" class='vertical' style="right:15px;width:16px" onclick="Comm.go('makeNote.html')">
+        </div>
+        <div class="navT paddl15 paddr15  flex-between ">
+            <span name='nowdate'>本月</span>
+            <span class="qk verticalP" onclick="Comm.showWindow('sinboxTemp',true);">
+                <span>筛选</span>
+                <img src="./img/gdfl.png" alt="" class="vertical">
+            </span>
+            
+        </div>
+    </header>
+
+    <section class='paddl15 ' id='box'>
+        <div id='list'></div>
+        
+    </section>
+    <footer>
+        
+    </footer>
+    <div id="sinbox" wtd="sinboxTemp">
+            <div class="item">
+                <div class="colorb5 left">时间筛选：</div>
+                <div class="tleft">
+                    <input readonly id="start" placeholder="开始时间" onclick="datePickerstart.show();" class='colordd' />
+                    <span>至&nbsp;</span>
+                    <input id="end" readonly onclick="datePickerend.show();" placeholder="结束时间" class='colordd' />
+                </div>
+                <div class="cls"></div>
+            </div>
+            <div class="tb">
+                <div class="td f16 " onclick="model.reset()">重置</div>
+                <div class="td f16 r btn" onclick="model.okref()">确定</div>
+                <div class="cls"></div>
+            </div>
+        </div>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script src="../inc/picker.min.js"></script>
+<script>
+   
+   function pageload() {
+        model.getMonthStartDateAndDateRange();
+        model.restime();
+        model.init();
+    }
+    function pageresume() {
+        model.init();
+    }
+    var model = {
+        start:'',
+        end:'',
+        opt: {},
+        getMonthStartDateAndDateRange: function () {
+            // 获取当前月的第一天  
+            var start = new Date();
+            start.setDate(1);
+            // 获取当前月的最后一天  
+            var date = new Date();
+            var currentMonth = date.getMonth();
+            var nextMonth = ++currentMonth;
+            var nextMonthFirstDay = new Date(date.getFullYear(), nextMonth, 1);
+            var oneDay = 1000 * 60 * 60 * 24;
+            var end = new Date(nextMonthFirstDay - oneDay);
+            model.opt.startTime = app.formatDate(start, 'Y-m-d'); // 日期变换  
+            model.opt.endTime = app.formatDate(end, 'Y-m-d'); // 日期变换  
+        },
+        restime: function () {//
+            datePickerstart = new Datepicker("开始时间", function (a, b, c) {
+                $("#WTDBOX #start").val(b);
+                model.start = b;
+            });
+            datePickerend = new Datepicker("结束时间", function (a, b, c) {
+                $("#WTDBOX #end").val(b);
+                model.end = b;
+            });
+        },
+        reset: function () {//
+            model.start = '';
+            model.end = "";
+            $("#WTDBOX #start").val(model.start);
+            $("#WTDBOX #end").val(model.end);
+        },
+        okref :function(){//收支查询
+            if(!model.start){
+                Comm.message("请选择开始时间~");
+                return 
+            }
+            if(!model.end){
+                Comm.message("请选择结束时间~");
+                return 
+            }
+            var v1 = new Date(model.start);
+            var v2 = new Date(model.end);
+            if(v1.getTime()>v2.getTime()){
+                Comm.message("结束时间小于开始时间~");
+                return
+            }
+            model.opt.startTime = model.start;
+            model.opt.endTime = model.end;
+            $("[name=nowdate]").html(model.start+"-"+model.end)
+            Comm.showWindow();
+            model.init();
+        },
+        init: function () {//查询当月订单统计
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/bussiness/financial/jizhangList',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.opt;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    console.info(d.data)
+                    var h = template('mainTpl', d.data);
+                    refresh.appendHtml(h);
+                    model.start='';
+                    model.end='';
+                };
+            } else {
+                // model.opt.keyword = keyword;
+                model.mere.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+    }
+</script>
+
+<script type="text/html" id="mainTpl">
+    {{each $data as v k}}
+    <div class="listInfo  paddt20 verticalP bottomBorder" onclick="Comm.go('serial.html?billId='+{{v.billId}})">
+        <span class="f14 bold ">{{v.category=='1'?'支出':'收入'}}</span>
+        <span class="f12 color999 mart5">{{formatDate(v.addTime,'Y-m-d')}}</span>
+        <span class="f18 vertical price cff">{{v.category=='1'?'-':'+'}}{{v.price}}</span>
+    </div>
+    {{/each}}
+</script>
+</html>

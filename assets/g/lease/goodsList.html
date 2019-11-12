@@ -1,0 +1,228 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../../css/g.css'>
+    <link rel='stylesheet' href='../../css/comm.css'>
+    <style>
+        /* search */
+        .navTitle {
+            font-weight: normal;
+        }
+        .more{
+            width:4px;
+            height:16px ;
+            right:15px;
+        }
+        .sousuoText {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            display: inline-block;
+        }
+
+        .searchBar {
+            margin: 0 auto;
+        }
+
+        .searchBar input {
+            width: 95%;
+            padding-left: 30px;
+            line-height: 30px;
+            height: 30px;
+            font-size: 14px;
+            color: #8891A7;
+            background-color: white;
+            border-radius: 3px;
+            background-image: url('../img/search.png');
+            background-repeat: no-repeat;
+            background-size: 14px;
+            background-position: 10px center;
+            margin: 0 auto;
+            margin-left: 2.5%;
+        }
+        [name='navlist'] span{
+            font-size: 15px;
+            color: #212121;
+        }
+        /* list */
+        .listinfo {
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .listinfo>p {
+            /* width: 100% */
+        }
+
+        .dfleximg {
+            width: 6px;
+            height: 11px;
+        }
+        .goodimg {
+            width: 90px;
+            height: 90px;
+            border-radius: 5px;
+        }
+        .lowerShelf {
+            width: 60px;
+            height: 60px;
+            line-height: 60px;
+            border-radius: 50%;
+            background: rgba(00, 00, 00, 0.5);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px
+        }
+        .btn-list button {
+            width: 70px;
+            text-align: center;
+            padding: 4px 10px;
+            border: 1px solid #DCDCDC;
+            margin-left: 10px;
+            border-radius: 3px;
+            line-height: 30px;
+            background: white;
+            color:black;
+            font: 14px bold;
+        }
+        /* more */
+        #WTDBOXTD {
+            width: 100%;
+            position: absolute;
+            right: 0px;
+            /* top: 0px; */
+            bottom: 0px;
+            padding: 0px 10px;
+        }
+        #sinbox {
+            /* height: 100%; */
+            padding: 0px;
+            background-color: rgba(221, 122, 122, 0);
+        }
+        .Tbtn,
+        .close {
+            border-radius: 5px;
+            background-color: white;
+        }
+
+        .Tbtn p,
+        .close p {
+            padding: 10px 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow verticalP'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>商品管理</div>
+            <img src="../img/spgl_type.png" alt="" class="vertical more" onclick="Comm.showWindow('WinTemp',true)">
+        </div>
+        <div class="paddr5 paddl15 bg_hui ">
+            <div class="nav-title block searchBar inblock" style="width: calc(100% - 50px);">
+                <form action="javascript:return true;" onsubmit="model.inSearch()">
+                    <input id="id_searchInput" type="search" placeholder="请输入商品名字">
+                </form>
+            </div>
+            <div class="sousuoText f14  colordd" onclick="model.inSearch()">搜索</div>
+        </div>
+        <div class="dflex  bg_white borderb bg_white paddb5 paddt5" name="navlist">
+                <div class="lh30" onclick="model.qh(this,1)" data='1'>
+                    <span class="" name="">商品状态</span>
+                    <img src="../img/shop/gdfl.png" style="width:9px;height: 5px;" />
+                </div>
+                <div class="lh30" onclick="model.qh(this,2)" data='2' name="pb">
+                    <span class="">商品分类</span>
+                    <img src="../img/shop/gdfl.png" style="width:9px;height: 5px;" />
+                </div>
+                <div class="lh30" onclick="model.no()" data='5' name="pb">
+                    <span class="">库存</span>
+                    <img src="../img/shop/jgsx.png" height="10" class="dfleximg" />
+                </div>
+            </div>
+    </header>
+
+    <section class='bg_hui' id='box'>
+        <div id="list">
+            <div class="clearfix pad10 marb5 bg_white bottomBorder" name="listinfo" data="{{v.goodsId}}" style="padding-right:0px">
+                <div style="height:90px">
+                    <!-- <div class='quan decir inblock left' style="margin-top:55px" onclick="model.checked(this)"></div> -->
+                    <div class="fl center marr5 marl5 clearFloat" style="max-height:90px;min-height:100px;position:relative" >
+                        <img src="{{OSS(v.img)}}" class="goodimg" onerror="app.errorimg(this)"> 
+                        <div class="lowerShelf colorfff">
+                            已下架
+                        </div>
+                    </div>
+                    <div class="listinfo clearFloat">
+                        <p class="wordW f16" onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                            <span class="f16 c333 bold">如意（0.3米）</span>
+                        </p>
+                        <p class="lh20 wordW" style="" onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                          
+                            <span class="color999 f12 inblock">适用各种空间，美观</span> 
+                        </p>
+                        <p class="" onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                            <span class="f12 colorred borred inblock" style="border:1px solid #DD1474;padding:0px 2px;transform: scale(.8)">可购买</span>
+                        </p>
+                        <div class="" onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                            <span class='color999 f12'>价格</span>
+                            <span class="colorred f12 bold ">￥1.5/月</span>
+        
+                        </div>
+                        <div class="mart5 hide" onclick="Comm.go('shopMain.html?id={{v.bussinessId}}')">
+                            <span class="f12">{{v.bussinessName?v.bussinessName:'查看店铺'}}</span>
+                            <img src="../img/rr.png" height="8" style="margin-top: 1px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="block _all  btn-list mart10 clearfix t-a-r paddr15" style="">
+                    <button>下架</button>
+                    <button>编辑</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+
+    </footer>
+    <!-- more操作 -->
+    <div id="sinbox" wtd="WinTemp">
+        <div class="Tbtn">
+            <p class="colordd bottomBorder" onclick="Comm.go('./addGoodsChoice.html')">添加商品</p>
+            <p class="colordd bottomBorder" onclick="Comm.go('./addCollocation.html')">添加套餐</p>
+            <p class="colordd bottomBorder" onclick="model.setReportLoss()">管理商品分类</p>
+            <p class="colordd bottomBorder" onclick="model.setReportLoss()">全部上架</p>
+            <p class="colordd " onclick="model.setReportLoss()">全部下架</p>
+        </div>
+        <div class="close mart10 marb5" onclick="Comm.showWindow()">
+            <p class="color999">取消</p>
+        </div>
+    </div>
+</body>
+<script src='../../inc/z.js'></script>
+<script src='../../inc/g.js'></script>
+<script src='../../inc/comm.js'></script>
+<script src='../../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+
+    }
+    function pageresume() {
+
+    }
+    var model = {
+    }
+</script>
+
+</html>

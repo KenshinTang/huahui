@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>订单中心</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        /* header */
+        
+        .navTitle {
+            font-weight: normal;
+        }
+        
+        .nav {
+            /* height: 55px;
+            line-height: 55px;
+            display: flex;
+            justify-content: space-around; */
+        }
+        
+        .active {
+            color: #dd1669;
+            position: relative;
+        }
+        
+        .active:after {
+            content: "";
+            position: absolute;
+            left: 25%;
+            bottom: 0px;
+            width: 50%;
+            height: 2px;
+            background-color: #dd1669;
+            text-align: center;
+        }
+        
+        .activebg {
+            background: #dd1669;
+        }
+        
+        .activeUnderline {
+            /* display: block; */
+            width: 50%;
+            position: relative;
+            top: -10px;
+            border-bottom: 3px solid #dd1669;
+        }
+        
+        .open {
+            background: url(./img/gdfl.png) no-repeat center;
+            background-size: contain;
+            position: absolute;
+            top: 24px;
+            right: -15px;
+        }
+        
+        .openA {
+            background: url(./img/dps.png) no-repeat center;
+            background-size: contain;
+        }
+        /* 下来菜单 */
+        
+        #downMenu {
+            width: 100%;
+            position: absolute;
+            z-index: 1001;
+            /* 层级 */
+        }
+        
+        .menuList {
+            height: 45px;
+            ;
+            /* border-top-color:  */
+        }
+        
+        .activeG {
+            width: 20px;
+            height: 20px;
+            background: url("./img/gou.png") no-repeat center;
+            background-size: contain;
+        }
+        /* 日历 */
+        
+        #calendar {
+            width: 18px;
+            height: 18px;
+            background: url(./img/xzrili.png) no-repeat;
+            background-size: contain;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        /* section */
+        /* list */
+        
+        .list {
+            border-radius: 10px;
+        }
+        
+        .colorda {
+            color: #DA251C;
+        }
+        
+        .btn-list {
+            display: flex;
+            /* flex-direction: row-reverse; */
+            justify-content: flex-end;
+        }
+        
+        .receipt,
+        .deliverGoods,
+        .complete {
+            border: #dd1669 solid 1px !important;
+        }
+        
+        .packBtn {
+            min-width: 70px;
+            text-align: center;
+            padding: 3px 5px;
+            border: 1px solid #f2f2f2;
+            margin-left: 5px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        /* 遮罩 */
+        
+        #mask {
+            position: absolute;
+            z-index: 1000;
+            background-color: rgba(0, 0, 0, 0.3);
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .border {
+            border: 1px solid #EBEBEB;
+            border-radius: 20px;
+            min-width: 90px;
+        }
+        /* 小票 */
+        
+        .print_container {
+            padding: 20px;
+            /* width: 80mm; */
+        }
+        
+        .section2 label {
+            display: block;
+        }
+        
+        .section3 label {
+            display: block;
+        }
+        
+        .section4 {}
+        
+        .section4 .total label {
+            display: block;
+        }
+        
+        .section4 .other_fee {
+            border-bottom: 1px solid black;
+        }
+        
+        .section5 label {
+            display: block;
+        }
+        
+        td {
+            display: inline-block
+        }
+        /* 导航滑动 */
+        
+        #groupNum {
+            /* width: 100%; */
+            overflow-x: scroll;
+        }
+        
+        #groupNum .container div {
+            float: left;
+            margin: 0 5px;
+            text-align: center;
+        }
+        
+        #groupNum span {
+            min-width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+        }
+        /* 
+        #groupNum::-webkit-scrollbar {
+            display: none;
+            -webkit-overflow-scrolling: touch;
+        } */
+    </style>
+</head>
+
+<body>
+    <div id="textareaView" style="background:#fff;padding:2px 2px;width:100%;height: auto;z-index: -11;position: absolute">
+    </div>
+    <header style="position:relative">
+        <div class="navBar bottomShadow" style="position:relative">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">订单中心</div>
+            <div id="calendar" class=""></div>
+        </div>
+        <div class="nav  paddl5 paddr5" id="groupNum" style="height: 50px;">
+            <div class="container">
+                <div class="nav-list " onclick="model.qh(this,1)" data='1'>
+                    <span class=" bold f16 inline-block color77" data="jieNum">待接单(0)</span>
+                </div>
+                <div class="nav-list" style="position:relative" onclick="model.qh(this,2)" data='2'>
+                    <span class=" bold f16 inline-block color77 " data="peiNum">待配送(0)</span>
+                    <!-- <img src="./img/gdfl.png" alt="" class="inblock left paddl5 " style="padding-top:24px"> -->
+                </div>
+                <div class="nav-list" onclick="model.qh(this,3)" data='3'>
+                    <span class=" bold f16 inline-block color77" data="shouNum">待收货(0)</span>
+                </div>
+                <div class="nav-list" onclick="model.qh(this,5)" data='5'>
+                    <span class=" bold f16 inline-block color77" data="yu">预定(0)</span>
+                </div>
+                <div class="nav-list" onclick="model.qh(this,4)" data='4'>
+                    <span class=" bold f16 inline-block color77" data="wanNum">已完成(0)</span>
+                </div>
+            </div>
+        </div>
+        <!-- 待配送下拉框 -->
+        <div id="downMenu" class="hide bg_white">
+
+        </div>
+        <!-- <div id="ssss"></div> -->
+    </header>
+    <section id='' class="bg_hui paddt5" style="position:relative">
+        <div id="mask" style="display:none"></div>
+        <div class="mescroll" id="box">
+            <div id="list"></div>
+        </div>
+    </section>
+    <footer class="shared ">
+
+    </footer>
+    <div id="sinbox" wtd="WinTemp">
+        <div>
+            <div class="center lh30 f18" id="tkTitle">快递号</div>
+            <input type="text" class="lh40 border mart10 marb20 center f18" id="num" style="width: auto;" number />
+            <div>
+                <button style="border: 0px;width: 150px;" onclick="model.fh(this)">确定</button>
+            </div>
+        </div>
+    </div>
+    <div id="sinbox" wtd="ZiTemp">
+        <div>
+            <div class="center lh30 f18" id="tkTitle">提货码</div>
+            <input type="text" class="lh40 border mart10 marb20 center f18" id="num" style="width: auto;" number />
+            <div>
+                <button style="border: 0px;width: 150px;" onclick="model.regCode(this)">确定</button>
+            </div>
+        </div>
+    </div>
+    <div id="sinbox" wtd="bgTemp">
+        <div>
+            <div class="center lh30 f18" id="tkTitle">包裹数量</div>
+            <input type="text" class="lh40 border mart10 marb20 center f18" id="num" style="width: auto;" number />
+            <div>
+                <button style="border: 0px;width: 150px;" onclick="model.bgNum(this)">确定</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="./foot.js"></script>
+<script src="../inc/dict.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+<script src="./countDown.js"></script>
+<script src="./js/jquery-3.3.1.min.js"></script>
+<script src="./js/jquery-barcode.min.js"></script>
+<script src="../inc/html2canvas.min.js"></script>
+<script src="../inc/picker.min.js"></script>
+
+<script>
+    var type = Comm.query("type"),
+        userinfo = Comm.db("userinfo");
+
+    function pageload() {
+        model.nav();
+        //获取物流方式
+        Comm.loading(true)
+        if (type == "undefined") {
+            model.index = 1
+            model.data.state = "2"
+        } else {
+            model.index = 2
+            model.data.state = "3,4,5,10"
+        }
+        GDict.init(function() {
+                var wl = GDict.get("logistics")
+                $.each(wl, function(i, v) {
+                    if (v.dictname == "自提") model.isZitiId = v.dictid
+                    model.wl.push({
+                        text: v.dictname,
+                        i: v.dictid
+                    })
+                })
+                model.getAccpet()
+            })
+            // $("#downMenu").on("click", ".menuList", function (e) {
+            //     $.each($("#downMenu").find("span"), function (index, value) {
+            //         $(value).removeClass("colordd")
+            //     })
+            //     $.each($("#downMenu").find(".activeG"), function (index, value) {
+            //         $(value).removeClass("activeG")
+            //     })
+            //     $(this).find(".change").addClass("activeG");
+            //     $(this).find("span").addClass("colordd ")
+            // })
+        $("a").on("click", function(event) {
+            event.stopPropagation();
+        });
+    }
+
+    function pageresume() {
+        model.orderNumber()
+    }
+    var model = {
+        onlyone: 0,
+        //状态值
+        //1, "待支付" 2, "待接单"  3, "待配货" 4, "待质检" 5, "待发货" 
+        //6, "待收货" 7, "已收货" 8, "已取消" 9, "已完成" 10 "待包装"
+        data: {
+            bussinessId: userinfo.bussinessId || "",
+        },
+        wl: [{
+            "text": "待配送",
+            i: '',
+            num: ''
+        }],
+        nav: function() {
+            var width = 0;
+            $('#groupNum .container div').each(function() {
+                width += $(this).width();
+            });
+            width = width + 90;
+            // $('#groupNum').css({ 'width': width + "px", height: '50px' });
+            $('#groupNum .container').css({
+                'width': width + "px",
+                height: '50px'
+            });
+            $(model.el).find(".bold").addClass("active");
+        },
+        qh: function(el, v) { //导航切换
+            model.el = $(el).find('span');
+            event.stopPropagation();
+            Comm.loading(true)
+            model.index = v;
+            model.data.logistType = "";
+            v == "1" ? model.data.state = "2" : v == "2" ? model.data.state = "3,4,5,10" : v == "3" ? model.data.state = "6" : v == "4" ? model.data.state = "7,8,9" : v == '5' ? model.data.state = "11,15" : false;
+            if (v == '2') {
+                Comm.loading(false)
+                model.wlpicker.show();
+            } else {
+                $.each($(".nav-list").find(".bold"), function(index, value) {
+                    $(value).removeClass("active")
+                })
+                $(el).find(".bold").addClass("active");
+                model.search()
+            }
+
+        },
+        showwl: function() { //  初始化下拉配送选选项 
+            model.wlpicker = new Commpicker(
+                "选择类别", [model.wl],
+                function(obj, name, sid) {
+                    model.data.logistType = sid;
+                    type = sid;
+                    $.each($(".nav-list").find(".bold"), function(index, value) {
+                        $(value).removeClass("active")
+                    })
+                    var num = obj[0].num || 0;
+                    var _e = $(".nav-list").find(".bold");
+                    $.each(_e, function(i, v) {
+                        if ($(v).parent().attr("data") * 1 == model.index * 1) {
+                            $(v).addClass("active");
+                            $(v).html(name + "(" + num + ")")
+                        }
+                    })
+                    model.search()
+                }
+            );
+        },
+        search: function() {
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/bussiness/norOrder/list',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.data;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function(refresh, d) {
+                    model.getTel(d, refresh)
+                };
+            } else {
+                model.mere.refreshOption.refreshParm = model.data;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+        //获取联系电话
+        getTel: function(d, refresh) {
+            var opt = [];
+            for (var i = 0; i < d.data.length; i++) {
+                opt.push(d.data[i].normalorderId)
+            }
+            AJAX.POST("/bussiness/bussiness/contact", {
+                normalorderIds: opt.join(",")
+            }, function(res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    $.each(res.data, function(i, v) {
+                        $.each(d.data, function(n, m) {
+                            if (v.normalorderId == m.normalorderId) {
+                                m.cphone = v.cphone;
+                                m.uphone = v.uphone;
+                            }
+                        })
+                    })
+                    $.each(d.data, function(i, v) {
+                        v.accpetTime = model.accpetTime
+                    })
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    console.info(d.data)
+                    $.each(d.data, function(i, v) {
+                        if (v.logistType == model.isZitiId) v.selfmention = 1
+                    })
+                    var h = template('boxTpl', d.data);
+                    refresh.appendHtml(h);
+                    // model.orderNumber()
+                }
+                //处理时间
+                var ind = setInterval(function() {
+                    var num = 0;
+                    $(".ttime").each(function(i, e) {
+                        if (!$(e).hasClass("hide")) {
+                            var id = $(e).attr('data');
+                            var result = $(e).attr('ttime');
+                            if (result > 0) {
+                                result = result - 1;
+                                var second = Math.floor(result % 60);
+                                var minite = Math.floor((result / 60) % 60);
+                                if (second < 10) second = "0" + second;
+                                if (minite < 10) minite = "0" + minite;
+                                $('#ttime' + id).html("倒计时 " + minite + ":" + second).attr('ttime', result);
+                            } else {
+                                $('#ttime' + id).addClass("hide")
+                            }
+                        } else {
+                            num++
+                        }
+                    })
+                    console.info(num)
+                    if (num == $(".ttime").length) clearInterval(ind)
+                }, 1000)
+            })
+        },
+        //获取订单num
+        orderNumber: function(t) {
+            AJAX.GET("/bussiness/norOrder/groupNum", function(res) {
+                if (res.code == 1) {
+                    // if (model.onlyone == "0") {
+                    $.each($(".nav-list").find("span"), function(i, v) {
+                        // 
+                        var a = ''
+                        if (res.data[$(v).attr("data")]) {
+                            a = $(v).html().replace(/\d+/g, res.data[$(v).attr("data")])
+                        } else {
+                            a = $(v).html()
+                        }
+                        $(v).html(a)
+                    })
+                    model.groupNum = res.data
+                    model.listNum(t)
+                        // } else {
+                        //     model.listNum(t)
+                        // }
+                }
+            })
+        },
+
+        //获取物流num
+        listNum: function() {
+            AJAX.POST("/bussiness/norOrder/listNum", {
+                bussinessId: userinfo.bussinessId,
+                state: "3,4,5,10"
+            }, function(res) {
+                if (res.code == 1) {
+                    var _count = 0;
+                    $.each(res.data, function(i, v) {
+                        $.each(model.wl, function(n, m) {
+                            if (m.i == v.logistType) {
+                                m.num = v.num;
+                                _count += Number(v.num);
+                            }
+                        })
+                    })
+                    model.wl[0].num = _count;
+                    Comm.loading(false)
+                    model.showwl();
+                    var t = '';
+                    if (model.index == '2') {
+                        $.each(model.wl, function(i, v) { //
+                            if (v.i == model.data.logistType) {
+                                t = v.num;
+                            }
+                        })
+                    }
+                    model.resetType(type, t)
+                        // model.search()
+                }
+            })
+        },
+
+        defaultA: function(v) {
+            $($(".nav-list")[v]).find("span").addClass("active");
+        },
+        resetType: function(v, t) { //跳转
+            if (v == "undefined") {
+                model.defaultA(0)
+            } else {
+                model.defaultA(1)
+                var temp = null;
+                $.each(model.wl, function(i, v) {
+                    if (type == v.i) {
+                        temp = model.eachLogistics(v.text)
+                        model.data.logistType = temp;
+                        model.changeWl(temp, v.text);
+                    }
+                })
+
+            }
+            // model.onlyone = "1"
+            model.search()
+
+
+        },
+        eachLogistics: function(val) { //跳转获取Logistics
+            var temp = null;
+            $.each(model.wl, function(i, v) {
+                if (val == v.text) {
+                    temp = v.i
+                }
+            })
+            return temp
+        },
+        changeWl: function(v, str) {
+            //物流默认选择
+            var el = $("#downMenu").find(".menuList")
+            console.info($("#downMenu").find(".menuList"))
+            $.each(el, function(i, elm) {
+                if ($(elm).attr("data") == v) {
+                    $(elm).find(".change").addClass("activeG");
+                    $(elm).find("span").addClass("colordd ")
+                }
+            })
+            $.each(model.wl, function(i, v) {
+                if (v.text == str) {
+                    model.num = v.num
+                }
+            })
+            $($(".nav-list")[1]).find(".bold").html(str + "(" + model.num + ')')
+
+        },
+        getAccpet: function() { //接单时间
+            AJAX.POST('/api/config/bykeys', {
+                keys: "accpet_time"
+            }, function(res) {
+                if (res.code == 1) {
+                    model.accpetTime = res.data[0].value;
+                    model.orderNumber()
+
+                }
+            })
+        },
+        cancel: function(normalOrderId) { //拒单
+            event.stopPropagation();
+            Comm.loading(true)
+            AJAX.POST("/bussiness/norOrder/brefuse", {
+                normalOrderId: normalOrderId
+            }, function(res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("取消成功")
+                    model.orderNumber(1)
+                    model.search()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        complete: function(normalOrderId) { //完成配货
+            event.stopPropagation();
+            Comm.loading(true)
+            AJAX.POST("/bussiness/norOrder/completePei", {
+                normalOrderId: normalOrderId
+            }, function(res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("完成配货")
+                    model.orderNumber(1)
+                    model.search()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        receipt: function(normalOrderId, ele) { //接单
+            event.stopPropagation();
+            Comm.loading(true)
+            AJAX.POST("/bussiness/norOrder/accpetOrder", {
+                normalOrderId: normalOrderId
+            }, function(res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("以成功接单,请尽快配货~")
+                    model.orderNumber(1)
+                    model.search()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        deliverGoods: function(normalOrderId, logistType, yuTime) { //发货
+            event.stopPropagation();
+            var starts = 0;
+            if (yuTime) {
+                var now = new Date();
+                starts = (hhmmss.todate(yuTime).getTime() - now.getTime()) / 1000;
+            }
+            if (starts > 0) {
+                Comm.Mess.confirm("预定发货时间为" + yuTime + ",确定提前发货？", Comm.setcb(function(a) {
+                    if (a == '1') {
+                        Comm.go('logisticsInfo.html?normalOrderId=' + normalOrderId + "&logistType=" + logistType)
+                    }
+                }))
+            } else {
+                Comm.go('logisticsInfo.html?normalOrderId=' + normalOrderId + "&logistType=" + logistType)
+            }
+        },
+        bgNum: function(el) {
+            var num = $("#WTDBOXTD").find("#num").val();
+            Comm.showWindow()
+            if (!num) {
+                Comm.message("请输入包裹数量~")
+                return
+            }
+            Comm.loading(true)
+            AJAX.POST("/bussiness/norOrder/deliverGoods", {
+                normalOrderId: model.tempnormalOrderId,
+                logistNum: num
+            }, function(res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("完成发货")
+                    model.listNum()
+                    model.search()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+
+        },
+
+        fh: function(el) {
+            var num = $("#WTDBOXTD").find("#num").val();
+            Comm.showWindow()
+            if (!num) {
+                Comm.message("请输入运单号~")
+                return
+            }
+            Comm.loading(true)
+            AJAX.POST("/bussiness/norOrder/deliverGoods", {
+                normalOrderId: model.tempnormalOrderId,
+                logistNum: num
+            }, function(res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("完成发货")
+                    model.listNum()
+                    model.search()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        print: function(normalOrderId) { //打印
+            event.stopPropagation();
+            AJAX.POST("/bussiness/norOrder/print", {
+                normalOrderId: normalOrderId
+            }, function(res) {
+                if (res.code == 1) {
+                    Comm.message("订单已打印")
+                    model.search()
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        godetails: function(id, v, code, logistType) { //详情
+            event.stopPropagation();
+            Comm.go('orderDetail.html?oid=' + id + "&ifFlower=" + v + "&code=" + code + "&logistType=" + logistType);
+        },
+
+        no: function() {
+            event.stopPropagation();
+            Comm.message("暂未开放，敬请期待~")
+        },
+        nophone: function(type) {
+            event.stopPropagation();
+            if (type == "1") {
+                Comm.message("暂未分配质检员~")
+            } else if (type == "2") {
+                Comm.message("平台暂未添加联系电话~")
+            }
+        },
+        ziti: function(id) {
+            model.tempZitiId = id
+            Comm.showWindow('ZiTemp', true)
+        },
+        regCode: function() {
+            var code = $("#WTDBOXTD").find("#num").val();
+            Comm.showWindow()
+            if (!code) {
+                Comm.message("请输入提货码~")
+                return
+            }
+            Comm.loading(true)
+            AJAX.POST("/bussiness/norOrder/ti", {
+                normalOrderId: model.tempZitiId,
+                receiptCode: code
+            }, function(res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    Comm.message("完成提货~")
+                    model.orderNumber(1)
+                    model.search()
+                } else {
+                    Comm.message("提货码错误~")
+
+                }
+            })
+        },
+        //jsonObj:{type:1,data:d}; 1 wifi打印机 2 蓝牙打印机 3 wifi打印（小票） 4 蓝牙打印（面单）
+        printMd: function(type, index, normalorderId, logistType) {
+            Comm.loading("打印中...")
+            if (type == "4" || type == '3') {
+                var opt = {
+                    userType: 1, //1 供应商 2 采购 4 质检
+                    orderId: normalorderId,
+                };
+                AJAX.POST('/ident/flowerMarket/printMianDan', opt, function(res) {
+                    if (res.code == 1) {
+                        // $.each(model.wl, function (i, v) {
+                        //     if(v.i==logistType){
+
+                        //     }
+                        // })
+
+                        if (logistType == "174") { //自提
+
+                        }
+
+                        if (type == "4") {
+                            $("#textareaView").html(template("mdTpl", res.data))
+                                // $("#ssss").html(template("mdTpl", res.data))
+                            $("#textareaView").find("[name=code]").barcode(res.data.faphone, "code128")
+                        } else {
+                            res.data.spje = (res.data.nowCash - res.data.packingfee - res.data.qualityfee - res.data.zaiFee + res.data.jifenMoney + res.data.jianNum).toFixed(2);
+                            $("#textareaView").html(template("xpTpl", res.data))
+                                // $("#ssss").html(template("xpTpl", res.data))
+                        }
+                        var shareContent = document.getElementById("textareaView");
+                        var width = shareContent.offsetWidth;
+                        var height = shareContent.offsetHeight;
+                        var canvas = document.createElement("canvas");
+                        var scale = 2;
+
+                        canvas.width = width * scale;
+                        canvas.height = height * scale;
+                        canvas.getContext("2d").scale(scale, scale);
+
+                        var opts = {
+                            scale: scale,
+                            canvas: canvas,
+                            logging: true,
+                            width: width,
+                            height: height
+                        };
+                        html2canvas(shareContent, opts).then(function(canvas) {
+                            dataURL = canvas.toDataURL("image/png");
+                            console.log(dataURL);
+                            dataURL = dataURL.split(",")
+                            Comm.bluetoothPrint({
+                                type: type,
+                                data: dataURL[1]
+                            }, function(res) {
+                                if (res == '1') {
+                                    Comm.loading(false)
+                                    Comm.message("打印完成~")
+                                } else {
+                                    Comm.loading(false)
+                                    Comm.bluetoothPrint({
+                                        type: 1
+                                    })
+                                }
+                            })
+                        });
+                    } else {
+                        Comm.loading(false);
+                        Comm.message(res.msg)
+                    }
+                })
+            }
+            // model.search()
+        },
+
+
+    };
+    template.defaults.imports.resetTime = function(v) {
+        return app.formatDate(v, "Y-m-d H:i:s")
+    }
+    template.defaults.imports.resetState = function(v) {
+        return v == "1" ? "待支付" : v == "2" ? "待接单" : v == "3" ? "待配货" :
+            v == "4" ? "待质检" : v == "5" ? "待发货" : v == "6" ? "待收货" :
+            v == "7" ? "已收货" : v == "8" ? "已取消" : v == "9" ? "已完成" : v == "10" ? "待包装" : v == "11" ? "待支付尾款" : v == '15' ? '平台介入' : '';
+    }
+    template.defaults.imports.resetMoney = function(v) {
+        return Number(v).toFixed(2)
+    }
+
+    template.defaults.imports.contactu = function(normalorderId, el) {
+            var opt = {
+                normalorderId: normalorderId
+            }
+            return AJAX.POST("/bussiness/bussiness/contactu", opt, function(res) {
+                if (res.code == 1) {
+                    return res.data
+                }
+            })
+        }
+        //换算分钟
+    template.defaults.imports.timeMinutes = function(addtime) {
+            addtime = addtime.replace(/-/g, "/").replace(/\.0/g, "")
+            var now = new Date();
+            var end = new Date(addtime).getTime() + (model.accpetTime * 1000 * 60);
+            var result = Math.floor((end - now) / 1000);
+            return result
+        }
+        //重置质检原因
+    template.defaults.imports.resetreasonId = function(id) {
+        // GDict=
+        return result
+    }
+    template.defaults.imports.resname = function(v) {
+        var str = "";
+        if (v.length == 0) {
+            str = ""
+        }
+        if (v.length > 9) {
+            str = v.slice(0, 9);
+            str = str + "...";
+        } else {
+            str = v;
+        }
+        return str
+    }
+</script>
+<script type="text/html" id="boxTpl">
+    {{each $data as v i}}
+    <div class="list white paddt10 paddb15 paddl10 paddr10 marl5 marr5 marb5">
+        <!-- 订单时间信息 -->
+        <div class="list-h flex-between paddt10 paddb10" onclick="model.godetails('{{v.normalorderId}}','0','{{v.selfmention}}','{{v.logistType}}')">
+            <div class="text inline-block">
+                <div class=" inline-block">
+                    <span class="block f14 wordW">订单时间:{{v.addTime|resetTime}}</span>
+                </div>
+            </div>
+            <div class="inline-block paddt11">
+                <!-- //1, "待支付" 2, "待接单"  3, "待配货" 4, "待质检" 5, "待发货" 
+                //6, "待收货" 7, "已收货" 8, "已取消" 9, "已完成" 10 "待包装" -->
+                <p class="colorda t-a-r" id="">{{v.state|resetState}}</p>
+                {{if v.state=="2"}}
+                <!-- <p class="colorda f12 ttime" id="" name="count_down" data=""></p> -->
+                {{set ttime=timeMinutes(v.addTime)}} {{if ttime>0}}
+                <p class="f12 colorred ttime" id="ttime{{v.normalorderId}}" data='{{v.normalorderId}}' ttime="{{ttime}}"></p>
+                {{else}}
+                <p class="f12 colorred ttime hide" id="ttime{{v.normalorderId}}" data='{{v.normalorderId}}' ttime="{{ttime}}"></p>
+                {{/if}} {{/if}}
+            </div>
+        </div>
+        <!-- 订单信息 -->
+        <div class="   flex-between" style="align-items: flex-end;" onclick="model.godetails('{{v.normalorderId}}','0','{{v.selfmention}}','{{v.logistType}}')">
+            <div class="" style="width:70%">
+                <p class="color74 f14 marb10" _style="width:100%">{{v.userName}} {{v.phone}}</p>
+                <p class="color74 f14 wordW" _style="width:100%">{{v.descript}}</p>
+            </div>
+            <div class="t-a-r" style="width:30%">
+                <span class="f16">&yen;{{v.allCash|resetMoney}}</span>
+            </div>
+        </div>
+        <!-- 质检信息 -->
+        {{if v.reasonId&&v.reasonId!="0"}}
+        <div class="mart10" id="qualityTesting">
+            <p class="color74 f14 wordW">质检未通过原因：{{getItemName(v.reasonId)}}</p>
+        </div>
+        {{/if}}
+        <!-- 预售信息 -->
+        <!-- <div class="mart10" id="advanceSale">
+            <p class="colordd f14 wordW">预售：2019-01-22前发货，还剩3天10小时</p>
+        </div> -->
+        <!-- 配送时间 -->
+        <!-- <div class="mart10" id="deliveryTime">
+            <p class="colordd f14 wordW">配送时间：2019-01-22</p>
+        </div> -->
+        <!-- 订单按钮-->
+        <div class="flex-between {{v.state!=7?flase:'hide'}} {{v.state!=8?flase:'hide'}} {{v.state!=9?flase:'hide'}}">
+            <div class="mart10 ">
+            </div>
+            <!-- 订单配送 取消按钮 -->
+            <div class="_inblock _all  btn-list mart10 ">
+                <!-- 1, "待支付" 2, "待接单"  3, "待配货" 4, "待质检" 5, "待发货" 
+                6, "待收货" 7, "已收货" 8, "已取消" 9, "已完成" -->
+                {{if (!(v.state=="1"||v.state=="2"||v.state=="3"||v.state=="7"||v.state=="8"||v.state=="9")||(v.selfmention=="1"&&v.flowerMarketId=='0'))}}
+                <div class="packBtn printOrder {{v.ifPrint=='0'?flase:'hide'}}" onclick="model.printMd('3','{{i}}','{{v.normalorderId}}','{{v.logistType}}')">打印小票</div>
+                {{/if}} {{if v.logistType=="174"}}
+                <a href="tel:{{v.phone||''}}" data="{{v.phone}}" style="display:block">
+                    <div class="packBtn contactSorter " _onclick="model.contactu('{{v.normalorderId}}',this)">联系用户</div>
+                </a>
+                {{/if}} {{if v.state=="2"}}
+                <div class="packBtn cancel " onclick="model.cancel('{{v.normalorderId}}')">取消订单</div>
+                <div class="packBtn receipt colordd " onclick="model.receipt('{{v.normalorderId}}',this)">接单</div>
+                {{/if}} {{if v.state=="3"}} {{if v.uphone}}
+                <a href="tel:{{v.uphone||''}}" data="{{v.uphone}}" style="display:block">
+                    <div class="packBtn contactSorter " _onclick="model.contactu('{{v.normalorderId}}',this)">联系分拣员</div>
+                </a>
+                {{else}}
+                <div class="packBtn contactSorter " onclick="model.nophone(1)">联系分拣员</div>
+                {{/if}} {{if v.cphone}}
+                <a href="tel:{{v.cphone||''}}" data="{{v.cphone}}" style="display:block">
+                    <div class="packBtn contactSortingCenter " _onclick="model.contactc('{{v.normalorderId}}',this)">联系分拣中心</div>
+                </a>
+                {{else}}
+                <div class="packBtn contactSortingCenter " onclick="model.nophone(2)">联系分拣中心</div>
+                {{/if}}
+                <div class="packBtn complete colordd " onclick="model.complete('{{v.normalorderId}}')">完成配货</div>
+                {{/if}} {{if v.state=="5"}} {{if v.flowerMarketId=='0'&&v.logistType!='174'}} {{if v.yuTime}}
+                <div class="packBtn deliverGoods colordd " onclick="model.deliverGoods('{{v.normalorderId}}','{{v.logistType}}','{{v.yuTime}}')">发货</div>
+                {{else}}
+                <div class="packBtn deliverGoods colordd " onclick="model.deliverGoods('{{v.normalorderId}}','{{v.logistType}}')">发货</div>
+                {{/if}} {{/if}} {{/if}} {{if v.state=="4"}} {{if v.uphone}}
+                <a href="tel:{{v.uphone||''}}" data="{{v.uphone}}" style="display:block">
+                    <div class="packBtn contactSorter " _onclick="model.contactu('{{v.normalorderId}}',this)">联系分拣员</div>
+                </a>
+                {{else}}
+                <div class="packBtn contactSorter " onclick="model.nophone(1)">联系分拣员</div>
+                {{/if}} {{if v.cphone}}
+                <a href="tel:{{v.cphone||''}}" data="{{v.cphone}}" style="display:block">
+                    <div class="packBtn contactSortingCenter " _onclick="model.contactc('{{v.normalorderId}}',this)">联系分拣中心</div>
+                </a>
+                {{else}}
+                <div class="packBtn contactSortingCenter " onclick="model.nophone(2)">联系分拣中心</div>
+                {{/if}} {{/if}} {{if v.selfmention=="1"&&v.flowerMarketId=='0'}}
+                <div class="packBtn deliverGoods colordd " onclick="model.ziti('{{v.normalorderId}}')">提货码</div>
+                {{/if}}
+
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</script>
+<script type="text/html" id="wlTpl">
+    {{each $data as v i}}
+    <div class="menuList bordert flex-between  paddl25 paddt10 paddb10 paddr25" data="{{v.i}}" onclick="model.xzwl('{{v.i}}','{{v.text}}','{{v.num*1}}')">
+        <div class="f14">
+            <span class=" f14">{{v.text}}</span>
+            <span class=" f14">{{v.num*1}}</span>
+        </div>
+        <div class="change "></div>
+    </div>
+    {{/each}}
+</script>
+<script type="text/html" id="xpTpl">
+    <div class="print_container ">
+        <div class="section3 paddb5" style="border-bottom: 1px solid black;padding-bottom:5px">
+            <label>订单编号：{{orderNum}}</label>
+
+        </div>
+        <div class="section3 paddb5" style="border-bottom: 1px solid black;padding-top:5px ">
+
+            <label>姓名：{{shouname}}</label>
+            <label>地址：{{shouaddress}}</label>
+            <label>电话：{{shouphone}}</label>
+            <label>下单时间：{{addTime}}</label>
+        </div>
+        <div class="section4 paddt5 paddb5 ">
+            <div style="border-bottom: 1px solid black;padding-bottom: 10px;">
+
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <td width="35%">名称</td>
+                            <td class="t-a-c" width="15%">数量</td>
+                            <td class="t-a-c" width="25%">单价</td>
+                            <td class="t-a-c" width="25%">金额</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{each orders as v i}}
+                        <tr>
+                            <td class="wordW" width="35%">{{v.goodsName|resname}}</td>
+                            <td class="t-a-c" width="15%">{{v.nowNum}}</td>
+                            <td class="t-a-c" width="25%">{{v.singlePrice}}</td>
+                            <td class="t-a-c" width="25%">{{v.allPrice}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="total paddt5 paddb5" style="border-bottom: 1px solid black;padding-right: 15px">
+                <span style="display: block;text-align: right">商品金额：{{spje}}</span> {{if jifenMoney*1>0}}
+                <span style="display: block;text-align: right">积分抵扣：{{jifenMoney}}</span> {{/if}} {{if jianNum*1>0}}
+                <span style="display: block;text-align: right">订单满减：{{jianNum}}</span> {{/if}} {{if packingfee}}
+                <span style="display: block;text-align: right">包装费：{{packingfee}}</span> {{/if}} {{if qualityfee}}
+                <span style="display: block;text-align: right">质检费：{{qualityfee}}</span> {{/if}} {{if zaiFee}}
+                <span style="display: block;text-align: right">运费：{{zaiFee}}</span> {{/if}} {{if nowCash}}
+                <span style="display: block;text-align: right">实付款：{{nowCash}}</span> {{/if}}
+            </div>
+        </div>
+        {{if logistCompany&&logistNum}}
+        <div class="section5 paddt5 paddb5" style="border-bottom: 1px solid black; ">
+            <label>物流公司：{{logistCompany}}</label>
+            <label>物流单号：{{logistNum}}</label>
+        </div>
+        {{/if}} {{if remark}}
+        <div class="section5 paddt5 paddb5">
+            <label style="width: 100%;height: auto;word-wrap:break-word;word-break:break-all;overflow: hidden;">备注：{{remark}}</label>
+        </div>
+        {{/if}}
+
+    </div>
+</script>
+
+<!-- 导航栏滑动 -->
+<!-- <script type="text/html" id="groupNumTpl">
+    
+    <div class="nav-list " onclick="model.qh(this,1)">
+        <div>
+            <div class=" bold f16 inline-block color77 ">待接单({{jieNum}})</div>
+        </div>
+
+    </div>
+    <div class="nav-list" style="position:relative" onclick="model.qh(this,2)">
+        <div>
+            <div class=" bold f16 inline-block color77">待配送({{peiNum}})</div>
+        </div>
+        <div class="open" ></div>
+    </div>
+    <div class="nav-list" onclick="model.qh(this,3)">
+        <div>
+            <div class=" bold f16 inline-block color77">待收货({{shouNum}})</div>
+        </div>
+    </div>
+    <div class="nav-list" onclick="model.qh(this,4)">
+        <div>
+            <div class=" bold f16 inline-block color77">已完成({{wanNum}})</div>
+        </div>
+    </div>
+</script> -->
+
+<script type="text/html" id="groupNumTpl">
+    <div class="container">
+        <div class="nav-list " onclick="model.qh(this,1)">
+            <span class=" bold f16 inline-block color77">待接单({{jieNum}})</span>
+        </div>
+        <div class="nav-list" style="position:relative" onclick="model.qh(this,2)">
+            <span class=" bold f16 inline-block color77 left">待配送({{peiNum}})</span>
+            <img src="./img/gdfl.png" alt="" class="inblock left paddl5 " style="padding-top:24px">
+        </div>
+        <div class="nav-list" onclick="model.qh(this,3)">
+            <span class=" bold f16 inline-block color77">待收货({{shouNum}})</span>
+        </div>
+        <div class="nav-list" onclick="model.qh(this,5)">
+            <span class=" bold f16 inline-block color77">预定({{shouNum}})</span>
+        </div>
+        <div class="nav-list" onclick="model.qh(this,4)">
+            <span class=" bold f16 inline-block color77">已完成({{wanNum}})</span>
+        </div>
+    </div>
+</script>
+
+</html>

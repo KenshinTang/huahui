@@ -1,0 +1,558 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        /* header */
+        .navTitle {
+            font-weight: normal;
+        }
+
+        .nav {
+            /* height: 55px;
+            line-height: 55px;
+            display: flex;
+            justify-content: space-around; */
+        }
+
+        .active {
+            color: #dd1669;
+            position: relative;
+        }
+
+        .active:after {
+            content: "";
+            position: absolute;
+            left: 25%;
+            bottom: 0px;
+            width: 50%;
+            height: 2px;
+            background-color: #dd1669;
+            text-align: center;
+        }
+
+        .activebg {
+            background: #dd1669;
+        }
+
+        .activeUnderline {
+            /* display: block; */
+            width: 50%;
+            position: relative;
+            top: -10px;
+            border-bottom: 3px solid #dd1669;
+        }
+
+        /* 导航滑动 */
+        #leaseNav {
+            width: 100%;
+            overflow-x: scroll;
+        }
+
+        #leaseNav .container div {
+            float: left;
+            margin: 0 5px;
+            text-align: center;
+        }
+
+        #leaseNav span {
+            min-width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+        }
+
+        #leaseNav::-webkit-scrollbar {
+            display: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* list */
+        .list {
+            border-radius: 5px;
+        }
+
+        .colorda {
+            color: #DA251C;
+        }
+
+        .btn-list {
+            display: flex;
+            /* flex-direction: row-reverse; */
+            justify-content: flex-end;
+        }
+
+        .receipt,
+        .deliverGoods,
+        .complete {
+            border: #dd1669 solid 1px !important;
+        }
+
+        .packBtn {
+            min-width: 70px;
+            text-align: center;
+            padding: 4px 7px;
+            border: 1px solid #EEEEEE;
+            margin-left: 5px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .info p {
+            margin-top: 13px;
+        }
+
+        .address::before {
+            content: '';
+            background: url('./img/order/kfdz.png') no-repeat;
+            background-size: contain;
+            /*兼容没测*/
+            position: absolute;
+            left: 0px;
+            z-index: 2;
+            width: 32px;
+            height: 16px
+        }
+
+        /* color */
+        .c666 {
+            color: #666666;
+        }
+        .hhmmss span{
+            color:#DA251C;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>客户订单</div>
+        </div>
+        <div class="nav  paddl5 paddr5" id="leaseNav">
+            <div class="container flex-around">
+                <div class="nav-list " onclick="model.qh(this,1)">
+                    <span class=" bold f16 inline-block c333 active">待接单</span>
+                </div>
+                <div class="nav-list" onclick="model.qh(this,2)">
+                    <span class=" bold f16 inline-block c333 ">待配送</span>
+                </div>
+                <div class="nav-list" onclick="model.qh(this,3)">
+                    <span class=" bold f16 inline-block c333">服务中</span>
+                </div>
+                <div class="nav-list" onclick="model.qh(this,4)">
+                    <span class=" bold f16 inline-block c333">已完成</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class='bg_hui paddt10 paddb10 paddl15 paddr15' id='box'>
+        <div id="list">
+
+        </div>
+
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script>
+    var userinfo = Comm.db("userinfo");
+    function pageload() {
+        model.getPayTime();
+		$("a").on("click", function (event) {
+		    event.stopPropagation();
+		});
+        // model.init()
+    }
+    function pageresume() {
+        model.init()
+    }
+    var model = {
+        getPayTime: function () {
+            Comm.loading(true);
+            var url = '/api/config/bykeys',
+                opt = {
+                    keys: "cancel_order"
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    model.cancel_order=res.data[0].value;
+                } else {
+                    Comm.message(res.msg)
+                }
+                model.getTxTime()
+            })
+        },
+		getTxTime: function () {
+		    Comm.loading(true);
+		    var url = '/api/config/bykeys',
+		        opt = {
+		            keys: "txxqsj"
+		        };
+		    AJAX.POST(url, opt, function (res) {
+		        Comm.loading(false);
+		        if (res.code == 1) {
+		            model.txxqsj=res.data[0].value;
+		        } else {
+		            Comm.message(res.msg)
+		        }
+		        model.init()
+		    })
+		},
+        qh: function (el, v) {//导航切换
+            // (1, "待支付"), (2, "待接单"),(3, "待配货"), (4, "待质检"),(5, "待发货"),(6, "待收货"),
+            // (7, "已收货"),(8, "已取消"),(9, "已完成"),(10, "待包装"),(11, "预定"),(12, "团购订单创建"),(13, "团购订单支付成功"),
+            // (14, "竞采待支付"),(15, "预定平台介入"),(16, "租赁商家修改后待用户确认"),(17, "租赁商家修改后废弃订单"),(18, "租赁进行中"),
+            model.el = $(el).find('span');
+            event.stopPropagation();
+            $.each($(".nav-list").find(".bold"), function (index, value) {
+                $(value).removeClass("active")
+            })
+            $(el).find(".bold").addClass("active");
+            v == '1' ? model.opt.state = '2,16' : v == '2' ? model.opt.state = '5' : v == '3' ? model.opt.state = '18,6' : v == '4' ? model.opt.state = '9,8' : '';
+            model.init();
+        },
+        opt: {
+            bId: userinfo.bussinessId,
+            type: '3',
+            yang: '2',
+            state: '2,16',
+            benable: '1'
+
+        },
+        init: function () {//
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/common/otherorder/lease/orderlist',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.opt;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    console.info(d.data)
+                    $.each(d.data, function (i, v) {
+                        v.isDq = model.calcTime(v);
+                        var now = new Date();
+                        for (var i = 0; i < d.data.length; i++) {
+                            var e = d.data[i];
+                            e.starts = (hhmmss.todate(e.addTime).getTime() - now.getTime()) / 1000;
+                            e.ends = (hhmmss.todate(e.addTime).getTime() +(model.cancel_order*60*1000) - now.getTime()) / 1000;
+                            // }
+                        }
+                        console.info(d.data)
+                    })
+                    var h = template('boxTpl', d.data);
+                    refresh.appendHtml(h);
+                };
+                hhmmss.init('list','支付超时');
+            } else {
+                // model.opt.keyword = keyword;
+                model.mere.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+            // $("#list").html(template("boxTpl"))
+        },
+        refuse: function (otherOrderId) {//取消订单
+            event.stopPropagation();
+            Comm.Mess.confirm("是否取消该订单", Comm.setcb(function (a) {
+                if (a == "1") {
+                    Comm.loading(true);
+                    var url = '/common/otherorder/refuse'
+                    opt = {
+                        otherOrderId: otherOrderId
+                    };
+                    AJAX.POST(url, opt, function (res) {
+                        Comm.loading(false);
+                        if (res.code == 1) {
+                            Comm.message("订单取消成功~");
+                            model.init()
+                        } else {
+                            Comm.message(res.msg)
+                        }
+                    })
+                }
+            }))
+
+        },
+        jiedan: function (otherOrderId) {//租赁接单
+            event.stopPropagation();
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/jiedan'
+            opt = {
+                otherOrderId: otherOrderId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("接单成功~");
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        editOrder: function (otherOrderId) {//修改订单
+            event.stopPropagation();
+            Comm.db("otherorderdetails", null);
+            Comm.go('editOrder.html?otherOrderId=' + otherOrderId)
+        },
+        fa: function (otherOrderId) {//
+            event.stopPropagation();
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/fa'
+            opt = {
+                otherOrderId: otherOrderId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("成功发货~");
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        queHui: function (otherOrderId) {//确认回收
+            event.stopPropagation();
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/queHui'
+            opt = {
+                otherOrderId: otherOrderId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("回收成功~");
+                    model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        remind: function (otherOrderId) {//提醒续期
+            event.stopPropagation();
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/tiXu'
+            opt = {
+                otherOrderId: otherOrderId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("已提醒用户~");
+                    // model.init();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        receivables: function (otherOrderId,elm) {//确认收款
+            event.stopPropagation();
+            // var ends = $(elm).parents(".list").find(".hhmmss").attr("data");
+            // if(ends*1<0){
+            //     Comm.message("")
+            // }
+            Comm.Mess.confirm("是否确认已收到补款？", Comm.setcb(function (a) {
+                if (a == "1") {
+                    Comm.loading(true);
+                    var url = '/bussiness/lease/order/que'
+                    opt = {
+                        otherOrderId: otherOrderId
+                    };
+                    AJAX.POST(url, opt, function (res) {
+                        Comm.loading(false);
+                        if (res.code == 1) {
+                            Comm.message("提交成功~");
+                            model.init();
+                        } else {
+                            Comm.message(res.msg)
+                        }
+                    })
+                }
+            }))
+
+        },
+        calcTime: function (data) {//计算到期时间
+            var tt = new Date(data.startTime);
+            var endstart = tt.setMonth(tt.getMonth() + data.cycle * 1);
+            var now = new Date();
+            var nowTime = now.getTime();
+            var diff = model.txxqsj * 24 * 60 * 60 * 1000;
+            var nowDiff = endstart - nowTime;
+            var str = '0';
+            // 
+            if(nowDiff>diff){
+                str='0';
+            }
+            else if(nowDiff < diff&&nowDiff>0) {
+                str = '1';
+            }
+            else if (nowDiff <='0') {
+                str = '2';
+            } 
+            return str;//0 未到期 1 临近到期 2 已到期
+            // return 1;//0 未到期 1 临近到期 2 已到期
+        }
+    }
+    template.defaults.imports.resetFwq = function (start, cycle, type) {
+        var tt = new Date(start);
+        var endstart = tt.setMonth(tt.getMonth() + cycle * 1);
+        var endDate = new Date(endstart);
+        var end = endDate.toLocaleDateString();
+        end = end.replace(/\//gi, '-');
+        if (type == '1') return start + "至" + end;
+        else return end;
+    };
+    template.defaults.imports.resState = function (v) {
+        v = String(v);
+        var str = '';
+        switch (v) {
+            case '2': str = '待接单'; break;
+            case '5': str = '待配送'; break;
+			case '6': str = '待收货'; break;
+            case '8': str = '已取消'; break;
+            case '9': str = '已完成'; break;
+            case '16': str = '待接单'; break;
+            case '18': str = '服务中'; break;
+        }
+        return str;
+    }
+</script>
+<!-- 租赁 导航 -->
+<script type="text/html" id="leaseNavTpl">
+    <div class="container">
+            <div class="nav-list " onclick="model.qh(this,1)">
+                <span class=" bold f16 inline-block color77 active">待接单</span>
+            </div>
+            <div class="nav-list"  onclick="model.qh(this,2)">
+                <span class=" bold f16 inline-block color77 ">待配送</span>
+            </div>
+            <div class="nav-list" onclick="model.qh(this,3)">
+                <span class=" bold f16 inline-block color77">服务中</span>
+            </div>
+            <div class="nav-list" onclick="model.qh(this,4)">
+                <span class=" bold f16 inline-block color77">已完成</span>
+            </div>
+    </div>
+</script>
+
+<!-- 租赁数据列表-->
+<script type="text/html" id="boxTpl">
+    {{each   $data  as v k}}
+    <div class="list white paddt15 paddb15 paddl15 paddr15 marb10 " >
+        <!-- 订单时间信息 -->
+        <div class="list-h flex-between" onclick="Comm.go('leaseorderDetail.html?t=1&otherOrderId='+{{v.otherOrderId}})">
+            <div class="text inline-block">
+                <div class=" inline-block">
+                    <span class="block f14 wordW c21 bold">订单时间：{{v.addTime}}</span>
+                </div>
+            </div>
+            <div class="inline-block paddt11">
+                <p class="colorda t-a-r f14" id="">{{resState(v.state)}}</p>
+
+            </div>
+        </div>
+        <!-- 补款信息 -->
+        {{if v.needPayCash*1 > 0&&v.state=='16'}}
+        <div class="flex-between mart15 item" onclick="Comm.go('leaseorderDetail.html?t=1&otherOrderId='+{{v.otherOrderId}})">
+            {{if v.needPayCash*1 > 0}}
+            <span class="f12" style="color:#DA251C">需补款{{v.needPayCash||'0'}}元，等待客户支付</span>
+            {{else}}
+            <!-- <span class="f12" style="color:#DA251C">需补款{{v.needPayCash||'0'}}元，等待客户确认</span> -->
+            {{/if}}
+            {{if(v.ends>0&&v.starts<=0)}} 
+            <span  class="lh20  hhmmss" data="{{v.ends}}">
+                <span class="f12  ">倒计时</span>
+                <span class="f12 hh" id="hh">00</span>
+                <span class="f12 ">:</span>
+                <span class="f12 mm" id="mm">00</span>
+                <span class="f12 ">:</span>
+                <span class="f12 ss" id="ss">00</span>
+            </span>
+            {{/if}}
+            {{if v.ends*1 < 0 &&v.starts*1 < 0}}
+            <span class="f12 hhmmss" data='{{v.ends}}' style="color:#DA251C">支付超时</span>
+            {{/if}}
+
+            
+        </div>
+        {{/if}}
+        <!-- 花店推单 -->
+        {{if v.type=='2'}}
+        <div class="mart15" >
+            <span class="f12 colordd marr5"
+                style="border-radius: 3px;padding:2px 3px;border:1px solid #DD1474;">花店推单</span>
+            <span class="f14 bold">未来久花店</span>
+        </div>
+        {{/if}}
+        <!-- 租赁信息 -->
+        <div class="info" style="" onclick="Comm.go('leaseorderDetail.html?t=1&otherOrderId='+{{v.otherOrderId}})">
+            <p class="f12 c666 address paddl20 verticalP">{{v.carAddress}}</p>
+            <p class="f12 c666 ">{{v.descript}}</p>
+            <p class="f12 c666 ">租赁周期：{{resetFwq(v.startTime,v.cycle,1)}}</p>
+            <p class="f12 c666 ">养护频次：1月{{v.pinNum}}次</p>
+            <p class="f12 c666 ">订单金额：{{v.allPrice}}</p>
+        </div>
+        <div class="verticalP">
+            {{if v.state=='18'}}
+                {{if v.isDq=='1'}}
+               <span class='vertical colordd'>{{resetFwq(v.startTime,v.cycle,2)}}服务到期</span>
+               {{else if v.isDq=='2'}}
+               <span class='vertical colordd'>服务已到期</span>
+                {{/if}}
+            {{/if}}
+            <div class="_inblock _all  btn-list mart10 ">
+                <!-- 1, "待支付" 2, "待接单"  3, "待配货" 4, "待质检" 5, "待发货" 
+                        6, "待收货" 7, "已收货" 8, "已取消" 9, "已完成" -->
+                {{if v.state=='2'}}
+                <div class="packBtn printOrder f14 " onclick="model.refuse('{{v.otherOrderId}}')">取消订单</div>
+                <div class="packBtn printOrder f14 " onclick="model.editOrder('{{v.otherOrderId}}')">修改订单</div>
+                <div class="packBtn printOrder f14 " onclick="model.jiedan('{{v.otherOrderId}}')">接单</div>
+                {{else if v.state=='5'}}
+                <div class="packBtn printOrder f14 " onclick="model.fa('{{v.otherOrderId}}')">发货</div>
+                {{else if v.state=='16'}}
+                    {{if v.needPayCash*1!='0'}}
+                    <div class="packBtn printOrder f14 " onclick="model.receivables('{{v.otherOrderId}}',this)">确认已收款</div>
+                    {{/if}}
+                {{else if v.state=='18'}}
+                    {{if v.isDq=='1'}}
+                    <div class="packBtn printOrder f14 " onclick="model.remind('{{v.otherOrderId}}')">提醒续期</div>
+                    {{else if v.isDq=='2'}}
+                    <div class="packBtn printOrder f14 " onclick="model.queHui('{{v.otherOrderId}}')" >确认回收</div>
+                    {{/if}}
+                {{/if}}
+                {{if v.state=='16'||v.state=='18'}}
+                <a  href="tel:{{v.carPhone||''}}" data="{{v.carPhone}}" style="display:block">
+                    <div class="packBtn printOrder f14 " >联系客户</div>
+                </a>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</script>
+
+</html>

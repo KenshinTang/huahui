@@ -1,0 +1,191 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        /* search */
+        .navTitle {
+            font-weight: normal;
+        }
+
+        .more {
+            width: 4px;
+            height: 16px;
+            right: 15px;
+        }
+
+        .sousuoText {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            display: inline-block;
+        }
+
+        .searchBar {
+            margin: 0 auto;
+        }
+
+        .searchBar input {
+            width: 95%;
+            padding-left: 30px;
+            line-height: 30px;
+            height: 30px;
+            font-size: 14px;
+            color: #8891A7;
+            background-color: white;
+            border-radius: 3px;
+            background-image: url('./img/search.png');
+            background-repeat: no-repeat;
+            background-size: 14px;
+            background-position: 10px center;
+            margin: 0 auto;
+            margin-left: 2.5%;
+        }
+
+        /* footer */
+        footer button {
+            border-radius: 5px;
+
+        }
+
+        /* 客户列表 */
+        .address .up {
+            border-bottom: 1px solid #eaeaea;
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        .address .down {
+            width: 90%;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>员工管理</div>
+        </div>
+        <div class="paddr5 paddl15 bg_hui ">
+            <div class="nav-title block searchBar inblock" style="width: calc(100% - 50px);">
+                <form action="javascript:return true;" onsubmit="model.inSearch()">
+                    <input id="id_searchInput" type="search" placeholder="请输入员工名字">
+                </form>
+            </div>
+            <div class="sousuoText f14  colordd" onclick="model.inSearch()">搜索</div>
+        </div>
+    </header>
+
+    <section class='bg_hui' id=''>
+
+    </section>
+    <footer class="paddt5 paddb5 t-a-c">
+        <button class="f18" onclick="Comm.go('./addStaff.html')">添加员工</button>
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+        model.init()
+    }
+    function pageresume() {
+        model.init()
+    }
+    var model = {
+        opt: {
+            type: '1',
+            userType: '1',
+        },
+        init: function () {//
+            var str = $("#id_searchInput").val("");
+            Comm.loading(true);
+            var url = '/common/staff/getStaff';
+            AJAX.POST(url, model.opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+
+                    if (res.data.length != '0') {
+                        $("section").html(template("mainTpl", res.data))
+                    } else {
+                        var str = '<div class="mescroll-empty t-a-c"><img class="empty-icon" src="../img/wjg.png"><p class="paddb10 empty-tip">您还未添加员工~</p></div>'
+                        $("section").html(str);
+                    }
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        del: function (staffId) {//
+            Comm.Mess.confirm("是否删除员工？", Comm.setcb(function (a) {
+                if (a == "1") {
+                    Comm.loading(true);
+                    var url = '/common/staff/deleteStaff'
+                    opt = {
+                        staffId: staffId
+                    };
+                    AJAX.POST(url, opt, function (res) {
+                        Comm.loading(false);
+                        if (res.code == 1) {
+                            Comm.message("删除成功~");
+                            model.init();
+                        } else {
+                            Comm.message(res.msg)
+                        }
+                    })
+                }
+            }))
+
+        },
+        inSearch: function () {//
+            var str = $("#id_searchInput").val();
+            // if (!str) {
+            //     Comm.message('请输入员工信息~');
+            //     return
+            // }
+            model.opt.userName = str;
+            model.init();
+        }
+    }
+</script>
+<script type="text/html" id="mainTpl">
+    {{each $data as v i}}
+    <div class="address bg_white mart5">
+            <div class="up paddt20 paddb5" onclick="model.jsGo('{{v.staffId}}')">
+                <div class="marb5"><span class="f17 ">{{v.userName}}&nbsp;{{v.phone}}</span></div>
+                <div class="wordW2"><span class="f14 color999 lh25">{{v.regionCn}}&nbsp;{{v.address}}</span></div>
+            </div>
+            <div class="down clearfix " >
+                <div class="left iserror hide">
+                    <img class="marr10" src="../img/select2-y.png" height="14">
+                    <span class="f14 color999 lh40">默认地址</span>
+                </div>
+                <div class="right">
+                    <p class="address-edit inblock">
+                        <img src="img/bji.png" height="14"
+                            onclick="Comm.go('addStaff.html?staffId='+{{v.staffId}})">
+                        <span class="f14 color999 lh40"
+                            onclick="Comm.go('addStaff.html?staffId='+{{v.staffId}})">编辑</span>
+                    </p>
+                    <p class="address-edit inblock">
+                        <img src="../img/shch.png" height="14" onclick="model.del('{{v.staffId}}')">
+                        <span class="f14 color999 lh40" onclick="model.del({{v.staffId}})">删除</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+</script>
+
+</html>

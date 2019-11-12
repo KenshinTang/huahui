@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>商品详情</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <link rel="stylesheet" href="../css/side.css" />
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        body>header {
+            opacity: 0;
+        }
+        
+        section .navBackIcon {
+            background-image: url(img/good/fh.png);
+            background-size: auto 30px;
+        }
+        
+        .animate {
+            -webkit-animation: animatekey 1s linear 0s 1 forwards;
+        }
+        
+        @-webkit-keyframes animatekey {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        body>header .cell {
+            background-image: url('img/good/cell.png');
+        }
+        
+        body>header .navTitle {
+            line-height: 40px;
+        }
+        
+        body>header .navTitle span {
+            height: 43px;
+            line-height: 43px;
+        }
+        
+        body>header .active {
+            display: inline-block;
+            border-bottom: 2px solid #DD1474;
+            color: #DD1474;
+        }
+        
+        section .navItemIcon.share {
+            background-image: url('img/good/fx.png');
+            background-size: auto 30px;
+        }
+        
+        section .navItemIcon.cell {
+            background-image: url('img/good/shouc.png');
+            background-size: auto 30px;
+        }
+        
+        section {
+            position: relative;
+        }
+        
+        section header {
+            position: absolute;
+            top: 0px;
+            width: 100%;
+        }
+        
+        .main {
+            position: relative;
+        }
+        
+        .borred {
+            border: 1px solid #DD1474;
+            padding: 0 5px;
+            border-radius: 5px;
+        }
+        
+        .borfff {
+            background-color: #DD1474;
+            color: #fff;
+            padding: 0 5px;
+            border-radius: 5px;
+        }
+        
+        .w33 {
+            width: 32%;
+            display: inline-block;
+        }
+        
+        #sinbox {
+            position: absolute;
+            width: 100%;
+            bottom: 0px;
+            left: 0px;
+            padding: 10px;
+        }
+        
+        span.line {
+            width: calc(32% - 10px);
+            display: inline-block;
+            text-align: center;
+            border-radius: 5px;
+            background-color: #F5F5F5;
+            margin-bottom: 10px;
+            margin-left: 10px;
+            line-height: 28px;
+            font-weight: normal;
+            font-size: 14px;
+        }
+        
+        footer {
+            background-color: #fff;
+        }
+        
+        .topbackimg {
+            position: fixed;
+            height: 50px;
+            z-index: 100;
+            right: 10px;
+            bottom: 60px;
+        }
+        
+        footer span.rednum {
+            padding: 0px 3px;
+            position: absolute;
+            left: 50%;
+            top: 2px;
+            height: 18px;
+            line-height: 18px;
+            font-size: 12px;
+            color: #fff;
+            border-radius: 18px;
+            background: -webkit-linear-gradient(right, #EE900E, #DD1474);
+        }
+        
+        .bg_FF404D {
+            background: -webkit-linear-gradient(right, #FF587D, #FF404D);
+        }
+        
+        .readiusnum {
+            background-color: #C0C0C0;
+            height: 15px;
+            line-height: 15px;
+            border-radius: 15px;
+            width: 15px;
+            color: #fff;
+            display: inline-block;
+            font-size: 12px;
+        }
+        
+        .lh15 {
+            line-height: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 头部 -->
+    <header class="hide">
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon hide" onclick="Comm.close()"></div>
+            <!-- <div class="navItemIcon marr10 cell hide" onclick="model.cell(this)"></div> -->
+            <div class="navItemIcon marr10 share hide" onclick="model.share(this)"></div>
+            <div class="navTitle">
+                <span class="active inblock marl5 marr5" onclick="model.qh(this,1)">商品</span>
+                <span class="inblock marl5 marr5" onclick="model.qh(this,2)">详情</span>
+                <span class="inblock marl5 marr5 pj hide" onclick="model.qh(this,3)">评价</span>
+            </div>
+        </div>
+    </header>
+    <section id="box" class="mescroll">
+        <header>
+            <div class="navBar bottomShadow" style="padding: 0;box-shadow: none;">
+                <div class="navBackIcon hide" onclick="Comm.close()"></div>
+                <!-- <div class="navItemIcon marr10 cell hide" onclick="model.cell(this)"></div> -->
+                <div class="navItemIcon marr10 share hide" onclick="model.share(this)"></div>
+            </div>
+        </header>
+        <div id="banner" class="banner side_box">
+            <ul class="side_ul" id="side">
+
+            </ul>
+        </div>
+        <div class="main">
+            <div id="gooddetail">
+
+            </div>
+            <div id="comments">
+                <div id="commentsTit">
+
+                </div>
+                <div class="listpj" id="listpj">
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <div class="dflex">
+            <div class="dflex" style="flex:50%">
+                <div onclick="model.goShop()">
+                    <p class="mart5">
+                        <img src="img/good/dp.png" height="15" />
+                    </p>
+                    <p class="f12 color999">店铺</p>
+                </div>
+                <div>
+                    <a id="peoplephone" href="javascrtipt:;" style="display: block;">
+                        <p class="mart5">
+                            <img src="img/good/sj.png" height="15" />
+                        </p>
+                        <p class="f12 color999">商家</p>
+                    </a>
+                </div>
+            </div>
+            <div style="flex: 50%" class="">
+                <button style="border-radius: 0px; width: 100%;border:0px;" onclick="model.go('http://app.huahuiyun8.com/app/isios.html?type=1')">下载APP</button>
+            </div>
+        </div>
+    </footer>
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/side.js"></script>
+<script type="text/javascript" src="../inc/art-template.js"></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="js/c.js"></script>
+<script>
+    function pageload() {
+        if (Comm.isweixin()) {
+            $(".share").hide()
+        }
+        var screenwidth = window.screen.width;
+        $("#side").css("height", screenwidth + "px")
+        $("section").scroll(function() {
+            model.scroll(this);
+        });
+        GDict.init(function() {
+            model.init();
+        });
+    }
+
+    function pageresume() {
+
+    }
+
+    var model = {
+        num: 1,
+        userinfo: Comm.db('userinfo'),
+        id: Comm.query('id'),
+        init: function() {
+            Comm.db("imgView", []);
+            Comm.loading(true)
+                //获取商品详情
+            AJAX.GET('/purchase/activityda/detail?activityId=' + model.id, function(d) {
+                Comm.loading(false)
+                if (d.code == 1) {
+                    $("#side").html(template('bannerTpl', d.data.imagelists)).height($("#banner").width());
+                    new Side('banner', 3, true);
+                    var tempimg = [];
+                    for (var i = 0; i < d.data.length; i++) {
+                        tempimg.push(d.data[i].url)
+                    }
+                    Comm.db("imgView", tempimg);
+                    if (d.data.lianPhone) {
+                        $("#peoplephone").attr('href', 'tel:' + d.data.lianPhone);
+                    }
+                    $("#gooddetail").html(template('gooddetailTpl', d.data));
+                    model.data = d.data;
+                }
+            });
+
+            model.shownum();
+        },
+        shownum: function() {
+            Cart.getnum(function(cartnum) {
+                if (cartnum > 0) {
+                    cartnum = cartnum >= 100 ? '99+' : cartnum;
+                    if (cartnum < 10) {
+                        $("#rednum").css('padding', '0px 6px')
+                    } else {
+                        $("#rednum").css('padding', '0px 3px')
+                    }
+                    $("#rednum").html(cartnum).removeClass('hide');
+                } else {
+                    $("#rednum").addClass('hide');
+                }
+            })
+        },
+        goShop: function() { //跳转商品详情
+            Comm.go('shopMain.html?id=' + model.data.bussinessId)
+        },
+        openheader: function() { //顶部显示
+            if ($("body>header").hasClass("hide")) {
+                $("body>header").removeClass("hide").addClass("animate")
+                setTimeout(function() {
+                    Comm.resizeSection();
+                }, 1000)
+            }
+        },
+        closeheader: function() { //顶部隐藏
+            if (!$("body>header").hasClass("hide")) {
+                $("body>header").addClass("hide");
+                Comm.resizeSection();
+            }
+        },
+        qh: function(a, i) { //顶部切换
+            if (!$(a).find('span').hasClass('active')) {
+                $(a).parent().find("span").removeClass('active')
+                $(a).addClass('active');
+                var bh = $("#banner").height();
+                if (i == 1) {
+                    model.closeheader();
+                    $("section").scrollTop(0);
+                } else if (i == 2) {
+                    $("section").scrollTop($("#contents").position().top + bh);
+                } else if (i == 3) {
+                    $("section").scrollTop($("#comments").position().top + bh);
+                }
+            }
+        },
+        scroll: function(a) { //滚动处理
+            var top = $(a).scrollTop();
+            //console.log(top);
+            var bh = $("#banner").height();
+            var commenth = $("#comments").position().top + bh
+            var contentth = $("#contents").position().top + bh
+            if (top > commenth) {
+                $("body>header .navTitle span").removeClass("active");
+                $("body>header .navTitle span:nth-child(3)").addClass("active");
+            } else if (top > contentth) {
+                $("body>header .navTitle span").removeClass("active");
+                $("body>header .navTitle span:nth-child(2)").addClass("active");
+            } else if (top > 200) {
+                model.openheader();
+            } else if (top < 200) {
+                model.closeheader();
+            }
+        },
+        gg: function() {
+            //id,skuid
+            var i = Cart.query(model.id, model.data.activityId, 3);
+            var num = 1;
+            if (i >= 0) {
+                num = num + Cart.mycart[i].num;
+            }
+            if (num > model.data.num * 1) {
+                Comm.message('库存不足')
+                return
+            }
+
+            var opt = {
+                type: 3,
+                num: num,
+                ifFlowerSuper: 0,
+                bussinessId: model.data.bussinessId,
+                goodsId: model.id,
+                goodsSkuId: model.data.activityId,
+                pic: model.data.pic,
+                goodsDetails: model.data.goodsDetails
+            };
+
+            Cart.add(opt);
+            model.shownum();
+            Comm.message('加入购物车成功');
+            Comm.showWindow();
+        },
+        share: function() {
+            var url = 'goodcollopurchase.html?id=' + model.id;
+            var opt = {
+                title: model.good.goodsName /*分享标题*/ ,
+                pic: Comm.OSS.getImgUrl(model.good.img, 'd') /*分享图标*/ ,
+                url: config.webroot + '/share/' + url /*分享链接 OR app的线上fir下载地址*/ ,
+                desc: model.good.details /*分享描述*/
+            };
+            Comm.shareUrl(opt, function(d) {
+                if (d == 1) {
+                    Comm.message("分享成功");
+                }
+            });
+        },
+        touch: function() {
+            var img = document.getElementById('topbackimg');
+
+            var x = 0,
+                y = 0,
+                right = 10,
+                bottom = 10;
+
+            img.addEventListener('touchstart', function(e) {
+                event.stopPropagation();
+                var touch = event.targetTouches[0];
+                x = touch.clientX;
+                y = touch.clientY;
+            });
+            img.addEventListener('touchmove', function(e) {
+                event.stopPropagation();
+                var touch = event.targetTouches[0];
+                var xx = x - touch.clientX;
+                var yy = y - touch.clientY;
+
+                x = touch.clientX;
+                y = touch.clientY;
+
+                right += xx;
+                bottom += yy;
+
+                if (right < 0) {
+                    right = 0;
+                }
+                if (bottom < 0) {
+                    bottom = 0;
+                }
+                if (right > document.body.offsetWidth - img.width) {
+                    right = document.body.offsetWidth - img.width
+                }
+                if (bottom > document.body.offsetHeight - img.width) {
+                    bottom = document.body.offsetHeight - img.width
+                }
+
+                img.style.right = right + "px";
+                img.style.bottom = bottom + "px";
+                console.log(xx + ":" + yy);
+                //console.log(img.style.right + "------------" + img.style.bottom);
+            });
+            img.addEventListener('touchend', function(e) {
+                event.stopPropagation();
+                var touch = event.targetTouches[0];
+            })
+        }
+    }
+</script>
+
+<script id="bannerTpl" type="text/html">
+    {{each $data v k }}
+    <li class="scroll">
+        <img onclick="Comm.go('imgView.html?ind={{k}}')" src="{{OSS(v.url,'d')}}" width="100%" onerror="app.errorimg(this)" />
+    </li>
+    {{/each}}
+</script>
+
+<script id="gooddetailTpl" type="text/html">
+    <div class="dflex bg_FF404D lh50  paddt5 paddb5">
+        <div class="marl15 flex_wrap" style="flex-basis: 25%;">
+            <div>
+                <span class="colorfff f12">￥</span>
+                <span class="colorfff f30">{{price}}</span>
+            </div>
+            <div class="marl15">
+                <div class="lh20 tleft">
+                    <span class="colorfff linethrough">￥{{(youHui*100+price*100)/100}}</span>
+                </div>
+                <div class="lh20">
+                    <span class="f12 colorred" style="background-color:#fff;border-radius: 3px; padding:1px 2px;">搭配购买更优惠</span>
+                </div>
+            </div>
+        </div>
+        <div style="text-align:right;" class="paddr20">
+            <span class="colorfff f12">活动至{{formatDate(endTime)}}</span>
+        </div>
+    </div>
+    <div class="lh25 paddl15 paddr15 wordW mart10">
+        <span class="f18">{{activityName}}</span>
+    </div>
+    <div class=" paddl15 paddr15 mart5 paddb15">
+        <span class="f12">可优惠{{youHui}} | 活动至{{formatDate(endTime)}}</span>
+        <span class="f12 color999 fr">库存{{num}}</span>
+    </div>
+    <div class="linebod"></div>
+    <div class="pad15" id="contents">
+        {{each goodsDetails v k}}
+        <div class="good clearfix dflex marb10" onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+            <div style="max-width: 75px;">
+                <img src="{{OSS(v.img)}} " width="75 " height="75 " class="radius3 fl" onerror="app.errorimg(this)" />
+            </div>
+            <div class="marl10">
+                <div class="tleft">
+                    <span class="wordW2">{{v.goodsName}}</span>
+                </div>
+                <div class="wordW2 tleft">
+                    {{if(v.grade!="-1")}}
+                    <span class="color999 f12 inblock">等级：{{getItemName(v.grade)}}</span> {{/if}} {{if(v.maturity!="-1")}}
+                    <span class="color999 f12 inblock">成熟度：{{getItemName(v.maturity)}}</span> {{/if}} {{if(v.color!="-1")}}
+                    <span class="color999 f12 inblock">颜色：{{getItemName(v.color)}}</span> {{/if}} {{if(v.speci)}}
+                    <span class="color999 f12 inblock">规格：{{(v.speci)}}/{{v.company}}</span> {{/if}} {{if(v.weight>0)}}
+                    <span class="color999 f12 inblock">重量：{{v.weight}}g</span> {{/if}} {{if(v.keyValue)}}
+                    <span class="color999 f12 inblock">规格：{{v.keyValue}}</span> {{/if}}
+                </div>
+                <div class="dflex lh25">
+                    <div style="text-align:left; "><span class="f12 colorred">￥</span><span class="f16 colorred">{{v.yuanPrice}}</span></div>
+                    <div class="color666 " style="text-align:right; ">x{{v.goodsNum}}</div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+    <div class="linebod"></div>
+</script>
+
+
+</html>

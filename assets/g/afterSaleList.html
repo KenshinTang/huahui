@@ -1,0 +1,226 @@
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css">
+    <title>售后管理</title>
+    <style>
+        .pad10ed {
+            padding: 10px 10px 0px 10px;
+        }
+
+        .goodimg {
+            border-radius: 5px;
+        }
+
+        .active {
+            display: inline-block;
+            border-bottom: 3px solid #DD1474;
+            color: #DD1474;
+        }
+
+        button {
+            background: inherit;
+            border: 1px solid #ebebeb;
+            border-radius: 20px;
+            color: #222;
+            width: 80px;
+            height: auto;
+            line-height: 20px;
+            font-size: 14px;
+            padding: 5px 8px;
+            margin-bottom: 10px;
+        }
+
+        button.red {
+            border: 1px solid #DD1474;
+            color: #DD1474;
+        }
+
+        button.w110 {
+            width: 110px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">售后管理</div>
+        </div>
+        <div class="dflex pad10ed bg_white borderb">
+            <div class="lh30" onclick="model.qh(this)" data="1">
+                <span class="color999 active">售后理赔</span>
+            </div>
+            <div class="lh30" onclick="model.qh(this)" data="2">
+                <span class="color999 ">退货申请</span>
+            </div>
+            <div class="lh30" onclick="model.qh(this)" data="3">
+                <span class="color999">换货申请</span>
+            </div>
+            <div class="lh30" onclick="model.qh(this)" data="4">
+                <span class="color999">已完成</span>
+            </div>
+        </div>
+    </header>
+    <section class="mescroll" id="box">
+        <div class="" id="order-ls">
+
+        </div>
+    </section>
+    <footer></footer>
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/art-template.js"></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<!-- <script type="text/javascript" src="js/c.js"></script> -->
+
+<script>
+    // var state = 1
+    // var ss = Comm.query('s')
+
+    function pageload() {
+        model.order();
+    }
+
+    function pageresume() {
+        model.order();
+    }
+
+    //换算分钟
+    template.defaults.imports.timeing = function (date) {
+        if (!date) {
+            return 0;
+        }
+        var d = model.time(date);
+        return d;
+    }
+    template.defaults.imports.stringify = function (d) {
+        return JSON.stringify(d);
+    }
+
+    var model = {
+        opt: {
+            type: 1 // 1 理赔 2 退货中 3 换货中 4 已完成
+        },
+        qh: function (a) {
+            if (!$(a).find('span').hasClass('active')) {
+                $(a).parent().find('span').removeClass('active')
+                $(a).find('span').addClass('active')
+                model.opt.type = $(a).attr('data').trim()
+                model.order();
+            }
+        },
+        time: function (date) {
+            var date = new Date(app.formatDate(date, 'Y-m-d H:i:s'));
+            var now = new Date();
+            var t = now.getTime() - date.getTime();
+            return t / 1000 / 60;
+        },
+        order: function () {
+            if (!model.mere) {
+                model.mere = new MERefresh('box,order-ls', {
+                    refreshUrl: '/bussiness/afterSale/queryAfterSale',
+                    refreshTypeGet: true
+                });
+
+                model.mere.refreshOption.refreshParm = model.opt
+
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    d.data.aftersale = model.aftersale;
+                    refresh.appendHtml(template('mainTpl', d.data));
+                };
+            } else {
+                model.mere.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+
+            }
+        },
+        godetail: function(afterSaleId) {
+            event.stopPropagation();
+            Comm.go('aftersaledetail.html?id=' + afterSaleId+"&type="+model.opt.type)
+        },
+
+
+    }
+
+    template.defaults.imports.restate = function (dealState) {
+        var str = '';
+        // dealState 1处理中 2已处理 3已撤销 4同意退换货填写运单号 401换货中 402待收货 5收到退货商品待退款 6拒绝 
+        // model.type 1 理赔 2 退货 3 换货 4 完成
+        if(dealState=="1") str= "待审核";
+        if(dealState=="2") str="已完成";
+        if(dealState=="3") str="已撤销";
+        if(dealState=="4") str="已同意";
+        if(dealState=="401") str="待收货";
+        if(dealState=="402") str="已发货";
+        if(dealState=="5") str="待退款";
+        if(dealState=="6") str="已拒绝";
+        return str;
+    }
+
+    /*是否处理完成 1处理中 2已处理 3已撤销 4同意退货填写运单号 5收到退货商品待退款6拒绝*/
+</script>
+
+<script id="mainTpl" type="text/html">
+    {{each $data v k}}
+    <div class="linebod"></div>
+    <div class="item .order-l" id="orders{{v.afterSaleId}}" onclick="model.godetail({{v.afterSaleId}})">
+        <div class="pad10" >
+            {{if(v.dealState)}}
+            <div class="fr tright">
+                <p class="state">{{restate(v.dealState)}}</p>
+            </div>
+            {{/if}} 
+            <div class="">
+               <p>申请时间：{{formatDate(v.addTime,'Y-m-d')}}</p>
+            </div>
+        </div>
+        {{if(v.dealState)}}
+        <div class="pad10 clearfix" style="background-color:#F7F7F7;" >
+            {{else}}
+            <div class="pad10 clearfix" style="background-color:#F7F7F7;">
+                {{/if}}
+                <div>
+                    <div class="fl center" style="width: 30%;max-height:90px;">
+                        <img src="{{OSS(v.img)}}" height="80" width="80" class="goodimg" onerror="app.errorimg(this)" />
+                    </div>
+                    <div>
+                        <p class="wordW2 lh20">{{v.goodsName}}</p>
+                        <p class="wordW2 lh20">
+                            {{if(v.color&&v.color!="-1")}}
+                            <span class="color999 f12 inblock">颜色：{{getItemName(v.color)}}</span> {{/if}} {{if(v.grade&&v.grade!="-1")}}
+                            <span class="color999 f12 inblock">等级：{{getItemName(v.grade)}}</span> {{/if}} {{if(v.maturity&&v.maturity!="-1")}}
+                            <span class="color999 f12 inblock">成熟度：{{getItemName(v.maturity)}}</span> {{/if}} {{if(v.speci*1>0)}}
+                            <span class="color999 f12 inblock">规格：{{(v.speci)}}/{{v.company}}</span> {{/if}} {{if(v.weight>0)}}
+                            <span class="color999 f12 inblock">重量：{{v.weight}}g</span> {{/if}} {{if(v.skuName)}}
+                            <span class="color999 f12 inblock">规格：{{v.skuName}}</span> {{/if}}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="paddr10">
+                    <div class="mart10 tright">
+                        <button onclick="model.godetail({{v.afterSaleId}})">查看详情</button>
+                    </div>
+            </div>
+        </div>
+        {{/each}}
+</script>
+
+</html>

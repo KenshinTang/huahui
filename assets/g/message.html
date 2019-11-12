@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+
+    <title>消息</title>
+
+    <link rel="stylesheet" href="../css/g.css">
+    <link rel="stylesheet" href="../css/comm.css">
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <link rel="stylesheet" href="../inc/mescroll/swiper.min.css">
+    <style>
+        section {
+            background-color: #F7F7F7;
+        }
+        
+        .navItemIcon {
+            background: inherit;
+        }
+        
+        .pad10ed {
+            padding: 10px 10px 0px 10px;
+            width: 100%;
+            white-space: nowrap;
+            /*内容横向排列不换行*/
+        }
+        
+        .pad10ed>div {
+            width: 25%;
+        }
+        
+        .active {
+            display: inline-block;
+            border-bottom: 3px solid #DD1474;
+            color: #DD1474;
+        }
+        
+        .main .item {
+            position: relative;
+            border-radius: 5px;
+        }
+        
+        .main .item .bg {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background-image: url('img/my/msgbg.png');
+            background-size: 100% 100%;
+        }
+        
+        .ml {
+            margin-bottom: 10px;
+            animation: myml 0.5s 1;
+            -webkit-animation: myml 0.5s 1;
+            margin-left: 30px;
+        }
+        
+        @keyframes myml {
+            from {
+                margin-left: 0px;
+            }
+            to {
+                margin-left: 30px;
+            }
+        }
+        
+        @-webkit-keyframes myml {
+            from {
+                margin-left: 0px;
+            }
+            to {
+                margin-left: 30px;
+            }
+        }
+        
+        .items {
+            position: relative;
+            padding: 10px;
+        }
+        
+        .items .sel {
+            position: absolute;
+            left: 10px;
+            width: 20px;
+        }
+        
+        footer {
+            background-color: #fff;
+            line-height: 50px;
+            display: none;
+        }
+        
+        footer .sel {
+            width: 20px;
+            margin-left: 20px;
+            vertical-align: middle;
+        }
+        
+        footer span {
+            vertical-align: middle;
+        }
+        
+        footer div {
+            background-color: #DD1474;
+            line-height: 38px;
+            width: 110px;
+            color: #fff;
+            margin-top: 6px;
+        }
+        
+        .read {
+            width: 8px;
+            height: 8px;
+            border-radius: 8px;
+            background-color: red;
+            margin: 4px 3px 0 0px !important;
+            padding: 0px !important;
+            display: inline-block;
+        }
+        
+        button {
+            width: 80px;
+            line-height: 30px;
+            background: #fff;
+            color: #4D4D4D;
+            height: 30px;
+            border: 1px solid #E5E5E5;
+            font-size: 14px;
+        }
+        
+        .bobt {
+            border-top: 1px solid #EBEBEB;
+        }
+    </style>
+
+</head>
+
+<!--******************************************************************************-->
+
+<body>
+
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navItemIcon marl5 marr10" onclick="model.edit(this)">编辑</div>
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle"></div>
+        </div>
+        <div class="dflex pad10ed bg_white borderb hide">
+            <div class="lh30" onclick="model.qh(this,2)">
+                <span class="color999 active">订单消息</span>
+            </div>
+            <div class="lh30" onclick="model.qh(this,1)">
+                <span class="color999">系统消息</span>
+            </div>
+        </div>
+    </header>
+    <!--******************************************************************************-->
+    <section class="mescroll" id="box">
+        <div id="list" class="main">
+
+        </div>
+    </section>
+
+    <!--******************************************************************************-->
+
+    <footer>
+        <img src="../img/select-n.png" class="sel" onclick="model.selAll(this)" />
+        <span>全选</span>
+        <div class="right center f16 bgdd-ef marl10 marr10" onclick="model.del()" style='border-radius: 5px'>删除</div>
+        <div class="right center f16 bgdd-ef" onclick="model.read()" style='border-radius: 5px'>标记已读</div>
+    </footer>
+</body>
+<script src="../inc/z.js"></script>
+<script src="../inc/g.js"></script>
+<script src="../inc/comm.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+
+<script>
+    var userinfo = Comm.db("userinfo")
+
+    function pageload() {
+        model.showMain();
+        $('.navTitle').html(model.messType == "1" ? '系统消息' : '订单消息')
+    }
+
+    function pageresume() {
+        model.showMain();
+    }
+    var model = {
+        messType: Comm.query('t'), //1 系统消息 2 订单消息
+        userType: 1, //1 供应商 2采购 4质检
+        qh: function(a, id) {
+            if (!$(a).find('span').hasClass('active')) {
+                $(a).parent().find('span').removeClass('active')
+                $(a).find('span').addClass('active')
+                model.messType = id;
+                model.showMain()
+            }
+        },
+        showMain: function() {
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/api/mess/list',
+                    refreshTypeGet: true
+                });
+                //网络请求参数projectType="+dictid+"&sortType="+sortType
+                model.mere.refreshOption.refreshParm = {
+                    messType: model.messType,
+                    userType: model.userType,
+                };
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function(refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    var h = template('messageTpl', d.data);
+                    refresh.appendHtml(h);
+                };
+            } else {
+                //网络请求参数projectType="+dictid+"&sortType="+sortType
+                model.mere.refreshOption.refreshParm = {
+                    messType: model.messType,
+                    userType: model.userType,
+                };
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+        edit: function(a) {
+            if ($(a).html() == "编辑") {
+                if ($('.main .item').length == 0) {
+                    Comm.message('您当前没有消息，无法编辑！');
+                    return false;
+                }
+                $('#box .item').addClass("ml");
+                $("#box .items .sel").show();
+                $(a).html('完成')
+                $('footer').show()
+                $("#box").height($("#box").height() + 50);
+            } else {
+                $('#box .item').removeClass("ml");
+                $("#box .items .sel").hide();
+                $(a).html('编辑')
+                $('footer').hide()
+                $("#box").height($("#box").height() - 50);
+            }
+        },
+        sel: function(a) {
+            var isn = $(a).attr('src').indexOf('select-n.png') >= 0 ? false : true;
+            if (!isn) {
+                $(a).attr('src', '../img/select2-y.png');
+                var isn = true;
+                $("#box img.sel").each(function(i, e) {
+                    var isnitem = $(e).attr('src').indexOf('select-n.png') >= 0 ? false : true;
+                    if (!isnitem) {
+                        isn = false
+                    }
+                })
+                if (isn) {
+                    $('footer .sel').attr('src', '../img/select2-y.png')
+                }
+            } else {
+                $(a).attr('src', '../img/select-n.png')
+                $('footer .sel').attr('src', '../img/select-n.png')
+            }
+        },
+        selAll: function(a) {
+            var isn = $(a).attr('src').indexOf('select-n.png') >= 0 ? false : true;
+            if (!isn) {
+                $(a).attr('src', '../img/select2-y.png');
+                $.each($("#list").find(".sel"), function(i, v) {
+                    $(v).attr('src', '../img/select2-y.png');
+                })
+            } else {
+                $(a).attr('src', '../img/select-n.png')
+                $.each($("#list").find(".sel"), function(i, v) {
+                    $(v).attr('src', '../img/select-n.png');
+                })
+            }
+        },
+        del: function() {
+            var ids = []
+            $("#box img.sel").each(function(i, e) {
+                var isnitem = $(e).attr('src').indexOf('select-n.png') >= 0 ? false : true;
+                if (isnitem) {
+                    ids.push($(e).attr('id'));
+                }
+            })
+            if (ids.length > 0) {
+                AJAX.POST('/api/mess/delids', {
+                    ids: ids.join(','),
+                    userType: model.userType
+                }, function(d) {
+                    if (d.code == 1) {
+                        Comm.message('删除成功！')
+                        $.each(ids, function(i, e) {
+                            $("#del" + e).remove();
+                        })
+                        model.showMain();
+                        $('.navItemIcon').html('编辑');
+                        $('footer .sel').attr('src', '../img/select-n.png')
+                        $('footer').hide()
+                        $("#box").height($("#box").height() - 50);
+                    } else {
+                        Comm.message('删除失败，请稍后再试！')
+                    }
+                })
+            } else {
+                Comm.message('请选择您要删除的消息！');
+            }
+        },
+        read: function() {
+            var ids = []
+            $("#box img.sel").each(function(i, e) {
+                var isnitem = $(e).attr('src').indexOf('select-n.png') >= 0 ? false : true;
+                if (isnitem) {
+                    ids.push($(e).attr('id'));
+                }
+            })
+            if (ids.length > 0) {
+                AJAX.POST('/api/mess/readids', {
+                    ids: ids.join(','),
+                    userType: model.userType
+                }, function(d) {
+                    if (d.code == 1) {
+                        Comm.message('标记成功！')
+                        model.showMain();
+                        $('.navItemIcon').html('编辑');
+                        $('footer .sel').attr('src', '../img/select-n.png')
+                        $('footer').hide()
+                        $("#box").height($("#box").height() - 50);
+                    } else {
+                        Comm.message('标记失败，请稍后再试！')
+                    }
+                })
+            } else {
+                Comm.message('请选择您要标记的消息！');
+            }
+        },
+        godetail: function(type, id, isread, ifFlower, messid, _this) {
+            if (isread == 0) {
+                AJAX.POST('/api/mess/read', {
+                    messid: messid,
+                    userType: model.userType
+                }, function(d) {
+                    if (d.code == 1) {
+                        $(_this).find('.read').remove()
+                        go()
+                    }
+                })
+            } else {
+                go()
+            }
+
+            function go() {
+                if (type == 2) {
+                    Comm.go('orderDetail.html?oid=' + id + "&ifFlower=" + ifFlower);
+                } else {
+                    model.showMain();
+                }
+            }
+        }
+    }
+</script>
+
+
+<script id="messageTpl" type="text/html">
+    {{each $data as v k}}
+    <div class="items" id="del{{v.messId}}">
+        <img src="../img/select-n.png" style="display: none;top: 73px;" class="sel" id="{{v.messId}}" onclick="model.sel(this)" />
+        <div class="item bg_white" id="{{v.messId}}_item" onclick="model.godetail({{v.messType}},{{v.itemId}},{{v.isread}},{{v.itemType}},{{v.messId}},this)">
+            <div class="bg" data="{{v.messagecontext}}">
+                <div class="f16 clearfix">
+                    <span class="fl {{if(v.isread=='0')}} read{{else}}{{/if}}">&nbsp;</span>
+                    <span class="fl wordW" style="width:64%;">{{v.messTitle}}</span>
+                    <span class="right colorA8">{{formatDate(v.addTime,'Y-m-d H:i')}}</span>
+                </div>
+                {{if(v.messType==1)}} {{if(v.content)}}
+                <div class="color74 clearfix  pad10 mart10" style="background-color:#F8F8F8;">
+                    {{v.content}}
+                </div>
+                {{/if}} {{else}}
+                <div class="color74 clearfix mart10 pad10" style="background-color:#F8F8F8;">
+                    <div class="fl marr10">
+                        {{if(v.itemType==1)}}
+                        <img src="../img/login/logo.png" height="80" width="80" onerror="app.errorimg(this)" /> {{else}}
+                        <img src="{{OSS(v.headPic)}}" height="80" width="80" onerror="app.errorimg(this)" /> {{/if}}
+                    </div>
+                    <div class="mart10 ">
+                        <p class="wordW2 f16">{{v.content}}</p>
+                        <p class="color999 mart10">订单编号：{{v.orderNum}}</p>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</script>
+
+</html>

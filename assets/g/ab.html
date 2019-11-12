@@ -1,0 +1,90 @@
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <title></title>
+    <link rel="stylesheet" href="../css/g.css">
+    <link rel="stylesheet" href="../css/comm.css">
+    <style>
+        body {
+            font-family: PingFang-SC-Regular;
+            background: rgba(247, 247, 247, 1);
+        }
+
+        section {
+            padding: 22px 15px 0 15px;
+        }
+
+        .Under {
+            font-size: 12px;
+            color: rgba(153, 153, 153, 1);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .imgBox {
+            width: 100%;
+            height: 180px;
+        }
+
+        .mation>* {
+            margin-bottom: 15px;
+        }
+
+        .massge {
+            font-size: 13px;
+            color: rgba(102, 102, 102, 1);
+        }
+
+        section img {
+            max-width: 100% !important;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle"></div>
+            <!-- <div class="">分享</div> -->
+        </div>
+    </header>
+
+    <section class="" id="">
+
+    </section>
+</body>
+<script id="contTpl" type="text/html">
+    <div class="mation">
+        <div>
+            {{section}}
+        </div>
+    </div>
+</script>
+<script src="../inc/z.js"></script>
+<script src="../inc/g.js"></script>
+<script src="../inc/comm.js"></script>
+<script src="../inc/art-template.js"></script>
+<script>
+    var id = Comm.query('id');
+
+    function pageload() {
+        AJAX.GET('/admin/article/detail?articleId=' + id, function (a) {
+            if (a.code == 1) {
+                $("section").append(template('contTpl', a.data));
+                $(".navTitle").html(a.data.articlename)
+            }
+        })
+    }
+</script>
+
+</html>

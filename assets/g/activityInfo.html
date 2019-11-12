@@ -1,0 +1,973 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title>活动详情</title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        /* footer */
+
+        footer {
+            /* padding: 5px 0px; */
+        }
+
+        .navItemIcon {
+            background: inherit;
+            width: auto;
+        }
+
+        .border {
+            border: 0px solid #ebebeb;
+            border-radius: 20px;
+            min-width: 90px;
+        }
+
+        #WTDBOXTD button {
+            width: auto;
+            height: 45px;
+            line-height: 45px;
+            min-width: 130px;
+            padding: 0 5px;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-left: 5px;
+        }
+
+        .bottomShadow {
+            box-shadow: none;
+        }
+
+        .bg8C7E85 {
+            background-color: #8C7E85;
+            height: 20px;
+            line-height: 20px;
+        }
+
+        .color767676 {
+            color: #767676;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow' style="position: relative">
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class="navItemIcon marr10 colorred" onclick="model.addActivity()">添加活动</div>
+            <div class='navTitle'></div>
+        </div>
+    </header>
+
+    <section class='bg_hui' id='box'>
+        <div id="mj">
+
+        </div>
+        <div id="">
+            <div id="list" class="list"></div>
+        </div>
+
+
+    </section>
+    <footer class="shared">
+        <button onclick="model.savejifen()" id="save" class="marauto block hide save"
+            style="border-radius: 5px;">保存</button>
+        <button onclick="model.addActivity()" id="footmz" class="marauto block hide mz"
+            style="border-radius: 5px;">添加买赠</button>
+        <button onclick="model.addActivity()" id="footmj" class="marauto block hide mj"
+            style="border-radius: 5px;">添加满减</button>
+    </footer>
+    <!-- 确认出货量弹框 -->
+    <div id="chl" wtd="chlWtd" class="bottomShadow paddr15 paddl15">
+
+    </div>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script src="../inc/dict.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script>
+    var type = Comm.query("type");
+
+    function pageload() {
+        GDict.init(function () {
+            model.ifActivityType();
+        })
+    }
+
+    function pageresume() { //
+        if (model.type == '32') {
+            model.mjInit(); //
+        }
+        model.init();
+    }
+    var model = {
+        type: Comm.query("type"), //活动类型
+        ifActivityType: function () { //更换类别
+            // 1 预定 2 竞拍  4 搭配销售 8 团购 16 店铺买赠 32 满减 64 预售 128 秒杀 256 积分
+            if (type) {
+                var str = type == "1" ? "预定管理" : type == "2" ? "竞拍管理" : type == "4" ? "搭配销售" :
+                    type == "8" ? "团购管理" : type == "16" ? "店铺买赠" : type == "32" ? "店铺满减" :
+                        type == "64" ? "预售管理" : type == "128" ? "秒杀管理" : type == "256" ? "店铺积分" : '';
+                $(".navTitle").html(str);
+            }
+            if (type == '16') { //买赠
+                model.opt.enable = '1'; //只查有效的
+                $("footer").css("padding", "5px 0px");
+                $('#footmz').removeClass('hide');
+                $('[name=addActivity]').hide();
+                $(".navItemIcon").hide();
+            }
+            if (type == '32') { //满减
+                model.opt.enable = '1'; //只查有效的
+                $("footer").css("padding", "5px 0px");
+                $('#footmj').removeClass('hide');
+                $(".navItemIcon").hide();
+                model.mjInit();
+                $('[name=addActivity]').hide();
+            }
+            if (type == '256') { //积分
+                Comm.loading(true);
+                $("footer").css("padding", "5px 0px");
+                $("#save").removeClass("hide");
+                $(".navItemIcon").hide();
+                $("[name=addActivity]").hide();
+                model.getjifen() //获取积分设置
+            } else {
+                model.init()
+            }
+            Comm.resizeSection()
+        },
+        addActivity: function () { //添加活动
+            Comm.db("acGoodsId", null);
+            Comm.go("addActivity.html?type=" + type)
+        },
+        opt: { //查询接口参数
+            type: type,
+            enable: 1,
+        },
+        data: [],
+        init: function () { //初始化活动列表界面
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/bussiness/activity/list',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.opt;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    // console.info(d.data)
+                    model.data = model.data.concat(d.data)
+                    if (model.type == '16') {
+                        var h = template("mzTpl", d.data)
+                    } else if (model.type == '32') {
+                        var h = template("mjListTpl", d.data)
+                    } else {
+                        $.each(d.data, function (i, v) {
+                            if (v.descript != '') {
+                                try {
+                                    d.data[i].descript = JSON.parse(v.descript)
+                                } catch (error) {
+                                    d.data[i].descript = {}
+                                }
+                            }
+                        })
+                        var now = new Date();
+                        for (var i = 0; i < d.data.length; i++) {
+                            var e = d.data[i];
+                            if (model.type == '2') { //竞拍拼装时间
+                                var cc = GDict.getItem(e.changci).dictname.split("-");
+                                e.startTime = e.startTime.split(" ")[0] + " " + cc[0]
+                                e.endTime = e.startTime.split(" ")[0] + " " + cc[1]
+                            }
+                            e.ends = (hhmmss.todate(e.endTime).getTime() - now.getTime()) / 1000;
+                            e.starts = (hhmmss.todate(e.startTime).getTime() - now.getTime()) / 1000;
+                            // }
+                        }
+                        console.info(d.data)
+                        var h = template('goodTpl', d.data);
+                    }
+                    refresh.appendHtml(h);
+
+                };
+                hhmmss.init('list');
+            } else {
+                // model.opt.keyword = keyword;
+                model.mere.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+        inputNum: function (obj, type, price) { //判断输入数字
+            var str = $(obj).val();
+            console.info(str)
+            if (str <= 0) {
+                Comm.message("请输入大于0的值~")
+                $(obj).val("")
+                return
+            }
+            if (type == "1") {
+                if (str.indexOf(".") != "-1") {
+                    Comm.message("请输入整数~")
+                    $(obj).val("")
+                    return
+                }
+            } else if (type == "2") {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val("")
+                        return
+                    }
+                }
+            } else if (type == '9') {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val("")
+                        return
+                    }
+                }
+                if (str > 100) {
+                    Comm.message("超过最大百分比，请重输~")
+                    $(obj).val("")
+                    return
+                }
+            }
+            if (price) {
+                if (str * 1 >= price * 1) {
+                    Comm.message("活动价大于原价，请重输~")
+                    $(obj).val("")
+                    return
+                }
+            }
+        },
+        // 秒杀 
+        // 竞拍
+        addNum: function (a, i) { //加减
+            var num =
+                $(a)
+                    .parent()
+                    .find("input")
+                    .val() *
+                1 +
+                i;
+            if (num > model.data[model.index].num) {
+                Comm.message("超出最大库存数~");
+                return
+            }
+            if (num >= 0) {
+                $(a)
+                    .parent()
+                    .find("input")
+                    .val(num);
+            }
+        },
+        chl: function (id) { //弹出出货量确认
+            event.stopPropagation();
+            model.activityId = id;
+
+            var _d = model.data.filter(function (item) {
+                return item.activityId == id;
+            });
+            model.iswtdnum = _d[0].num;
+            console.info(_d, $("#WTDBOX").length == '0')
+
+            // if($("#WTDBOX").length=='0'){
+            //     $("#chl").html(template("chlTpl", _d[0]))
+            // }else{
+            //     console.info( $("#WTDBOXTD #chl"))
+            //     $($("#WTDBOXTD > #chl")).html(template("chlTpl", _d[0]))
+            // }
+            Comm.showWindow("chlWtd")
+            $("#WTDBOXTD > #chl").html(template("chlTpl", _d[0]))
+
+        },
+        inpChl: function (elm) { //输入出货量
+            event.stopPropagation();
+            var str = $(elm).val().trim();
+            if (str.indexOf(".") != "-1") {
+                Comm.message("请输入整数~")
+                $(elm).val("")
+                return
+            }
+            if (str * 1 > model.iswtdnum * 1) {
+                Comm.message("超出最大库存~")
+                $(elm).val("")
+                return
+            }
+        },
+        confirmChl: function () { //确认出货量
+            event.stopPropagation();
+            var url = '/bussiness/activityAuction/jinjia'
+            opt = {
+                activityId: model.activityId,
+                num: $("#WTDBOXTD").find("input").val().trim()
+            };
+            if (opt.num == '' || opt.num == '0') {
+                Comm.message("请输入出货量~");
+                Comm.showWindow();
+                return
+            }
+            if (opt.num * 1 > model.iswtdnum * 1) {
+                Comm.message("超出最大库存数~");
+                Comm.showWindow();
+                return
+            }
+            Comm.loading(true)
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false)
+                Comm.showWindow();
+                if (res.code == 1) {
+                    model.init()
+                    Comm.message("出货成功~")
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        ckfp: function (activityId) { //查看分配情况
+            event.stopPropagation();
+            // model.activityId = model.data[index].activityId;
+            Comm.go("jplist.html?activityId=" + activityId)
+        },
+        // 团购
+        kt: function (activityId, t) { //开团 不开团
+            event.stopPropagation();
+            Comm.loading(true);
+            var url = '/bussiness/activitygroupbuy/tuan'
+            opt = {
+                activityId: activityId,
+                state: t
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    if (t == "1") {
+                        Comm.message("开团成功~")
+                    } else {
+                        Comm.message("已取消该团购~")
+                    }
+                    model.init();
+                } else {
+                    Comm.message("网络错误~")
+                }
+            })
+        },
+        // 店铺满减
+        mjInit: function () { //满减界面初始化
+            Comm.loading(true)
+            var url = '/bussiness/bussiness/getjiFen'
+            opt = {
+
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false)
+                if (res.code == 1) {
+                    var arr = [];
+                    for (var i = 0; i < 9; i++) {
+                        //2的n - 1次方
+                        var a = Math.pow(2, i);
+                        //判断是否存在
+                        //位运算
+                        if ((res.data.activitys & a) == a) {
+                            //包含
+                            // 1 预定 2 竞拍  4 搭配销售 8 团购 16 店铺买赠 32 满减 64 预售 128 秒杀 256 积分
+                            var str = a == 1 ? "预订" : a == 2 ? '竞拍' : a == 4 ? '搭配销售' : a == 8 ? '团购' : a == 16 ? '店铺买赠' : a == 32 ? '满减' : a == 64 ? '预售' : a == 128 ? '秒杀' : a == 256 ? '积分' : '';
+                            arr.push(str)
+                        }
+                    }
+                    res.data.arr = arr;
+                    console.info(res.data)
+                    $('#mj').html(template('mjTpl', res.data))
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        setMj: function (elm, t) { //设置满家抵扣活动说明
+            // t 1 是否与积分叠加抵扣 2 是否与活动叠加抵扣
+            var f = $(elm).attr("data");
+            if (f == "0") {
+                $(elm).attr("src", './img/kqjfdk.png').toggleClass("ro180").attr("data", '1')
+            } else {
+                $(elm).attr("src", './img/gbjfdk.png').toggleClass("ro180").attr("data", '0')
+            }
+            if (t == 2) {
+                var t = $(elm).attr("data");
+                if (t == "0") $('[name=activitys]').addClass('hide');
+                else $('[name=activitys]').removeClass('hide')
+            }
+            var url = '/bussiness/bussiness/setManJian'
+            opt = {
+                manji: $('[name=manji]').attr('data'),
+                ifActivity: $('[name=ifActivity]').attr('data'),
+                activitys: $('[name=activitys]').attr('data'),
+            };
+            AJAX.POST(url, opt, function (res) {
+                if (res.code == 1) {
+                    Comm.message("设置成功~")
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+
+        },
+        // 店铺买赠
+        mzdel: function (activityId) { //买赠删除
+            Comm.Mess.confirm("是否删除该活动？", Comm.setcb(function (a) {
+                if (a == '1') {
+                    var url = '/bussiness/activityMaiZeng/delete'
+                    opt = {
+                        activityId: activityId
+                    };
+                    AJAX.POST(url, opt, function (res) {
+                        if (res.code == 1) {
+                            Comm.message("删除成功~");
+                            model.init();
+                        } else {
+                            Comm.message(res.msg)
+                        }
+                    })
+                }
+            }))
+
+        },
+        // 店铺积分
+        isjifen: function (elm) { //是否开启积分按钮
+            var f = $(elm).attr("data");
+            if (f == "0") {
+                $(elm).attr("src", './img/kqjfdk.png').toggleClass("ro180").attr("data", '1')
+            } else {
+                $(elm).attr("src", './img/gbjfdk.png').toggleClass("ro180").attr("data", '0')
+            }
+        },
+        getjifen: function () { //获得积分抵扣详情
+            var url = '/bussiness/bussiness/getjiFen'
+            opt = {
+
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    $("section").html(template("integralTpl", res.data));
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        savejifen: function () { //保存积分活动
+            var url = '/bussiness/bussiness/setjiFen',
+                f = true;
+            opt = {
+                ifji: $('[name=ifji]').attr("data"),
+                duiji: $('[name=duiji]').val(),
+                duijiqian: $('[name=duijiqian]').val(),
+                duiqian: $('[name=duiqian]').val(),
+                duiqianji: $('[name=duiqianji]').val(),
+                dikoulv: $('[name=dikoulv]').val(),
+            };
+            for (i in opt) {
+                if (opt[i] == "") f = false;
+            }
+            if (!f) {
+                Comm.message("请完善下列信息")
+                return;
+            }
+            console.info(opt)
+            AJAX.POST(url, opt, function (res) {
+                if (res.code == 1) {
+                    Comm.message("设置成功~");
+                    Comm.close();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        delactivity: function (activityId) {//删除活动
+            event.stopPropagation();
+            Comm.Mess.confirm("是否删除该活动？", Comm.setcb(function (a) {
+                if (a == '1') {
+                    Comm.loading(true);
+                    var url = '/bussiness/activity/delete'
+                    opt = {
+                        activityId: activityId
+                    };
+                    AJAX.POST(url, opt, function (res) {
+                        Comm.loading(false);
+                        if (res.code == 1) {
+                            Comm.message("删除成功~");
+                            model.init()
+                        } else {
+                            Comm.message(res.msg)
+                        }
+                    })
+                }
+            }))
+
+        }
+
+    }
+    //换算分钟
+    template.defaults.imports.timeMinutes = function (addtime, startTime, endTime) {
+        console.info(addtime, startTime, endTime)
+        addtime = addtime.replace(/-/g, "/").replace(/\.0/g, "")
+        var now = new Date();
+        var end = new Date(addtime).getTime() + (model.accpetTime * 1000 * 60);
+        var result = Math.floor((end - now) / 1000);
+        console.info("result", result)
+        return result
+    }
+    template.defaults.imports.bfb = function (saleNum, num) {
+        var str = ((saleNum / num) * 100)
+        if (str) {
+            str = str.toFixed(2);
+        } else {
+            str = "0"
+        }
+        return str
+    }
+    template.defaults.imports.resetNum = function (v) {
+        if (!v) {
+            return ""
+        }
+        return Number(v);
+    };
+</script>
+
+<!-- 商品列表 -->
+<style>
+    .tt {
+        background: #8C7E85;
+        color: white;
+        padding: 3px;
+        border-radius: 2px;
+        font-size: 12px;
+    }
+
+    .c76 {
+        color: #767676;
+    }
+
+    .c8C7E85 {
+        color: #8C7E85;
+    }
+
+    .colorDD1474 {
+        color: #DD1474;
+    }
+
+    .goodimg {
+        width: 125px;
+        height: 125px;
+        border-radius: 5px;
+    }
+
+    .listinfo {
+        height: 125px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .c333333 {
+        color: #333333;
+    }
+
+
+    .inblock {
+        padding-right: 0px;
+    }
+
+    div[name="listinfo"] button {
+        width: auto;
+        height: 30px;
+        line-height: 30px;
+        min-width: 90px;
+        padding: 0 5px;
+        display: inline-block;
+        font-size: 14px;
+        font-weight: bold;
+        border: 1px solid #DCDCDC;
+        border-radius: 3px;
+        background: white;
+        color: #212121;
+        margin-left: 5px;
+    }
+</style>
+<script id="goodTpl" type="text/html">
+    {{each $data v k }}
+    <div class="clearfix pad10 marb5 bg_white item" name="listinfo" data="{{v.goodsId}}" style="padding-right:0px">
+        <!-- // 1 预定 2 竞拍  4 搭配销售 8 团购 16 店铺买赠 32 满减 64 预售 128 秒杀 256 积分 -->
+        {{if (v.activityType!='16'&&v.activityType!='32'&&v.activityType!='256')}} {{if(v.starts>0&&v.ends >0)}}
+        <div class="lh20 paddb10 hhmmss">
+            <span class="f12 color767676 marr15">未开始</span>
+        </div>
+        {{/if}} {{if(v.ends>0&&v.starts
+        <=0)}} <div class="lh20 paddb10 hhmmss" data="{{v.ends}}">
+            <span class="f12 color767676 marr15">距结束</span>
+            <span class="f12 inblock bg8C7E85 colorfff radius5 hh" id="hh" style="padding: 0 3px;">00</span>
+            <span class="f12 c8C7E85">:</span>
+            <span class="f12 inblock bg8C7E85 colorfff radius5 mm" id="mm" style="padding: 0 3px;">00</span>
+            <span class="f12 c8C7E85">:</span>
+            <span class="f12 inblock bg8C7E85 colorfff radius5 ss" id="ss" style="padding: 0 3px;">00</span>
+    </div>
+    {{/if}} {{if v.ends
+    < 0 && v.starts < 0}} <div class="lh20 paddb10 hhmmss flex-between">
+        <span class="f12 color767676 marr15">已结束</span>
+        <span class="f12 colordd marr15" onclick="model.delactivity('{{v.activityId}}')">删除</span>
+        </div>
+        {{/if}} {{/if}}
+        {{if v.activityType!='4'}}
+        <div style="" class="verticalP" onclick="Comm.go('gooddetailgroup.html?id={{v.goodsId}}&activityId={{v.activityId}}&ifflower=0')">
+            {{else}}
+            <div style="" class="verticalP" onclick="Comm.go('gooddetailpurchase.html?id={{v.activityId}}')">
+            {{/if}}
+            <div class="fl center marr10  clearFloat" style=";position:relative">
+                <img src="{{OSS(v.img||v.pic)}}" class="goodimg" onerror="app.errorimg(this)">
+            </div>
+            <div class="listinfo clearFloat ">
+                <p class="wordW2 f16" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                    <!-- 标题名 -->
+                    {{if v.activityType!='4'}}
+                    <span class="f16 bold c333333">
+                            {{v.goodsName}}{{if v.activityType!='1'}}{{v.versionNumber}}{{/if}}
+                        </span> {{else}}
+                    <span class="f16 bold c333333">
+                            {{v.activityName}}
+                        </span> {{/if}}
+
+                    <!-- 团购的信息 -->
+                    {{if v.activityType=='8'}} {{if v.groupType=='1'}}
+                    <!-- 1 普通团 2 拼团 -->
+                    <span class="inblock" style="font-size:10px;color:#FF6000;background:#FFECE1;border-radius: 3px;padding:2px 5px">参团数{{v.num *1 - v.nowNum *1}}/{{v.num}}</span> {{else if v.groupType=='2'}}
+                    <span class="inblock" style="font-size:10px;color:#FF6000;background:#FFECE1;border-radius: 3px;padding:2px 5px">{{v.allNum*1}}人已参团</span> {{/if}} {{/if}}
+                </p>
+                {{if v.activityType!='4'}}
+                <!-- 非搭配的信息 -->
+                <p class="lh20 wordW2 mart5" style="min-height: 40px;" _onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+                    {{if(v.grade!="-1")}}
+                    <span class="color999 f12 inblock">等级：{{getItemName(v.grade)}}</span> {{/if}} {{if(v.maturity!="-1")}}
+                    <span class="color999 f12 inblock">成熟度：{{getItemName(v.maturity)}}</span> {{/if}} {{if(v.color!="-1")}}
+                    <span class="color999 f12 inblock">颜色：{{getItemName(v.color)}}</span> {{/if}} {{if(v.speci*1>0)}}
+                    <span class="color999 f12 inblock">规格：{{(v.speci)}}/{{v.company}}</span> {{/if}} {{if(v.weight>0)}}
+                    <span class="color999 f12 inblock">重量：{{v.weight}}g</span> {{/if}} {{if(v.keyValue)}}
+                    <span class="color999 f12 inblock">规格：{{v.keyValue}}</span> {{/if}}
+                </p>
+                {{else}}
+                <!-- 搭配的信息 -->
+                <p class="lh20  mart5 paddr15 verticalP" _style="min-height: 40px;">
+                    <span class="f12 block wordW" style="color:#DA251C;text-decoration:underline;max-height:40px;width:100%">{{v.daDes}}</span>
+                    <span class="f12 color999 block mart5" style="">活动至{{formatDate(v.endTime,'Y-m-d')}}</span>
+                    <span class="f12 color999 inblock mart5" style="color:#ffffff;background:#FF7900;border-radius:8px;;padding:0px 10px 0px 25px;min-width:110px;">最多可优惠{{v.youHui|resetNum}}</span>
+                    <img src='./img/index-kyh.png' alt='' style="width:17px;top:60px;left:5px" class="vertical" />
+                </p>
+                {{/if}}
+                <!-- 活动价格信息  下列-->
+                {{if v.activityType=="128"}} {{set bf = bfb(v.saleNum,v.num)}}
+                <!-- 秒杀 -->
+                <div class="mart10 ">
+                    <span class="colorred f12">已售{{bf}}%</span>
+                    <div class="inblock" style="position:relative;">
+                            <div class="bg_white center progress">
+                                <span class="colorred f12">剩余{{v.num - v.saleNum}}件</span>
+                                <div class="jd" max="{{v.num}}" value="{{v.saleNum}}" style="width:{{v.num!='0'?(v.saleNum/v.num)*100:'0'}}%"></div>
+                            </div>
+                        </div>
+                </div>
+                
+                <p class="mart10">
+                    <span class="colorred f12">&yen;{{v.price}}</span>
+                    <span class="color999 f12 linethrough">&yen;{{v.yuanPrice}}</span>
+                </p>
+                {{else if v.activityType=='2'}}
+                <!-- 竞拍的 -->
+                <div class="mart10 ">
+                        <span class="color999 f12">已有{{v.baoNum}}人报价</span>
+                        <div class="inblock" style="position:relative;">
+                                <div class="bg_white center progress">
+                                    <span class="colorred f12">共{{v.num}}件</span>
+                                    <div class="jd" max="{{0}}" value="{{0}}" style="width:0%"></div>
+                                </div>
+                            </div>
+                            <p class="mart10"></p>
+                            <span class="colorred f12 ">&yen;{{v.price}}起拍</span>
+                    </div>
+                {{else if v.activityType=="8"}}
+                <!-- 团购 -->
+                <p class="" _style="margin-top:30px;">
+                    <span class="linethrough f12 color999">&yen;{{v.yuanPrice}}</span>
+                    <span class="colorred f16">&yen;{{v.price}}</span>
+                    <span style="background:url('../img/ptj.png');min-width:50px;height:16px;padding:0px 2px 0px 7px" class="inblock f12 colorfff  {{v.groupType=='1'?'hide':''}}">{{v.groupNum}}人拼购价</span>
+                </p>
+                {{else if v.activityType=='64'}}
+                <!-- 预售 -->
+                <p class="" _style="margin-top:30px;">
+                    <span class="colorred f16 inblock mart5">&yen;{{v.price}}</span>
+                    <span class="f12 inblock mart5" style="color:#DA251C;border:1px solid #DA251C;border-radius:8px;padding:0px 7px">剩余{{v.num }}件</span>
+                    <span class="f12 inblock mart5" style="color:#DD1474;border:1px solid #DD1474;border-radius:8px;padding:0px 7px">{{formatDate(v.faTime,'Y-m-d')}}发货</span>
+                </p>
+                {{else if v.activityType=='1'}}
+                <!-- 预定 -->
+                <p class="" _style="margin-top:30px;">
+                    <span class="color999 f12">价格：</span>
+                    <span class="f12 bold">&yen;{{v.price|resetNum}}</span>
+                    <span class="color999 f12 marl5">库存：</span>
+                    <span class="f12 bold">{{v.nowNum}}</span>
+                </p>
+                {{else if v.activityType=='4'}}
+                <!-- 搭配销售 -->
+                <p class="" _style="margin-top:30px;">
+                    <!-- <span class="color999 f12">价格：</span> -->
+                    <span class="f12 bold" style='color:#E61777'>&yen;{{v.price|resetNum}}</span>
+                    <span class="color999 f12 marl5">库存：</span>
+                    <span class="f12  color999">{{v.num}}</span>
+                </p>
+                {{/if}}
+            </div>
+
+            {{if v.activityType=="2"}}
+            <!--  -->
+            <div class="clearfix paddt10 ">
+                <span class="f12 color999">竞拍时间：{{v.startTime}} 至 {{v.endTime}}</span>
+            </div>
+            {{else}}
+            <div class="clearfix paddt10 {{v.activityType=='4'?'hide':''}}">
+                <span class="f12 color999">活动时间：{{v.startTime}} 至 {{v.endTime}}</span>
+            </div>
+            {{/if}} 
+            {{if v.activityType=='2'}}
+                    <!-- 竞拍 -->
+                    {{if v.ends< 0 && v.starts < 0 && v.baoNum*1!='0' }} <!-- state 0 未开始 1 竞拍以分配 2 开团 3 不开团 -->
+                        <div class="clearfix paddt10 t-a-r paddr10">
+                            {{if v.state=='0'}}
+                            <button onclick="model.chl({{v.activityId}})">确认出货量</button>
+                            {{else if v.state=='1'}}
+                            <button onclick="model.ckfp({{v.activityId}})">查看分配情况</button>
+                            {{/if}}
+                        </div>
+                    {{/if}} 
+            {{else if v.activityType=='8'&&v.groupType=="1"}}
+                     <!-- 团购 -->
+                    {{if v.ends< 0 && v.starts < 0}}
+                        {{if v.state=='0' }} 
+                            {{if (v.num *1 - v.nowNum *1)!='0' ||(v.allNum*1!='0' )}} 
+                                <div class="clearfix paddt10 t-a-r paddr10">
+                                    <button onclick="model.kt({{v.activityId}},2)">不开团</button>
+                                    <button onclick="model.kt({{v.activityId}},1)">开团</button>
+                                </div>
+                            {{/if}}
+                        {{/if}} 
+                        {{if v.state=='2'||v.state=='3'}}
+                        <div class="clearfix paddt10 t-a-r paddr10">
+                            <span style="font-size:12px;color:#FF6000;background:#FFECE1;border-radius: 3px;padding:2px 5px">{{v.state=='2'?'开团成功':v.state=='3'?'以取消该团购':''}}</span>
+                        </div>
+                        {{/if}} 
+                    {{/if}} 
+            {{else if v.activityType=='4'}}
+                {{if v.ends
+                < 0 && v.starts < 0}}
+                    <!-- <div class="clearfix paddt10 t-a-r paddr10">
+                        <button onclick="model.delactivity('{{v.activityId}}')">删除</button>
+                    </div> -->
+                    {{/if}}
+            {{/if}}
+
+        </div>
+        </div>
+        {{/each}}
+</script>
+<!-- 买赠 -->
+<style>
+    .mzbox {
+        box-shadow: 0px 3px 20px 0px rgba(19, 17, 20, 0.08);
+    }
+
+    .mzdel {
+        border-radius: 3px;
+        padding: 2px 10px;
+    }
+</style>
+<script type="text/html" id="mzTpl">
+    {{each $data v k }}
+    <div class="  white mart10  paddl15 paddr15 paddt15 paddb15">
+        <div class='mzbox verticalP paddt15 paddb15 paddl15 paddr15'>
+            {{if v.type=='1'}}
+            <!-- type 1 价格 2 数量 -->
+            <span class="f16  bold">满{{v.num|resetNum}}元赠{{v.zeng}}</span> {{else}}
+            <span class="f16  bold">买{{v.num|resetNum}}赠{{v.zeng}}</span> {{/if}}
+            <p class="color999 f12 mart10">
+                {{v.descript}}
+            </p>
+            <span class="bgdd-ef colorfff mzdel vertical inblock f12" style="top:25px ;right:15px" onclick="model.mzdel('{{v.activityId}}')">删除</span>
+        </div>
+    </div>
+    {{/each}}
+</script>
+<!-- 满减 -->
+<style>
+
+</style>
+<script type="text/html" id="mjTpl">
+    <div class="paddl15 bg_white ">
+        <div class="cellContent  bottomBorder ">
+            <div class="label f16  indicator icon_pre icon_name ">是否与积分抵扣叠加使用</div>
+            <img src="{{manji=='0'?'./img/gbjfdk.png':'./img/kqjfdk.png'}}" alt="" class="isInvoice {{manji=='1'?'ro180':''}}" data="{{manji||'0'}}" onclick="model.setMj(this,1)" name='manji'>
+        </div>
+    </div>
+    <div class="paddl15 bg_white ">
+        <div class="cellContent  bottomBorder ">
+            <div class="label f16  indicator icon_pre icon_name ">是否与活动抵扣叠加使用</div>
+            <img src="{{ifActivity=='0'?'./img/gbjfdk.png':'./img/kqjfdk.png'}}" alt="" class="isInvoice {{ifActivity == '1'?'ro180':''}}" data="{{ifActivity||'0'}}" onclick="model.setMj(this,2)" ischeck="0" name='ifActivity'>
+        </div>
+    </div>
+    <div class="paddl15 bg_white {{ifActivity=='0'?'hide':''}}" onclick="Comm.go('activityMj.html?manji={{manji}}&ifActivity={{ifActivity}}&activitys={{activitys}}')" name="activitys" data="{{activitys||'0'}}">
+        <div class="cellContent  indicator _bottomBorder verticalP" style="padding-right:15px;display:block;line-height:30px">
+
+            <div style="width:70%;height:30px;overflow:hidden" class="inblock">
+                {{if arr&&arr.length!='0'}} {{each arr as v k}}
+                <span style="border:1px solid #e2e2e2;padding:2px 5px;border-radius:3px" class='f14 '>{{v}}</span> {{/each}} {{/if}}
+            </div>
+            <div class="label f16 icon_pre inblock right marr10" style="width:65px">添加活动</div>
+        </div>
+    </div>
+</script>
+<script type="text/html" id="mjListTpl">
+    {{each $data v k }}
+    <div class="  white mart10  paddl15 paddr15 paddt15 paddb15">
+        <div class='mzbox verticalP paddt15 paddb15 paddl15 paddr15'>
+            <span class="f16  bold">购买商品满{{v.manprice|resetNum}}</span>
+            <p class="color999 f12 mart10">
+                <span class="color999 f12 ">{{if v.jianPrice *1>0}}商品金额减{{v.jianPrice|resetNum}}{{/if}}</span>
+                <span class="color999 f12 ">{{if v.packingfee*1>0}},包装费减免{{v.packingfee|resetNum}}%{{/if}}</span>
+                <span class="color999 f12 ">{{if v.packingfee*1=="-2"}},包装费全免{{/if}}</span>
+                <span class="color999 f12 ">{{if v.zaiFee*1>0}},运费减免{{v.zaiFee|resetNum}}%{{/if}}</span>
+                <span class="color999 f12 ">{{if v.zaiFee*1=="-2"}},运费全免{{/if}}</span>
+            </p>
+            <span class="bgdd-ef colorfff mzdel vertical inblock f12" style="top:25px ;right:15px" onclick="model.mzdel('{{v.activityId}}')">删除</span>
+        </div>
+    </div>
+    {{/each}}
+</script>
+
+<!-- 店铺积分 -->
+<style>
+    .cellContent {
+        height: 50px;
+    }
+
+    .icon_pre {
+        /* padding-left: 25px; */
+        background-repeat: no-repeat;
+        background-position: left 2px;
+        background-size: auto 15px;
+    }
+
+    .isInvoice {
+        width: 40px;
+        float: right;
+    }
+
+    #integral input[type='number'] {
+        width: 18%;
+        height: 20px;
+        padding-left: 2px;
+        border: 1px solid #EEEEEE
+    }
+
+    .c333 {
+        color: #333333;
+    }
+
+    .ro180 {
+        transform: rotate(180deg)
+    }
+
+    @media only screen and (max-width:320px) {
+        #integral input[name='15'] {
+            width: 15%;
+        }
+    }
+</style>
+<script type="text/html" id="integralTpl">
+    <div id="integral">
+        <div class="paddl15 bg_white ">
+            <div class="cellContent  _bottomBorder ">
+                <div class="label f16  indicator icon_pre icon_name ">是否开启积分抵扣</div>
+                <img src="{{ifji=='0'?'./img/gbjfdk.png':'./img/kqjfdk.png'}}" alt="" class="isInvoice {{ifji=='1'?'ro180':''}}" data="{{ifji||'0'}}" name="ifji" onclick="model.isjifen(this)">
+            </div>
+        </div>
+        <div class="">
+            <div class="paddl15 bg_white mart10 c333 ">
+                <div class="cellContent  _bottomBorder ">
+                    <span class=''>每消费商品金额</span><input type="number" name="duijiqian" id="" value="{{duijiqian||''}}" onchange="model.inputNum(this,1)"><span>元，可兑换</span><input type="number" name="duiji" id="" value="{{duiji||''}}" onchange="model.inputNum(this,1)"><span>积分</span>
+                </div>
+            </div>
+            <div class="paddl15 bg_white mart10 c333">
+                <div class="cellContent  _bottomBorder ">
+                    <span>每使用</span><input type="number" name="duiqianji" id="" value="{{duiqianji||''}}" onchange="model.inputNum(this,1)"><span>积分，可抵扣商品金额</span><input type="number" name="duiqian" id="" value="{{duiqian||''}}" onchange="model.inputNum(this,1)"><span>元</span>
+                </div>
+            </div>
+            <div class="paddl15 bg_white mart5 c333">
+                <div class="cellContent  _bottomBorder ">
+                    <span>每笔订单，积分最多抵扣商品金额的</span><input style="width:25%" type="number" name="dikoulv" id="" value="{{dikoulv||''}}" onchange="model.inputNum(this,9)"><span>%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<!-- 渲染出货量 -->
+<script type="text/html" id="chlTpl">
+    <div class="clearfix paddt20 paddl15 paddr15 paddb20 marb5 bg_white" name="" data="{{goodsId}}" style="border-radius: 10px;">
+        <div style="" class="verticalP _bottomBorder">
+            <div class="fl center marr10  clearFloat" style=";position:relative">
+                <img src="{{OSS(img)}}" class="goodimg" onerror="app.errorimg(this)" style="width:90px;height:90px">
+            </div>
+            <div class="listinfo clearFloat t-a-l" style=";height:90px">
+                <p class="wordW f16" _onclick="Comm.go('gooddetail.html?id={{goodsId}}')">
+                    <span class="f16 bold c333333">{{goodsName}}</span>
+                </p>
+                <p class="lh20 wordW2 " style="min-height: 40px;" onclick="Comm.go('gooddetail.html?id={{goodsId}}')">
+                    {{if(grade!="-1")}}
+                    <span class="color999 f12 inblock">等级：{{getItemName(grade)}}</span> {{/if}} {{if(maturity!="-1")}}
+                    <span class="color999 f12 inblock">成熟度：{{getItemName(maturity)}}</span> {{/if}} {{if(color!="-1")}}
+                    <span class="color999 f12 inblock">颜色：{{getItemName(color)}}</span> {{/if}} {{if(speci>0)}}
+                    <span class="color999 f12 inblock">规格：{{(speci)}}/{{company}}</span> {{/if}} {{if(weight>0)}}
+                    <span class="color999 f12 inblock">重量：{{weight}}g</span> {{/if}} {{if(keyValue)}}
+                    <span class="color999 f12 inblock">规格：{{keyValue}}</span> {{/if}}
+                </p>
+                <!-- <p class="mart5"></p> -->
+                <p class="flex-between"><span class="colorred f12 inblock" style="">&yen;{{price}}起拍</span>
+                    <span class="inblock"> 
+                            <span class="f12 marl5">出货量</span>
+                    <img src="img/cart-jian.png" width="12" style="" onclick="model.addNum(this,-1)">
+                    <input type="number" name="" id="" style="width:35px;background:#F2F2F2" class="inblock t-a-c" placeholder="{{num}}" value="" data-reg="empty" onchange="model.inpChl(this)">
+                    <img src="img/cart-jia.png" width="12" style="" onclick="model.addNum(this,1)">
+                    </span>
+                </p>
+                </p>
+            </div>
+        </div>
+        <div class='mart20 bordert paddt20 paddb10'>
+            <button style="background:white;color:black;border:1px solid #E5E5E5" class="marr10" onclick="Comm.showWindow(false)">取消</button>
+            <button onclick="model.confirmChl()">确定</button>
+        </div>
+    </div>
+</script>
+
+</html>

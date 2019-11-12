@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>新建账号</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        .navTitle {
+            font-weight: normal;
+        }
+
+        /* header */
+        /* section */
+        .cellContent {
+            height: 50px;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+            color: #999;
+        }
+
+        .cellContent input,
+        #wx_id,
+        #sex,
+        #sj_id {
+            color: black;
+        }
+
+        .btn {
+            width: 45px;
+            height: 24px;
+            display: inline-block;
+        }
+
+        .no {
+
+            background: url("img/gbjfdk.png") no-repeat center;
+            background-size: contain;
+        }
+
+        .active {
+            background: url("img/kqjfdk.png") no-repeat center;
+            background-size: contain;
+            transform: rotate(180deg);
+
+        }
+
+        /* footer */
+        .save,
+        .edit {
+            height: 50px;
+            line-height: 50px;
+            border-radius: 5px;
+        }
+
+        .edit {
+            background: white;
+            color: black;
+            border: 1px solid #e2e2e2;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">新建账号</div>
+        </div>
+    </header>
+    <section id='' class=" ">
+
+    </section>
+    <footer class="shared paddl15 paddt5 paddb5 paddr15 flex-around">
+        <div class="edit center  f18 flex-1 marr10 hide" onclick="model.del()">删除</div>
+        <div class="bgdd-ef save center colorfff f18 flex-1" onclick="model.submit()">保存</div>
+    </footer>
+</body>
+
+
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="./foot.js"></script>
+<script src="../inc/art-template.js"></script>
+<script src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<script type="text/javascript" src="../inc/upimg/upload.js"></script>
+
+<script>
+    function pageresume() {
+
+    }
+
+    function pageload() {
+        // model.choice()
+        if (model.userRelationId) {
+            model.init();
+            if (model.t) {
+                $(".navTitle").html("权限列表");
+                $("footer").hide()
+            } else {
+                $(".navTitle").html("修改账号");
+                $(".edit").removeClass("hide");
+                $(".save").html("修改");
+            }
+
+        }
+        else $("section").html(template("roleTpl"))
+
+    }
+    var model = {
+
+        t: Comm.query("t"),
+        userRelationId: Comm.query("userRelationId"),
+        init: function () {//初始化权限
+            Comm.loading(true);
+            var url = '/common/roleManager/detail'
+            opt = {
+                userRelationId: model.userRelationId,
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    model.customerId = res.data.customerId;
+                    $("section").html(template("roleTpl", res.data));
+                    model.getRole(res.data.roleId);
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        getRole: function (roleId) {// 运算 权限管理
+            var _rolr = [];
+            for (var i = 0; i < 9; i++) {
+                //2的n - 1次方
+                var a = Math.pow(2, i);
+                //判断是否存在
+                //位运算
+                if ((roleId & a) == a) {
+                    //包含
+                    _rolr.push(a)
+                }
+            }
+            if (roleId == "128") {
+                $.each($("[name=btn]"), function (i, v) {//
+                    
+                       $(v).toggleClass("no active");
+                   
+                })
+            } else {
+                $.each($("[name=btn]"), function (i, v) {//
+                    $.each(_rolr, function (m, n) {//
+                        if ($(v).attr('data') == n) $(v).toggleClass("no active");
+                    })
+                })
+            }
+
+        },
+        choice: function (elm) {
+            if (model.t) {
+                return
+            }
+            $(elm).toggleClass("no active");
+        },
+        submit: function () {//提交
+            // 1 订单管理 2 财务管理 4 商品管理 8 租赁管理 16 活动管理 32 评论管理 64 员工管理  128 全部权限
+            var data = Check.submit("POST");
+            if (!data) return
+            Comm.loading(true);
+            data.roleId = 0;
+            data.userType = '1';
+            $.each($("[name=btn]"), function (i, v) {//
+                if ($(v).hasClass("active")) data.roleId += $(v).attr("data") * 1;
+            })
+
+            var url = '/common/roleManager/add';
+            if (model.userRelationId) {
+                url = '/common/roleManager/update';
+                data.userRelationId = model.userRelationId;
+            }
+            AJAX.POST(url, data, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("添加成功~");
+                    Comm.close();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        del: function () {//删除权限
+            Comm.loading(true);
+            var url = '/common/roleManager/delete',
+            opt = {
+                customerId: model.customerId,
+                userType:'1'
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    Comm.message("删除成功~");
+                    Comm.close();
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        }
+    }
+</script>
+<script type="text/html" id="roleTpl">
+    <div class="paddl15 bg_white ">
+        <div class="cellContent bottomBorder ">
+            <div class="label f16 icon_pre icon_name c333">姓名</div>
+            <input type="text" maxlength="10" name="customerName" data-reg="empty" placeholder="请输入姓名"
+                id="customerName" value="{{customerName||''}}" class="c333">
+        </div>
+    </div>
+    <div class="paddl15 bg_white ">
+        <div class="cellContent bottomBorder ">
+            <div class="label f16 icon_pre icon_name c333">手机号</div>
+            <input number type="tel" maxlength="11" name="phone" data-reg="m" placeholder="请输入手机号" id="phone"
+                value="{{phone||''}}" class="c333">
+        </div>
+    </div>
+    <div class="color74 paddt15 paddb15 paddl15  f18">
+        <span class="  f16 paddb10 block bold">权限设置</span>
+        <DIV class="paddl5  " name="roleId">
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">订单管理</span>
+                <span name="btn" class="btn no" data='1' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">财务统计</span>
+                <span name="btn" class="btn no" data='2' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">商品管理</span>
+                <span name="btn" class="btn no" data='4' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">租赁服务</span>
+                <span name="btn" class="btn no" data='8' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">活动管理</span>
+                <span name="btn" class="btn no" data='16' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">评论管理</span>
+                <span name="btn" class="btn no" data='32' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">员工管理</span>
+                <span name="btn" class="btn no" data='64' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">售后管理</span>
+                <span name="btn" class="btn no" data='256' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">新建订单</span>
+                <span name="btn" class="btn no" data='512' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">我的客户</span>
+                <span name="btn" class="btn no" data='1024' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">权限管理</span>
+                <span name="btn" class="btn no" data='2048' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">员工操作</span>
+                <span name="btn" class="btn no" data='4096' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">预订管理</span>
+                <span name="btn" class="btn no" data='8192' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">店铺管理</span>
+                <span name="btn" class="btn no" data='16384' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">抢单</span>
+                <span name="btn" class="btn no" data='32768' onclick="model.choice(this)"></span>
+            </div>
+            <div class="flex-between paddt15 paddb15 paddr15 bottomBorder">
+                <span class="f16 c333">数据统计</span>
+                <span name="btn" class="btn no" data='65536' onclick="model.choice(this)"></span>
+            </div>
+        </DIV>
+    </div>
+</script>
+
+</html>

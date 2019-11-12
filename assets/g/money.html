@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+
+<head>
+	<meta charset="UTF-8">
+	<meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+	<link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+	<title>余额</title>
+	<link rel="stylesheet" href="../css/g.css">
+	<link rel="stylesheet" href="../css/comm.css">
+	<style>
+		.navBar {
+			background: -webkit-linear-gradient(right, #EE900E, #DD1474);
+		}
+
+		.navBackIcon {
+			background-image: url(../img/back_w.png);
+		}
+
+		.navItemIcon {
+			background-image: none;
+			width: auto;
+		}
+
+		.ye {
+			background: -webkit-linear-gradient(right, #EE900E, #DD1474);
+			height: 160px;
+		}
+
+		.wds {
+			width: 50%;
+			float: left;
+			height: 80px;
+			padding: 10px 0 0 5%;
+		}
+
+		.wds p {
+			color: #FFFFFF;
+		}
+
+		.mt {
+			width: 80px;
+			height: 30px;
+			text-align: center;
+			line-height: 30px;
+			color: #dd1474;
+			background-color: #FFFFFF;
+			border-radius: 20px;
+			float: right;
+			margin-right: 10%;
+		}
+
+		.rday {
+			border-top: 3px solid #f7f7f7;
+			border-bottom: 3px solid #f7f7f7;
+			line-height: 40px;
+			padding: 0 5%;
+		}
+
+		.months {
+			background-color: #f2f4f7;
+			line-height: 40px;
+			padding: 0 5%;
+		}
+
+		.colorg {
+			color: #f8b184;
+		}
+
+		#sinbox {
+			width: 100%;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			padding: 0px;
+		}
+
+		#sinbox .item {
+			padding: 0px 10px;
+			line-height: 40px;
+		}
+
+		#sinbox .item span.btn {
+			background: inherit;
+			padding: 5px 10px;
+			border-radius: 3px;
+			color: #222;
+			border: 1px solid #EBEBEB;
+			font-size: 14px;
+		}
+
+		#sinbox .item span.btnp {
+			padding: 5px 15px;
+		}
+
+		#sinbox .item span.cur {
+			color: #DD1474;
+			border-color: #DD1474;
+		}
+
+		#sinbox .tb {
+			height: 50px;
+			line-height: 50px;
+		}
+
+		#sinbox .tb .td {
+			width: 50%;
+			float: left;
+			background-color: #EBEBEB;
+		}
+
+		#sinbox .tb .r {
+			width: 50%;
+			height: 50px;
+			float: left;
+			color: #fff;
+			border-radius: 0px;
+		}
+
+		#sinbox .item .scoll {
+			overflow: hidden;
+			overflow-x: auto;
+			white-space: nowrap;
+			text-align: left;
+		}
+
+		#sinbox .item input {
+			width: 100px;
+		}
+
+		#MainBg,
+		#WTDBOX {
+			top: 64px;
+			z-index: 99;
+		}
+	</style>
+</head>
+
+<body>
+	<header class="bg_white">
+		<div class="navBar">
+			<div class="navBackIcon" onclick="Comm.close()"></div>
+			<div class="navItemIcon marr10 colorfff" onclick="Comm.go('ab.html?id=79')">提现说明</div>
+			<div class="navTitle" style="color: #FFFFFF;">钱包</div>
+		</div>
+		<div id="money"></div>
+	</header>
+	<section id="box">
+		<div class="lh40 paddt10 f18" style="padding-left: 5%;">
+			余额明细
+		</div>
+		<div class="months">
+			<span class="f14" style="">本月</span>
+			<span class="f14" style="float: right;" _onclick="model.no()"
+				onclick="Comm.showWindow('sinboxTemp',true);ttop()">筛选 <i><img style="margin-top: -5px;"
+						src="../g/img/gdfl.png" /></i></span>
+		</div>
+		<div id="list"></div>
+	</section>
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script type="text/javascript" src="../inc/art-template.js"></script>
+<script type="text/javascript" src="../inc/picker.min.js"></script>
+<div id="sinbox" wtd="sinboxTemp">
+	<div class="item hide">
+		<div class="colorb5 left">买卖类型：</div>
+		<div class="scoll scolltow">
+			<span id="btntow" class="btn cur marr5" onclick="scolltowclick(this,'-1')">全部</span>
+			<span id="_transactionFlowTypeid1" class="btn marr5" onclick="scolltowclick(this,'0')">买入</span>
+			<span id="_transactionFlowTypeid2" class="btn marr5" onclick="scolltowclick(this,'1')">卖出</span>
+		</div>
+	</div>
+	<div class="item">
+		<div class="colorb5 left">交易类型：</div>
+		<div class="scoll scollone" id="sco">
+		</div>
+		<div class="cls"></div>
+	</div>
+	<div class="item">
+		<div class="colorb5 left">时间筛选：</div>
+		<div class="tleft">
+			<input readonly id="start" placeholder="开始时间" onclick="datePickerstart.show();" />
+			<span>至&nbsp;</span>
+			<input id="end" readonly onclick="datePickerend.show();" placeholder="结束时间" />
+		</div>
+		<div class="cls"></div>
+	</div>
+	<div class="tb">
+		<div class="td f16 " onclick="model.reset()">重置</div>
+		<div class="td f16 r btn" onclick="model.okref()">确定</div>
+		<div class="cls"></div>
+	</div>
+</div>
+<script>
+
+	var datePickerstart, merefreshbuy = null,
+		datePickerend, user = Comm.db("userinfo"),
+		coinType = [],
+		selectType = "",
+		transactionFlowType = "",
+		start = "",
+		end = "";
+
+	function pageload() {
+		var _date = new Date();
+		var _y= _date.getFullYear(),_m = _date.getMonth() + 1;
+		model.data.startTime = _y +"-"+_m +"-"+"1" ;
+		model.data.endTime =_y+"-"+_m+"-"+model.mGetDate(_y,_m);
+			console.info(_date)
+		datePickerstart = new Datepicker("开始时间", function (a, b, c) {
+			$("#WTDBOX #start").val(b);
+			start = b;
+		});
+		datePickerend = new Datepicker("结束时间", function (a, b, c) {
+			$("#WTDBOX #end").val(b);
+			end = b;
+		});
+		getType();
+		model.getMonet();
+	}
+
+	function pageresume() {
+		model.getMonet();
+		model.search()
+	}
+
+	function getType() {
+		$("#sco").append('<span id="btnone" class="btn cur marr5" onclick="scollclick(this,\'-1\')">全部</span>');
+		var a = {};
+		var data = [{
+			coinface: '',
+			coinname: '线上收款',
+			type: 0,
+		}]
+		a.data = data;
+		coinType = a.data;
+		for (var i = 0; i < a.data.length; i++) {
+			$("#sco").append('<span id="_cointypeid' + a.data[i].type + '" class="btn marr5"  onclick="scollclick(this,' + a.data[i].type + ')">' + a.data[i].coinname + '</span>')
+		}
+	}
+
+
+	function ttop() {
+		$("#MainBg,#WTDBOX").css("top", $(".navBar").height());
+		$("#WTDBOX #start").val(start)
+		$("#WTDBOX #end").val(end)
+		if (selectType == "") {
+			scollclick("#btnone", '')
+		} else {
+			scollclick("#_cointypeid" + selectType, selectType)
+		}
+		if (transactionFlowType == "") {
+			scolltowclick("#btntow", '')
+		} else {
+			scolltowclick("#_transactionFlowTypeid" + transactionFlowType, transactionFlowType)
+		}
+	}
+
+	function scollclick(a, id) {
+		if (!$("#WTDBOX").find(a).hasClass("cur")) {
+			$("#WTDBOX .scollone span").removeClass("cur")
+			$("#WTDBOX").find(a).addClass("cur")
+			model.data.billType = id;
+		}
+	}
+
+	function scolltowclick(a, id) {
+		if (!$("#WTDBOX").find(a).hasClass("cur")) {
+			$("#WTDBOX .scolltow span").removeClass("cur")
+			$("#WTDBOX").find(a).addClass("cur")
+			model.data.billType = id;
+		}
+	}
+	var model = {
+		data: {
+			itemId: user.bussinessId,
+			itemType: "2",
+			billType: "-1",//0 线上 1 线下
+			startTime: "",
+			endTime: "",
+		},
+		mGetDate: function (year, month) {
+			var d = new Date(year, month, 0);
+			return d.getDate();
+		},
+		reset: function () {
+			$("#WTDBOX #start").val("");
+			$("#WTDBOX #end").val("");
+			selectType = "";
+			scollclick("#btnone", '')
+			scolltowclick("#btntow", '')
+		},
+		okref: function () {
+
+			var obj = {
+				itemId: user.bussinessId,
+				itemType: "2",
+				billType: model.data.billType,
+				startTime: start,
+				endTime: end
+			}
+			Comm.showWindow()
+			Comm.go("myMoneylist.html?obj=" + JSON.stringify(obj))
+		},
+		getMonet: function () {
+			AJAX.POST("/bussiness/wallet/detail", { bussinessId: user.bussinessId }, function (res) {
+				if (res.code == 1) {
+					$("#money").html(template("moneyTpl", res.data))
+					model.search()
+				}
+			})
+		},
+		search: function () {
+			if (!model.mere) {
+				model.mere = new MERefresh('box,list', {
+					pagesize: 10,
+					refreshUrl: '/common/wallet/list',
+					refreshTypeGet: true
+				});
+				model.mere.refreshOption.refreshParm = model.data;
+				//页面 <刷新> 的回调
+				model.mere.refreshOption.refresh_cb = function (refresh, d) {
+					refresh.successEndRef(d.data.length, d.totalCount);
+					var h = template('listTpl', d.data);
+					refresh.appendHtml(h);
+				};
+			} else {
+				model.mere.refreshOption.refreshParm = model.data;
+				//重置列表数据
+				model.mere.MeRefScroll.resetUpScroll();
+				//model.mere.MeRefScroll.triggerDownScroll();
+				//隐藏回到顶部按钮
+				model.mere.MeRefScroll.hideTopBtn();
+			}
+		},
+		no: function () {
+			Comm.message("暂未开放,敬请期待~")
+		}
+	}
+	template.defaults.imports.resetBalance = function (v) {
+		if (v >= 0) return Number(v).toFixed(2)
+		else return 0
+	}
+	template.defaults.imports.resetTime = function (v) {
+		return app.formatDate(v, "Y-m-d H:i:s")
+	}
+</script>
+<script type="text/html" id="moneyTpl">
+		<div class="ye">
+				<div class="wds">
+					<p class="f14">账户余额(元)</p>
+					<p class="f24 mart15">{{balance|resetBalance}}</p>
+				</div>
+				<div class="wds" onclick="Comm.go('cash.html')">
+					<div class="mt mart15">提现</div>
+				</div>
+				<div class="wds">
+					<p class="f14">待入账金额(元)</p>
+					<p class="f24 mart15">{{unBalance|resetBalance}}</p>
+				</div>
+				<div class="wds">
+					<p class="f14">冻结金额(元)</p>
+					<p class="f24 mart15">{{freezingBalance|resetBalance}}</p>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			{{if freezingTime!=''}}
+			<div class="rday">
+				<span class="f14" style="color: #dd1474;">提现审核中</span>
+				<span class="f14" style="float: right;">{{freezingTime|resetTime}}</span>
+			</div>
+			{{/if}}
+			
+	</script>
+<script type="text/html" id="listTpl">
+		{{each $data as v i}}
+			<div class="paddl15 bg_white ">
+				<div class="cellContent bottomBorder">
+					<div class="label f16 icon_pre icon_phone ">
+						<p>{{v.dictname}}</p>
+						<p class="f12 color999">{{v.addTime|resetTime}}</p>
+					</div>
+					{{if v.state=="1"}}
+					<span class="colorg f16">+{{v.price}}</span>
+					{{else if v.state=="2"}}
+					<span class="f16">-{{v.price}}</span>
+					{{/if}}
+				</div>
+			</div>
+		{{/each}}
+	</script>
+
+</html>

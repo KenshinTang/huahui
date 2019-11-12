@@ -1,0 +1,265 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        /* color */
+        .c87 {
+            color: #878787;
+        }
+
+        /*  */
+        .br10 {
+            display: inline-block;
+            border-radius: 10px;
+            padding: 2px 7px;
+            background: #F4F4F4;
+            color: #878787;
+        }
+
+        .active {
+            background: -webkit-linear-gradient(left, #dd1669, #ef940b);
+            background: -o-linear-gradient(right, #dd1669, #ef940b);
+            background: -moz-linear-gradient(right, #dd1669, #ef940b);
+            background: linear-gradient(right, #dd1669, #ef940b);
+            color: white;
+        }
+
+        /* 列表 */
+        .title span {
+            font-size: 16px;
+        }
+
+        span {
+            text-align: center;
+            word-wrap: break-word;
+            word-break: normal;
+        }
+
+        .list span {
+            font-size: 14px
+        }
+
+        .c21 {
+            color: #212121;
+        }
+
+        .c5c {
+            color: #5C5C5C
+        }
+
+        /* chart */
+        #chart {
+            min-height: 350px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>销售统计</div>
+        </div>
+    </header>
+
+    <section class='' id=''>
+        <div class="paddt10 paddb10 paddl10 paddr10 flex-between bottomBorder">
+            <div>
+                <span class="br10  active f12" onclick="model.qh(this,1)">近一周</span>
+                <span class="br10 f12" onclick="model.qh(this,2)">近一月</span>
+                <span class="br10 f12" onclick="model.qh(this,3)">近一年</span>
+            </div>
+            <span class="c87 f14 " name='nowdate'></span>
+        </div>
+        <!-- 图表 -->
+        <div id='chart' _class='bg_hui'></div>
+        <!-- 列表  -->
+        <div id='list'>
+
+
+        </div>
+    </section>
+    <footer>
+
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<!-- <script src='../inc/echarts.simple.min.js'></script> -->
+<script src='../inc/echarts.min.js'></script>
+
+<script>
+
+    function pageload() {
+        model.getSaleData(model.getDate(1));
+    }
+    function pageresume() {
+        model.getSaleData(model.getDate(1));
+    }
+    var model = {
+        qh: function (elm, t) {//
+            $.each($('.br10'), function (i, v) {
+                $(v).removeClass("active");
+            })
+            var time = model.getDate(t);
+            $(elm).addClass('active');
+            model.getSaleData(time);
+        },
+        getMonthStartDateAndDateRange: function () {
+            // 获取当前月的第一天  
+            var start = new Date();
+            start.setDate(1);
+            // 获取当前月的最后一天  
+            var date = new Date();
+            var currentMonth = date.getMonth();
+            var nextMonth = ++currentMonth;
+            var nextMonthFirstDay = new Date(date.getFullYear(), nextMonth, 1);
+            var oneDay = 1000 * 60 * 60 * 24;
+            var end = new Date(nextMonthFirstDay - oneDay);
+            model.startTime = app.formatDate(start, 'Y-m-d'); // 日期变换  
+            model.endTime = app.formatDate(end, 'Y-m-d'); // 日期变换  
+        },
+        getSaleData: function (d) {//获取销售统计数据
+            Comm.loading(true);
+            var url = '/bussiness/data/xiao',
+                opt = {
+                    startTime: d.startTime,
+                    endTime: d.endTime
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    //    model.renderList(res.data)
+                    $("#list").html(template('listTpl', res.data));
+                    model.dataStreamlining(res.data, '1');//1 销售统计处理
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        getDate(t) {//1 近一周 2 近一月 3 近一年
+            var dd = new Date();
+            var endTime = app.formatDate(dd, 'Y-m-d');
+
+            var startTime = "";
+            if (t == '1') {
+                dd.setDate(dd.getDate() - 6);
+                startTime = app.formatDate(dd, 'Y-m-d');
+            } else if (t == '2') {
+                dd.setMonth(dd.getMonth() - 1);
+                startTime = app.formatDate(dd, 'Y-m-d');
+            } else if (t == '3') {
+                dd.setFullYear(dd.getFullYear() - 1);
+                startTime = app.formatDate(dd, 'Y-m-d');
+            }
+            $("[name=nowdate]").html(startTime.replace(/-/g, '\.') + "-" + endTime.replace(/-/g, '\.'));
+            startTime += " 00:00:00";
+            endTime += " 23:59:59";
+
+            return { 'startTime': startTime, "endTime": endTime };
+        },
+        dataStreamlining: function (d, t) {// 1 销售统计处理
+            if (t == '1') {
+                var _xData = [], _data = [];
+                $.each(d, function (i, v) {
+                    var _d = new Date(v.time)
+                    _xData.push((app.formatDate(_d, 'm-d')).replace(/-/g,'\/'));
+                    _data.push(v.price);
+                });
+                var option = {
+                    legend:{
+                        selectedMode:false,
+                    },
+                    grid: {
+                        right: 5,
+                        borderWidth: 1
+                    },
+                    tooltip: {
+                        show:false
+                    },
+                    dataZoom: [
+                        {
+                            id: 'dataZoomX',
+                            type: 'inside',
+                            xAxisIndex: [0],
+                            filterMode: 'filter',
+                            show: false,
+                            startValue: 0,
+                            endValue: 6,
+                            zoomLock: true,
+                        },
+                    ],
+                    xAxis: {
+                        data: _xData,
+                        nameGap: 4,
+                        nameLocation: 'end',
+                        nameTextStyle: {
+                        }
+                    },
+                    yAxis: {
+                        name: "(单位:元)",
+                        splitLine:{
+                            show:false,
+                        }
+                    },
+                    series: [{
+                        type: 'bar',
+                        legendHoverLink:false,
+                        barWidth: 10,
+                        data: _data,
+                        itemStyle: {
+                            normal: {
+                                color: {
+                                    type: 'linear',
+                                    y: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0, color: '#ef940b'
+                                    }, {
+                                        offset: 1, color: '#dd1669'
+                                    }],
+                                    globalCoord: false
+                                }
+                            }
+                        },
+                    }]
+
+                }
+
+            }
+            model.renderChart(option);
+        },
+        renderChart: function (option) {//渲染图表
+            var mychart = echarts.init(document.getElementById("chart"));
+            mychart.setOption(option);
+        },
+        renderList: function (d) {//渲染列表
+        },
+    }
+</script>
+
+<script type="text/html" id="listTpl">
+    <li class="title bg_hui paddt10 paddb10 paddl10 paddr10 flex-between">
+        <span style="width: 35% ">时间</span>
+        <span style="width: 30%">订单数量</span>
+        <span style="width: 35%">销售额</span>
+    </li>
+    {{each $data as v k}}
+    <li class="list paddt10 paddb10 paddl10 paddr10 flex-between bottomBorder">
+        <span style="width: 35%" class="c5c">{{v.time}}</span>
+        <span style="width: 30%" class="c5c">{{v.num}}</span>
+        <span style="width: 35%" class="c5c">&yen;{{v.price}}</span>
+    </li>
+    {{/each}}
+</script>
+
+</html>

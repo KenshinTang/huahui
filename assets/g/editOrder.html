@@ -1,0 +1,524 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <style>
+        /* addr */
+        .addr {
+            background-image: url('./img/addrbg.png');
+            background-size: 100% 100%;
+        }
+
+        /* jt */
+        .cellContent {
+            /* height: 50px; */
+            /* justify-content: normal; */
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        /* list */
+        .list {
+            padding: 10px 0px;
+            height: 60px;
+        }
+
+        .list>img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .list span {
+            height: 40px;
+            line-height: 40px;
+        }
+
+        [name='fee']>div {
+            display: flex;
+            justify-content: space-between;
+            width: auto;
+            overflow: hidden;
+        }
+
+        [name='fee'] input {
+            display: inline-block;
+            min-width: 30px;
+            max-width: 80px;
+            line-height: 30px;
+            vertical-align: sub;
+            background: #e2e2e2;
+        }
+
+        [name='goodsFee'] span {}
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow verticalP'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>修改订单</div>
+            <div class="vertical f16 colordd" style='right:15px' onclick="model.update()">保存</div>
+        </div>
+    </header>
+
+    <section class='bg_hui' id=''>
+
+    </section>
+    <footer class="paddt5 paddb5 t-a-c">
+        <button id="choiceGoods" class="marauto f18 " style="border-radius: 5px;line-height: 50px"
+            onclick="model.yuanOrder()">查看原订单</button>
+    </footer>
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script src='../inc/art-template.js'></script>
+<script src="../inc/area.js"></script>
+<script src="../inc/dict.js"></script>
+<script src="../inc/picker.min.js"></script>
+<script>
+
+    function pageload() {
+        GDict.init(function () {
+            model.gdict();
+        })
+        Area.init(function () {
+            model.init();
+        })
+
+
+    }
+    function pageresume() {
+        model.render();
+    }
+    var model = {
+        // _iseditData:null,
+        otherOrderId: Comm.query('otherOrderId'),
+        otherorderdetails: Comm.db("otherorderdetails"),
+        gdict: function () {//pick
+            var Maintenancefrequency = GDict.get('Maintenancefrequency');//养护频次
+            var changetimes = GDict.get('changetimes');//更换频次
+            var MaintenancefrequencyData = [];
+            for (var i = 0; i < Maintenancefrequency.length; i++) {
+                var e = Maintenancefrequency[i]
+                MaintenancefrequencyData.push({
+                    text: e.dictname,
+                    i: e.dictid,
+                    remark: e.remark
+                })
+            }
+            var changetimesData = [];
+            for (var i = 0; i < changetimes.length; i++) {
+                var e = changetimes[i]
+                changetimesData.push({
+                    text: e.dictname,
+                    i: e.dictid,
+                    remark: e.remark
+                })
+            }
+            model.MaintenancefrequencyPicker = new Commpicker("养护频次", [MaintenancefrequencyData], function (a, v, sid) {
+                $("[name=pinNum]").val("1月" + v).attr("data", a[0].remark);
+            });
+            model.changetimesPicker = new Commpicker("更换频次", [changetimesData], function (a, v, sid) {
+                $("[name=siChuangeNum]").val(a[0].remark + "月1次").attr("data", a[0].remark);
+            });
+        },
+        init: function () {
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/detail'
+            opt = {
+                otherOrderId: model.otherOrderId
+            };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    model.data = res.data;
+                    model._iseditData = JSON.stringify(res.data);
+                    if (!model.otherorderdetails) {
+                        model.otherorderdetails = JSON.stringify(res.data.otherorderdetails);
+                        Comm.db("otherorderdetails", model.otherorderdetails)
+                    }
+                    $("section").html(template("mainTpl", res.data));
+                } else {
+                    Comm.message(res.msg)
+                }
+                model.render();
+            })
+        },
+        addLeaseGoods: function () {//修改 添加商品
+            // 
+            if (!model.otherorderdetails) model.otherorderdetails = JSON.stringify(model.data.otherorderdetails);
+            Comm.db("otherorderdetails", model.otherorderdetails);
+            Comm.go('goodsList.html?type=2')
+        },
+        render: function () {//渲染新的模版
+            // 
+            model.otherorderdetails = Comm.db("otherorderdetails");
+            if (model.otherorderdetails) model.data.otherorderdetails = JSON.parse(model.otherorderdetails);
+
+            if (model.otherorderdetails) {
+                var d = JSON.parse(model.otherorderdetails);
+                $("#otherorderdetails").html(template("otherorderdetailsTpl", d));
+                model.getCash();
+            }
+        },
+        inputNum: function (obj, type, singlePrice) { //判断输入数字
+            var str = $(obj).val();
+            console.info(str)
+            if (str <= 0) {
+                Comm.message("请输入大于0的值~");
+                $(obj).val(singlePrice)
+                return
+            }
+            if (type == "1") {
+                if (str.indexOf(".") != "-1") {
+                    Comm.message("请输入整数~")
+                    $(obj).val(singlePrice)
+                    return
+                }
+            } else if (type == "2") {
+                if (str.indexOf(".") != "-1") {
+                    var arr = str.split(".")
+                    if (arr[1].length > "2") {
+                        Comm.message("请输入不超过两位小数~")
+                        $(obj).val(singlePrice)
+                        return
+                    }
+                }
+            }
+            model.getCash();
+        },
+        ifInputNum: function (obj, type) {// 
+            var str = $(obj).val();
+            var _num = $(obj).attr("data");
+            if (str <= 0) {
+                Comm.message("请输入大于0的值~");
+                $(obj).val(_num)
+                return
+            }
+            if (str.indexOf(".") != "-1") {
+                var arr = str.split(".")
+                if (arr[1].length > "2") {
+                    Comm.message("请输入不超过两位小数~")
+                    $(obj).val(_num)
+                    return
+                }
+            }
+            if (type == '1') {
+                var goodsFee = $("[name=goodsFee]").find('input').val();
+                var bond = $("[name=bond]").find('input').val();
+                var allPrice = ((goodsFee * 1000 + bond * 1000) / 1000).toFixed(2);
+                $("[name=allPrice]").find('input').val(allPrice).attr('data', allPrice);
+
+            }
+        },
+        addNum: function (a, i, goodsId) {//
+            //加减
+            var num = $(a).parent().find("input").val() * 1 + i;
+            if (num > 0) {
+                $(a)
+                    .parent()
+                    .find("input")
+                    .val(num);
+                model.getCash();
+            }
+            if (num == '0') {
+                Comm.Mess.confirm("是否删除该商品？", Comm.setcb(function (f) {
+                    if (f == "1") {
+                        var _d = JSON.parse(model.otherorderdetails);
+                        _d = $.grep(_d, function (v, i) {
+                            return v.goodsId != goodsId
+                        });
+                        $(a).parents(".list").remove();
+                        model.otherorderdetails = JSON.stringify(_d);
+                        Comm.db("otherorderdetails", model.otherorderdetails);
+                        model.getCash();
+                    }
+                }))
+            }
+        },
+        getCash: function () {//获取运费
+            Comm.loading(true);
+            var list = $('#otherorderdetails').find(".list");
+            model._goods = [];
+            $.each(list, function (i, v) {
+                model._goods.push({
+                    otherGoodsId: $(v).attr("data"),
+                    num: $(v).find("[name=num]").val(),
+                    price: $(v).find("[name=price]").val(),
+                })
+            })
+            var url = '/common/otherorder/getCash',
+                opt = {
+                    type: '1',
+                    cycle: $("[name=cycle]").attr("data"),
+                    goods: JSON.stringify(model._goods)
+                };
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    var allPrice = (res.data.goodsFee * 1000 + res.data.bondFee * 1000) / 1000;
+                    allPrice = allPrice.toFixed(2);
+                    $("[name=goodsFee]").find('input').val(res.data.goodsFee).attr('data', res.data.goodsFee);
+                    $("[name=bond]").find('input').val(res.data.bondFee).attr('data', res.data.bondFee);
+                    $("[name=allPrice]").find('input').val(allPrice).attr('data', allPrice);
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        update: function () {//修改下单
+            Comm.loading(true);
+            var url = '/bussiness/lease/order/update',
+                opt = {
+                    pinNum: $("[name=pinNum]").attr("data"),
+                    pinType: '1',
+                    startTime: $("[name=startTime]").val(),
+                    cycle: $("[name=cycle]").attr('data'),
+                    otherOrderId: model.otherOrderId,
+                    allPrice: $("[name=allPrice]").find("input").val(),
+                    bond: $("[name=bond]").find("input").val(),
+                    siChuangeType: '2',
+                    siChuangeNum: $("[name=siChuangeNum]").attr("data"),
+                    goods: []
+                };
+            var list = $('#otherorderdetails').find(".list");
+            $.each(list, function (i, v) {
+                opt.goods.push({
+                    otherGoodsId: $(v).attr("data"),
+                    num: $(v).find("[name=num]").val(),
+                    price: $(v).find("[name=price]").val(),
+                })
+            })
+            var isEdit = model.isEdit(opt);
+            if (isEdit) {
+                Comm.close();
+            } else {
+                opt.goods = JSON.stringify(opt.goods)
+                // 
+                AJAX.POST(url, opt, function (res) {
+                    Comm.loading(false);
+                    if (res.code == 1) {
+                        Comm.db("otherorderdetails", null);
+                        Comm.message("修改成功~");
+                        Comm.db("_editID", res.data)
+                        setTimeout(function () {
+                            Comm.close();
+                        }, 600)
+
+                    } else {
+                        Comm.message(res.msg)
+                    }
+                })
+            }
+
+        },
+        yuanOrder: function () {//查看原订单
+            //    Comm.go('leaseorderDetail.html?otherOrderId='+model.otherOrderId);
+            Comm.go('leaseorderDetail.html?t=3&otherOrderId=' + model.otherOrderId)
+        },
+        isEdit: function (d) {//判断是否修改订单
+            var f = true;//true  无修改  
+            var t = JSON.parse(model._iseditData);
+            d.allPrice == t.allPrice ?
+                d.bond == t.bond ?
+                    d.pinNum == t.pinNum ? d.pinType == t.pinType ? d.siChuangeNum == t.siChuangeNum ? d.siChuangeType == t.siChuangeType ? f = true : f = false : f = false : f = false : f = false
+                    : f = false
+                : f = false;
+            var arr1 = [];
+            var arr2 = [];
+            if (f) {
+                if (d.goods.length != t.otherorderdetails.length) {
+                    f = false;
+                } else {
+                    $.each(d.goods, function (i, v) {
+                        arr1.push(v.otherGoodsId);
+                        $.each(t.otherorderdetails, function (m, n) {
+                            if (v.otherGoodsId == n.goodsId) {
+                                v.price == n.singlePrice ? v.num == n.allNum ? f = true : f = false : f = false;
+                            }
+                        })
+                    })
+                    $.each(t.otherorderdetails, function (i, v) {
+                        arr2.push(v.goodsId)
+                    });
+                  f=   model.scalarArrayEquals(arr1, arr2)
+                }
+
+            }
+            return f;
+        },
+        scalarArrayEquals: function (array1, array2) {
+            return array1.length == array2.length && array1.every(function (v, i) { return v === array2[i] });
+        }
+    }
+</script>
+<script id="defailTpl" type="text/html">
+		<div class="addr clearfix pad10 bg_white" onclick="Comm.go('../myAddress.html?t={{deliveryAddressId}}')">
+        <div class="fl lh50 marr10 verticalP" style="height: 45px">
+            <img class=" vertical" src="../img/addr.png" height="20" />
+        </div>
+        <div class="fr lh50 marl10 verticalP"  style="height: 45px">
+            <img class="vertical" src="../img/arrowRight.png" height="12" />
+        </div>
+        <div class="paddl25 paddr15">
+            <p class="lh25">
+                <span>{{userName}}</span>
+                <span class="fr">{{phone}}</span>
+            </p>
+            <p class="f12 lh20 color999 ">
+                {{getFullName(region)}} {{address}}
+            </p>
+        </div>
+    </div>
+</script>
+
+
+<script type="text/html" id="mainTpl">
+		<div id="addrk">
+            <div class="addr clearfix pad10 bg_white" >
+                <div class="fl lh50 marr10 verticalP" style="height: 55px">
+                    <img class=" vertical" src="./img/addr.png" height="15" />
+                </div>
+                <div class="paddl25 ">
+                    <p class="lh30">
+                        <span class='f16'>{{carName}}</span>
+                        <span class="fr f16">{{carPhone}}</span>
+                    </p>
+                    <p class="f14 lh25 color999 ">
+                        {{getFullName(region)}} {{carAddress}}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="mart10 paddl10 paddr10">
+            <!-- 租赁信息 -->
+            <div class="bg_white  ">
+                <div class="paddl10 bg_white ">
+                    <div class="cellContent  _indicator bottomBorder ">
+                        <div class="label f14 icon_pre c21 ">开始时间</div>
+                        <input type="text" readonly name="startTime" placeholder="" data="" value="{{startTime}}" data-reg='empty' />
+                    </div>
+                </div>
+                <div class="paddl10 bg_white ">
+                    <div class="cellContent  _indicator bottomBorder ">
+                        <div class="label f14 icon_pre c21 ">租赁周期</div>
+                        <input type="text" readonly name="cycle" placeholder="" data="{{cycle}}" value="{{cycle}}个月" data-reg='empty' />
+                    </div>
+                </div>
+                <div class="paddl10 bg_white " onclick='model.MaintenancefrequencyPicker.show()'>
+                    <div class="cellContent  indicator bottomBorder ">
+                        <div class="label f14 icon_pre c21 ">养护频次</div>
+                        <input type="text" readonly name="pinNum" placeholder="" data="{{pinNum}}" value="1月{{pinNum}}次" data-reg='empty' />
+                    </div>
+                </div>
+                <div class="paddl10 bg_white " onclick='model.changetimesPicker.show()'>
+                    <div class="cellContent  indicator _bottomBorder ">
+                        <div class="label f14 icon_pre c21 ">应景更换频次</div>
+                        <input type="text" readonly name="siChuangeNum" placeholder="" data="{{siChuangeNum}}" value="{{siChuangeNum}}月1次" data-reg='empty' />
+                    </div>
+                </div>
+            </div>
+            <!-- 租赁商品信息 -->
+            <div class="mart10 bg_white pad10">
+                <span class="f16 bold c21 bottomBorder paddb15 block">{{bussinessName}}</span>
+                <div class='bottomBorder' style="height: auto;" id="otherorderdetails">
+                    {{each otherorderdetails as v k}}
+                    <p class="list " data="{{v.goodsId||''}}">
+                        <img src="{{OSS(v.img)}}" alt="" onerror="app.errorimg(this)" class="marr5 ">
+                        <span class="f14 c1a  wordW inline-block" style="width:30%">{{v.goodsName}}</span>
+                        <span style='max-width:30%;' class="inline-block">
+                            <span readonly class="f16 bold  t-a-l inline-block" style="line-height:40px;vertical-align: baseline;">&yen;</span>
+                            <input type="number" onchange="model.inputNum(this,2,'{{v.singlePrice}}')" class="f16 bold v-a-b t-a-l inline-block" style="width:80%;line-height:40px" id=" " name="price"  placeholder="" data=" " value="{{v.singlePrice}}" data-reg='empty' />
+                        </span>
+                        
+                        <span class="inblock    fr">
+                            <img src="./img/cart-jian.png" width="12" style="" onclick="model.addNum(this,-1,{{v.goodsId}})">
+                            <input type="number" name="num" class="num t-a-c" id=""
+                                style="height:17px;width:35px;background:#F2F2F2;padding-right:0px;"
+                                class="inblock t-a-c" placeholder="" value="{{v.nowNum}}" data-reg="empty"
+                                onchange="model.inputNum(this,1,'{{v.nowNum}}')">
+                            <img src="./img/cart-jia.png" width="12" style="" onclick="model.addNum(this,1,{{v.goodsId}})">
+                        </span>
+                    </p>
+                    {{/each}}
+                </div>
+
+            </div>
+            <div class="bg_white paddb10 paddt10" style="width: 100%;">
+                <div class="marauto  bg_white paddt10 paddb10 paddl20 paddr20 t-a-c f14"
+                    style="color:#5C5C5C;width:130px;border-radius: 3px;border:1px solid #e5e5e5" onclick="model.addLeaseGoods()">
+                    +&nbsp;添加商品
+                </div>
+            </div>
+            <div class="pad10 bg_white" name="fee">
+                    <div class="lh30">
+                        <span class=" c21  f14">租赁费</span>
+                        <span class="fr c21  f12" name="goodsFee">
+                            <span class="inline-block">&yen;</span>
+                            <input type="number" class="t-a-c " id="" name=""  placeholder="" data="{{allPrice*1 - bond*1}}" value="{{allPrice*1 - bond*1}}" onchange="model.ifInputNum(this,1)" data-reg='empty' />
+                        </span>
+                    </div>
+                    <div class="lh30">
+                        <span class=" c21  f14">保证金(商品回收后退回)</span>
+                        <span class="fr c21  f12" name="bond">
+                            <span class="inline-block">&yen;</span>
+                            <input type="number" class="t-a-c " id="" name=""  placeholder="" data="{{bond}}" value="{{bond}}" onchange="model.ifInputNum(this,1)" data-reg='empty' />
+                        </span>
+                    </div>
+                    <div class="lh30">
+                        <span class=" c21  f14">合计</span>
+                        <span class="fr c21  f12" name="allPrice">
+                            <span class="inline-block colordd">&yen;</span>
+                            <input type="number" class="colordd t-a-c" readonly id="" name=""  placeholder="" data="{{allPrice}}" value="{{allPrice}}" onchange="model.ifInputNum(this)" data-reg='empty'  _style="background:white"/>
+                        </span>
+                    </div>
+                </div>
+        </div>
+</script>
+
+<script type="text/html" id="otherorderdetailsTpl">
+		{{each $data as v k}}
+    <p class="list "  data="{{v.goodsId}}">
+        <img src="{{OSS(v.img)}}" alt="" onerror="app.errorimg(this)" class="marr5 ">
+        <span class="f14 c1a  wordW inline-block" style="width:30%">{{v.goodsName}}</span>
+        <span style='max-width:30%;' class="inline-block">
+            <span readonly class="f16 bold  t-a-l inline-block" style="line-height:40px;vertical-align: baseline;">&yen;</span>
+            <input type="number" onchange="model.inputNum(this,2,'{{v.singlePrice}}')" class="f16 bold v-a-b t-a-l inline-block" style="width:80%;line-height:40px" id=" " name="price"  placeholder="" data=" " value="{{v.singlePrice}}" data-reg='empty' />
+        </span>
+        
+        <span class="inblock    fr">
+            <img src="./img/cart-jian.png" width="12" style="" onclick="model.addNum(this,-1,{{v.goodsId}})">
+            <input type="number" name="num" class="num t-a-c" id=""
+                style="height:17px;width:35px;background:#F2F2F2;padding-right:0px;"
+                class="inblock t-a-c" placeholder="" value="{{v.nowNum}}" data-reg="empty"
+                onchange="model.inputNum(this,1,'{{v.nowNum}}')">
+            <img src="./img/cart-jia.png" width="12" style="" onclick="model.addNum(this,1,{{v.goodsId}})">
+        </span>
+    </p>
+    {{/each}}
+</script>
+
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <title>未来久花卉</title>
+    <link rel="stylesheet" href="../css/g.css">
+    <link rel="stylesheet" href="../css/comm.css">
+    <style>
+        .navItemIcon {
+            background-image: inherit;
+            width: auto;
+        }
+
+        section {
+            background-color: #F4F4F4;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="bg_white">
+        <div class="navBar bottomShadow">
+            <div class="navBackIcon" onclick="Comm.close()"></div>
+            <div class="navTitle">未来久花卉</div>
+        </div>
+    </header>
+    <section>
+        <div class="bg_white" id="baseInfo">
+            <script type="text/html" id="base">
+                <div class="f16 pad10">基本信息</div>
+                <div class="pad10">
+                    <img src="img/shop/spzs.png" class="marr10" height="13" />
+                    <span>商品总数：{{goodsNum}}</span>
+                </div>
+                <div class="pad10">
+                    <img src="img/shop/xse.png" class="marr10" height="13" />
+                    <span>销售额：{{salesPrice}}元</span>
+                </div>
+                <div class="pad10">
+                    <img src="img/shop/zylx.png" class="marr10" height="13" />
+                    <span>主营类型：{{mainGoods}}</span>
+                </div>
+                <div class="pad10">
+                    <img src="img/shop/gsmc.png" class="marr10" height="13" />
+                    <span>公司名称：{{bussinessName}}</span>
+                </div>
+                <div class="pad10">
+                    <img src="img/shop/lxr.png" class="marr10" height="13" />
+                    <span>联系人：{{peopleName}}老板</span>
+                </div>
+                <div class="pad10">
+                    <a style="display:block;" href="tel:{{peoplephone}}">
+                        <img src="img/shop/lxdh.png" class="marr10" height="13" />
+                        <span>联系电话：{{peoplephone}}</span>
+                        <img src="../img/r.png" class="marr10" height="10" />
+                    </a>
+                </div>
+                <div class="pad10">
+                    <img src="img/shop/lxdz.png" class="marr10" height="13" />
+                    <span>联系地址：{{getFullName(manageAddress)}}</span>
+                </div>
+            </script>
+        </div>
+        <div class="pad10 bold f16 bg_white">商品推荐</div>
+        <div id="list" class="pad10"></div>
+    </section>
+</body>
+<script id="goodrTpl" type="text/html">
+    <div class="mart5 dflex">
+    {{each $data v k}}
+        {{if(k%2==0&&k!=0)}}
+        </div><div class="mart10 dflex">
+        {{/if}}
+        <dl class="pad10 bg_white marr5 radius5"  style="width:48%;" onclick="Comm.go('gooddetail.html?id={{v.goodsId}}')">
+            <dt>
+                <img src="{{OSS(v.img)}}" height="150" width="100%" class="radius5"  onerror="app.errorimg(this)"/>
+            </dt>
+            <dd class="mart5 tleft wordW">{{v.goodsName}}</dd>
+            <dd class="f12 colorA8 tleft wordW">{{v.descript}}</dd>
+            <dd class="mart5 tleft">
+                <span class="colorred">￥{{priceTp(v.lowSkuPrice)}}</span>
+                <span class="linethrough f12 color999 hide">￥200</span>
+            </dd>
+        </dl>
+        {{/each}}
+    </div>
+</script>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/area.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script src="../inc/art-template.js"></script>
+<script>
+    var userinfo = Comm.db("userinfo"), bussinessId = Comm.query('id');
+
+    function pageload() {
+        Area.init()
+        Comm.loading(1)
+        //商家基本信息
+        AJAX.POST('/purchase/bussiness/getBussInfoByBussId', { bussinessId: bussinessId }, function (res) {
+            if (res.code == 1) {
+                $('.navTitle').html(res.data.bussinessName)
+                $('#baseInfo').html(template('base', res.data))
+            } else {
+                Comm.message(res.msg)
+            }
+
+        })
+        //商品推荐
+        AJAX.POST('/purchase/bussiness/getGoodsList', { bussinessId: bussinessId, pagesize: 4, pageno: 1, recommend: 1 }, function (res) {
+            Comm.loading()
+            if (res.code == 1) {
+                if (res.data && res.data.length > 0) {
+                    $("#list").html(template('goodrTpl', res.data))
+                }
+            }
+        })
+    }
+    function pageresume() {
+
+
+    }
+
+</script>
+
+</html>

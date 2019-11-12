@@ -1,0 +1,197 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../../css/g.css'>
+    <link rel='stylesheet' href='../../css/comm.css'>
+    <style>
+        /* addr */
+        .addr {
+            background-image: url('../img/addrbg.png');
+            background-size: 100% 100%;
+        }
+
+        /* jt */
+        .cellContent {
+            /* height: 50px; */
+            /* justify-content: normal; */
+        }
+
+        .cellContent input {
+            text-align: right;
+            font-size: 15px;
+            height: 30px;
+        }
+
+        .cellContent input:disabled {
+            background: none;
+        }
+
+        .icon_pre {
+            /* padding-left: 25px; */
+            background-repeat: no-repeat;
+            background-position: left 2px;
+            background-size: auto 15px;
+        }
+
+        /* list */
+        .list {
+            padding: 10px 0px;
+            height: 60px;
+        }
+
+        .list>img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .list span {
+            height: 40px;
+            line-height: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class='navBar bottomShadow verticalP'>
+            <div class='navBackIcon' onclick='Comm.close()'></div>
+            <div class='navTitle'>修改订单</div>
+            <div class="vertical f16 colordd" style='right:15px'>保存</div>
+        </div>
+    </header>
+
+    <section class='bg_hui' id=''>
+        <div id="addrk">
+            <div class="addr clearfix pad10 bg_white" onclick="Comm.go('../myAddress.html?t={{deliveryAddressId}}')">
+                <div class="fl lh50 marr10 verticalP" style="height: 55px">
+                    <img class=" vertical" src="../img/addr.png" height="15" />
+                </div>
+                <div class="fr lh50 marl10 verticalP" style="height: 55px">
+                    <img class="vertical " src="../img/arrowRight.png" height="12" style="right:0px" />
+                </div>
+                <div class="paddl25 paddr15">
+                    <p class="lh30">
+                        <span class='f16'>{{userName}}</span>
+                        <span class="fr f16">{{phone}}</span>
+                    </p>
+                    <p class="f14 lh25 color999 ">
+                        {{getFullName(region)}} {{address}}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="mart10 paddl10 paddr10">
+            <!-- 租赁信息 -->
+            <div class="bg_white  ">
+                <div class="paddl10 bg_white ">
+                    <div class="cellContent  indicator bottomBorder ">
+                        <div class="label f14 icon_pre c21 ">开始时间</div>
+                        <input type="text" name="" placeholder="" data="" value="2018-11-01" data-reg='empty' />
+                    </div>
+                </div>
+                <div class="paddl10 bg_white ">
+                    <div class="cellContent  indicator bottomBorder ">
+                        <div class="label f14 icon_pre c21 ">租赁周期</div>
+                        <input type="text" name="" placeholder="" data="" value="6个月" data-reg='empty' />
+                    </div>
+                </div>
+                <div class="paddl10 bg_white ">
+                    <div class="cellContent  indicator bottomBorder ">
+                        <div class="label f14 icon_pre c21 ">养护频次</div>
+                        <input type="text" name="" placeholder="" data="" value="1月4次" data-reg='empty' />
+                    </div>
+                </div>
+                <div class="paddl10 bg_white ">
+                    <div class="cellContent  indicator _bottomBorder ">
+                        <div class="label f14 icon_pre c21 ">应景更换频次</div>
+                        <input type="text" name="" placeholder="" data="" value="3月1次" data-reg='empty' />
+                    </div>
+                </div>
+            </div>
+            <!-- 租赁商品信息 -->
+            <div class="mart10 bg_white pad10">
+                <span class="f16 bold c21 bottomBorder paddb15 block">未来极为</span>
+                <div class='bottomBorder' style="height: auto;">
+                    <p class="list ">
+                        <img src="{{OSS(v.img)}}" alt="" onerror="app.errorimg(this)" class="marr5 ">
+                        <span class="f14 c1a  wordW inblock" style="width:40%">{{盒子盒子盒子盒子盒子盒子盒子}}</span>
+                        <span class="f16 bold  t-a-r inblock">&yen;222</span>
+                        <span class="inblock    fr">
+                            <img src="../img/cart-jian.png" width="12" style="" onclick="model.addNum(this,-1)">
+                            <input type="number" name="jcNum" class="num t-a-c" id=""
+                                style="height:17px;width:35px;background:#F2F2F2;padding-right:0px;"
+                                class="inblock t-a-c" placeholder="" value="0" data-reg="empty"
+                                onchange="model.inputNum(this,1)">
+                            <img src="../img/cart-jia.png" width="12" style="" onclick="model.addNum(this,1)">
+                        </span>
+                    </p>
+                </div>
+
+            </div>
+            <div class="bg_white paddb10 paddt10" style="width: 100%;">
+                <div class="marauto  bg_white paddt10 paddb10 paddl20 paddr20 t-a-c f14"
+                    style="color:#5C5C5C;width:130px;border-radius: 3px;border:1px solid #e5e5e5">
+                    +&nbsp;添加商品
+                </div>
+            </div>
+            <div class="pad10 bg_white">
+                    <div class="lh30">
+                        <span class=" c21  f14">租赁费</span>
+                        <span class="fr c21  f12">&yen;100</span>
+                    </div>
+                    <div class="lh30">
+                        <span class=" c21  f14">保证金(商品回收后退回)</span>
+                        <span class="fr c21  f12">&yen;100</span>
+                    </div>
+                    <div class="lh30">
+                        <span class=" c21  f14">合计</span>
+                        <span class="fr c21  f12 colordd">&yen;100</span>
+                    </div>
+                </div>
+        </div>
+    </section>
+    <footer class="paddt5 paddb5 t-a-c">
+        <button onclick="model.choiceGoods()" id="choiceGoods" class="marauto f18 " style="border-radius: 5px;line-height: 50px">查看原订单</button>
+    </footer>
+</body>
+<script src='../../inc/z.js'></script>
+<script src='../../inc/g.js'></script>
+<script src='../../inc/comm.js'></script>
+<script src='../../inc/art-template.js'></script>
+<script>
+
+    function pageload() {
+
+    }
+    function pageresume() {
+
+    }
+    var model = {
+    }
+</script>
+<script id="defailTpl" type="text/html">
+    <div class="addr clearfix pad10 bg_white" onclick="Comm.go('../myAddress.html?t={{deliveryAddressId}}')">
+        <div class="fl lh50 marr10 verticalP" style="height: 45px">
+            <img class=" vertical" src="../img/addr.png" height="20" />
+        </div>
+        <div class="fr lh50 marl10 verticalP"  style="height: 45px">
+            <img class="vertical" src="../img/arrowRight.png" height="12" />
+        </div>
+        <div class="paddl25 paddr15">
+            <p class="lh25">
+                <span>{{userName}}</span>
+                <span class="fr">{{phone}}</span>
+            </p>
+            <p class="f12 lh20 color999 ">
+                {{getFullName(region)}} {{address}}
+            </p>
+        </div>
+    </div>
+</script>
+
+</html>

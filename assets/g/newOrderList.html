@@ -1,0 +1,387 @@
+<html lang='zh'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='width=device-width,initial-scale=1.0,user-scalable=no' name='viewport'>
+    <meta name='apple-mobile-web-app-capable' content='yes' />
+    <meta name='format-detection' content='telephone=no,email=no,adress=no' />
+    <title></title>
+    <link rel='stylesheet' href='../css/g.css'>
+    <link rel='stylesheet' href='../css/comm.css'>
+    <link rel="stylesheet" href="../inc/mescroll/mescroll.min.css" />
+    <style>
+        /* 导航滑动 */
+
+        #groupNum {
+            width: 100%;
+            overflow-x: scroll;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        #groupNum span {
+            min-width: 50px;
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+        }
+
+        #groupNum::-webkit-scrollbar {
+            display: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .c71 {
+            color: #717171;
+        }
+
+        .active {
+            color: #dd1669;
+            position: relative;
+        }
+
+        .active:after {
+            content: "";
+            position: absolute;
+            left: 25%;
+            bottom: 0px;
+            width: 50%;
+            height: 2px;
+            background-color: #dd1669;
+            text-align: center;
+        }
+
+        /* 列表 */
+
+        section {
+            height: auto;
+        }
+
+        section span {
+            display: inline-block;
+        }
+
+        .listInfo {
+            height: auto;
+            padding: 20px 15px 10px 15px;
+        }
+
+        .listInfo .printdy {
+            width: 75px;
+            height: 30px;
+            line-height: 30px;
+            background: #ffffff;
+            border: 1px #EEEEEE solid;
+            border-radius: 3px;
+            color: black;
+            font-size: 16px;
+            text-align: center;
+            /* padding: 10px; */
+        }
+
+        .listInfo img {
+            width: 35px;
+            height: 35px;
+            top: 40px;
+            left: 10px;
+        }
+
+        /* 小票 */
+
+        .print_container {
+            padding: 20px;
+            /* width: 80mm; */
+        }
+
+        .section2 label {
+            display: block;
+        }
+
+        .section3 label {
+            display: block;
+        }
+
+        .section4 {}
+
+        .section4 .total label {
+            display: block;
+        }
+
+        .section4 .other_fee {
+            border-bottom: 1px solid black;
+        }
+
+        .section5 label {
+            display: block;
+        }
+
+        td {
+            display: inline-block
+        }
+    </style>
+</head>
+
+<body style="position: relative">
+    <!-- <div id="ssss"></div> -->
+    <div id="textareaView" style="background:#fff;padding:2px 2px;width:100%;height: auto;z-index: -11;position: absolute;"></div>
+    <header>
+        <div class='navBar bottomShadow'>
+            <div class='navBackIcon' onclick='model.goback()'></div>
+            <div class='navTitle'>订单列表</div>
+        </div>
+    </header>
+
+    <section class='' id='box'>
+        <div id="list"></div>
+
+    </section>
+    <footer>
+
+    </footer>
+    
+</body>
+<script src='../inc/z.js'></script>
+<script src='../inc/g.js'></script>
+<script src='../inc/comm.js'></script>
+<script type="text/javascript" src="../inc/dict.js"></script>
+<script type="text/javascript" src="../inc/mescroll/mescroll.min.js"></script>
+<script src='../inc/art-template.js'></script>
+<script src="../inc/html2canvas.min.js"></script>
+<script>
+    var t = Comm.query("t");
+
+    function pageload() {
+        GDict.init(function () {
+            model.init()
+        })
+
+    }
+
+    function pageresume() {
+
+    }
+    var model = {
+        opt: {
+
+        },
+        init: function () { //
+            if (!model.mere) {
+                model.mere = new MERefresh('box,list', {
+                    pagesize: 10,
+                    refreshUrl: '/bussiness/order/newlist',
+                    refreshTypeGet: true
+                });
+                model.mere.refreshOption.refreshParm = model.opt;
+                //页面 <刷新> 的回调
+                model.mere.refreshOption.refresh_cb = function (refresh, d) {
+                    refresh.successEndRef(d.data.length, d.totalCount);
+                    console.info(d.data)
+
+                    var h = template('mainTpl', d.data);
+                    refresh.appendHtml(h);
+                };
+            } else {
+                // model.opt.keyword = keyword;
+                model.mere.refreshOption.refreshParm = model.opt;
+                //重置列表数据
+                model.mere.MeRefScroll.resetUpScroll();
+                //model.mere.MeRefScroll.triggerDownScroll();
+                //隐藏回到顶部按钮
+                model.mere.MeRefScroll.hideTopBtn();
+            }
+        },
+        printXp: function (type, normalorderId) { //打印小票
+            event.stopPropagation();
+            Comm.loading("打印中...");
+            var url = '/bussiness/order/print'
+            opt = {
+                orderId: normalorderId
+            };
+
+
+            var temp = $('#list').html();
+
+            AJAX.POST(url, opt, function (res) {
+                Comm.loading(false);
+                if (res.code == 1) {
+                    var allCount = 0;
+                    $.each(res.data.details, function (i, v) {
+                        allCount += Number(v.singlePrice * v.num) * 1000;
+                    })
+                    allCount /= 1000;
+                    res.data.allCount = allCount;
+                    res.data.youHui = res.data.allCount * 1 + res.data.packingfee * 1 - res.data.nowCash * 1;
+                    console.info(res.data)
+                    $("#textareaView").html(template("xpTpl", res.data))
+                    // $("#ssss").html(template("xpTpl", res.data))
+                    var shareContent = document.getElementById("textareaView");
+                    var width = shareContent.offsetWidth;
+                    var height = shareContent.offsetHeight;
+                    var canvas = document.createElement("canvas");
+                    var scale = 2;
+
+                    canvas.width = width * scale;
+                    canvas.height = height * scale;
+                    canvas.getContext("2d").scale(scale, scale);
+
+                    var opts = {
+                        scale: scale,
+                        canvas: canvas,
+                        logging: true,
+                        width: width,
+                        height: height
+                    };
+                    html2canvas(shareContent, opts).then(function (canvas) {
+                        dataURL = canvas.toDataURL("image/png");
+                        console.log(dataURL);
+                        dataURL = dataURL.split(",")
+                        Comm.bluetoothPrint({
+                            type: type,
+                            data: dataURL[1]
+                        }, function (res) {
+                            if (res == '1') {
+                                Comm.loading(false)
+                                Comm.message("打印完成~")
+                            } else {
+                                Comm.loading(false)
+                                Comm.bluetoothPrint({
+                                    type: 1
+                                })
+                            }
+                        })
+                        $('#list').html(temp);
+                    });
+
+                } else {
+                    Comm.message(res.msg)
+                }
+            })
+        },
+        goback: function () { //
+            androidback()
+        },
+        godetails: function (id, v, code, logistType) { //详情
+            event.stopPropagation();
+            Comm.go('orderDetail.html?oid=' + id + "&ifFlower=" + v + "&code=" + code + "&logistType=" + logistType + "&ishare=1");
+        },
+    }
+
+    function androidback() {
+        if (t == '1') {
+            Comm.close(1)
+        } else {
+            Comm.db("cartGoodsId", null);
+            Comm.close(2)
+        }
+    }
+    template.defaults.imports.resname = function (v) {
+        var str = "";
+        if (v.length == 0) {
+            str = ""
+        }
+        if (v.length > 9) {
+            str = v.slice(0, 9);
+            str = str + "...";
+        } else {
+            str = v;
+        }
+        return str
+    }
+</script>
+<script type="text/html" id="mainTpl">
+    {{each $data as v k}}
+    <div class='white listInfo verticalP bottomBorder item' onclick="model.godetails('{{v.normalorderId}}','0','{{v.selfmention}}','{{v.logistType}}')">
+        <div onclick="model.detail('{{v.jinCaiId}}')">
+            <span class="f16  block">{{v.userName}}</span>
+            <span class="mart5 f12 color999">{{formatDate(v.addTime,"Y-m-d H:i:s")}}</span>
+        </div>
+        <div class="mart15" onclick="model.detail('{{v.jinCaiId}}')">
+            <span style="width:70%" class=" wordW">{{v.descript}}</span>
+            <span style="width:28%" class="t-a-r ">&yen;{{v.nowCash}}</span>
+        </div>
+        <div class="mart10">
+            <span>配送方式：{{getItemName(v.logistType)}}</span>
+        </div>
+        {{if v.remark}}
+        <div class="mart10">
+            <span>支付方式：{{getItemName(v.remark)}}</span>
+        </div>
+        {{/if}}
+        <!-- <div class="t-a-r mart15">
+                <button class="f14 " onclick="model.cy('{{v.jinCaiId}}','{{v.goodsName}}')">参与竞采</button>
+                <button class="f14 " onclick="model.detail('{{v.jinCaiId}}')">查看订单</button>
+                <button class="f14 " onclick="model.del('{{v.jinCaiId}}')">删除订单</button>
+            </div> -->
+        <!-- <img src="{{OSS(v.avatar)}}" alt="" class="vertical" onerror="app.herrorimg(this)"> -->
+        <div class="t-a-r mart5">
+            <span onclick="model.printXp('3',{{v.normalorderId}})" class="printdy">打印</span>
+        </div>
+
+        <span class='vertical f14 ttime' id="ttime" data='' ttime="" style="color:#DA251C;top:30px;right:15px">已完成</span>
+
+    </div>
+    {{/each}}
+</script>
+
+
+<script type="text/html" id="xpTpl">
+    <div class="print_container ">
+        <div class="section3 paddb5" style="border-bottom: 1px solid black;padding-bottom:5px">
+            <label>订单编号：{{orderNum}}</label>
+
+        </div>
+        <div class="section3 paddb5" style="border-bottom: 1px solid black;padding-top:5px ">
+
+            <label>姓名：{{userName}}</label>
+            <label class="">地址：{{regionCn}} {{address}}</label>
+            <label>电话：{{phone}}</label>
+            <label>下单时间：{{addTime}}</label>
+        </div>
+        <div class="section4 paddt5 paddb5 ">
+            <div style="border-bottom: 1px solid black;padding-bottom: 10px;">
+
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <td width="35%">名称</td>
+                            <td class="t-a-c" width="15%">数量</td>
+                            <td class="t-a-c" width="25%">单价</td>
+                            <td class="t-a-c" width="25%">金额</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{each details as v i}}
+                        <tr>
+                            <td class="wordW" width="35%">{{v.goodsName|resname}}</td>
+                            <td class="t-a-c" width="15%">{{v.nowNum}}</td>
+                            <td class="t-a-c" width="25%">{{v.singlePrice}}</td>
+                            <td class="t-a-c" width="25%">{{v.allPrice}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="total paddt5 paddb5" style="border-bottom: 0px solid black;padding-right: 15px">
+                <span style="display: block;text-align: right">商品金额：{{allCount}}</span> {{if jifenMoney*1>0}}
+                <span style="display: block;text-align: right">积分抵扣：{{jifenMoney}}</span> {{/if}} {{if jianNum*1>0}}
+                <span style="display: block;text-align: right">订单满减：{{jianNum}}</span> {{/if}} {{if packingfee*1>0}}
+                <span style="display: block;text-align: right">包装费：{{packingfee}}</span> {{/if}} {{if qualityfee*1>0}}
+                <span style="display: block;text-align: right">质检费：{{qualityfee}}</span> {{/if}} {{if zaiFee*1>0}}
+                <span style="display: block;text-align: right " class="hide">运费：{{zaiFee}}</span> {{/if}} {{if nowCash*1>0}}
+                <span style="display: block;text-align: right">实付款：{{nowCash}}</span> {{/if}}
+            </div>
+        </div>
+        {{if logistCompany&&logistNum}}
+        <div class="section5 paddt5 paddb5" style="border-bottom: 1px solid black; ">
+            <label>物流公司：{{logistCompany}}</label>
+            <label>物流单号：{{logistNum}}</label>
+        </div>
+        {{/if}}
+
+    </div>
+</script>
+
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>资讯</title>
+    <meta content="width=device-width,initial-scale=1.0,user-scalable=no" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no,email=no,adress=no" />
+    <link rel="stylesheet" href="../css/g.css" />
+    <link rel="stylesheet" href="../css/comm.css" />
+    <style>
+        section {
+            background-color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 头部 -->
+    <header>
+        <div class="navBar bottomShadow">
+            <div class="nav-title block ">详情</div>
+        </div>
+    </header>
+    <section class="pad10">
+        <!--内容部分-->
+    </section>
+</body>
+<script type="text/javascript" src="../inc/z.js"></script>
+<script type="text/javascript" src="../inc/g.js"></script>
+<script type="text/javascript" src="../inc/comm.js"></script>
+<script type="text/javascript" src="../inc/art-template.js"></script>
+<script>
+    var data = null;
+    function pageload() {
+        AJAX.POST('/admin/article/detail', { articleId: Comm.query('id') }, function (a) {
+            if (a.code == 1) {
+                data = a.data
+                $("section").append(template('container', a.data));
+            }
+        })
+    }
+
+    function pageresume() {
+
+    }
+
+</script>
+<script id="container" type="text/html">
+    <div class="paddb10 paddt10 bold f20">{{articlename}}</div>
+    <div class="clearfix paddb15 paddt10">
+        <div class="f12 color999 fl">{{formatDate(addTime,'Y-m-d')}}</div>
+        <div class="f12 color999 fr">阅读{{readcount}}次</div>
+    </div>
+    <div><img src="{{OSS(face)}}" width="100%" height="160" class="radius5"  onerror="app.errorimg(this)"/></div>
+</script>
+
+</html>
