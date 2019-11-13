@@ -1,32 +1,27 @@
 package com.yunlinker;
 
-import android.app.AlertDialog;
-import android.app.AppOpsManager;
 import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
-
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.liulishuo.filedownloader.FileDownloader;
+import com.lzy.imagepicker.ImagePicker;
 import com.qiyukf.unicorn.api.ImageLoaderListener;
 import com.qiyukf.unicorn.api.SavePowerConfig;
 import com.qiyukf.unicorn.api.StatusBarNotificationConfig;
@@ -46,18 +41,12 @@ import com.umeng.message.entity.UMessage;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
 import com.yunlinker.baseclass.BaseActivity;
-//import com.yunlinker.image.GlideApp;
+import com.yunlinker.hhgys.MainActivity;
 import com.yunlinker.hhgys.R;
 import com.yunlinker.manager.ActivityManager;
-import com.yunlinker.hhgys.MainActivity;
 import com.yunlinker.upimage.GlideImageLoader;
-import com.lzy.imagepicker.ImagePicker;
-import com.yunlinker.util.NotificationsUtils;
 
 import org.json.JSONObject;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 import static com.yunlinker.config.WebConfig.QQID;
 import static com.yunlinker.config.WebConfig.QQSECRET;
@@ -66,6 +55,8 @@ import static com.yunlinker.config.WebConfig.UMKEY;
 import static com.yunlinker.config.WebConfig.WXID;
 import static com.yunlinker.config.WebConfig.WXSECRET;
 import static com.yunlinker.config.WebConfig.saveKey;
+
+//import com.yunlinker.image.GlideApp;
 
 /**
  * Created by lemon on 2017/8/21.
@@ -146,9 +137,14 @@ public class myApp extends Application {
                 UmengMessageHandler messageHandler = new UmengMessageHandler(){
                     @Override
                     public Notification getNotification(Context context, UMessage msg) {
+                        Log.d("kenshin", "msg = " + msg.toString());
+                        Log.d("kenshin", "msg = " + msg.title);
+                        Log.d("kenshin", "msg = " + msg.text);
+                        Log.d("kenshin", "msg = " + msg.ticker);
                         switch (msg.builder_id) {
                             case 1:
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    Log.d("kenshin", "Build.VERSION.SDK_INT = " + Build.VERSION.SDK_INT);
                                     notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
                                     //准备intent
                                     Intent intent = new Intent();

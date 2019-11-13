@@ -57,7 +57,12 @@ dependencies {
     //----------图片选择----------
     compile project(':imagepicker')
     compile project(':luban')
-    compile project(':push')
+
+//    compile project(':push')
+    compile 'com.umeng.umsdk:common:1.5.4'
+    compile 'com.umeng.umsdk:utdid:1.1.5.3'
+    compile 'com.umeng.umsdk:push:6.0.1'
+
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:support-v4:25.3.1'

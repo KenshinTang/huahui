@@ -1,10 +1,10 @@
 var config = {
-    root: 'http://app.huahuiyun8.com/',
-    // root: 'http://test.huahuiyun8.com/',
+//    root: 'http://app.huahuiyun8.com/',
+     root: 'http://test.huahuiyun8.com/',
     // root: 'http://192.168.0.23:7700/',
     // root: 'http://192.168.0.129:80/', //牟军
-    webroot: "http://app.huahuiyun8.com/app", //网址地址
-    //webroot: "http://test.huahuiyun8.com/app_test", //网址地址
+//    webroot: "http://app.huahuiyun8.com/app", //网址地址
+    webroot: "http://test.huahuiyun8.com/app_test", //网址地址
     // base: '/chuanhui/',//本地
     // baseimg: '/',//本地
     base: '', //线上
