@@ -137,14 +137,9 @@ public class myApp extends Application {
                 UmengMessageHandler messageHandler = new UmengMessageHandler(){
                     @Override
                     public Notification getNotification(Context context, UMessage msg) {
-                        Log.d("kenshin", "msg = " + msg.toString());
-                        Log.d("kenshin", "msg = " + msg.title);
-                        Log.d("kenshin", "msg = " + msg.text);
-                        Log.d("kenshin", "msg = " + msg.ticker);
                         switch (msg.builder_id) {
                             case 1:
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    Log.d("kenshin", "Build.VERSION.SDK_INT = " + Build.VERSION.SDK_INT);
                                     notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
                                     //准备intent
                                     Intent intent = new Intent();
