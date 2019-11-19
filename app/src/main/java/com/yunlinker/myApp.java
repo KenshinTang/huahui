@@ -5,7 +5,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -112,8 +111,9 @@ public class myApp extends Application {
             @Override
             public void run() {
                 //注册推送服务，每次调用register方法都会回调该接口
-                mPushAgent.setNotificationPlaySound(MsgConstant.NOTIFICATION_PLAY_SERVER);
+                mPushAgent.setNotificationPlaySound(MsgConstant.NOTIFICATION_PLAY_SDK_ENABLE);
                 mPushAgent.setNotificationPlayLights(MsgConstant.NOTIFICATION_PLAY_SDK_ENABLE);
+                mPushAgent.setNoDisturbMode(0, 0, 0, 0);
                 mPushAgent.register(new IUmengRegisterCallback() {
 
                     @Override
@@ -143,17 +143,11 @@ public class myApp extends Application {
                         Log.d("kenshin", "msg = " + msg.ticker);
                         switch (msg.builder_id) {
                             case 1:
+                                Log.d("kenshin", "Build.VERSION.SDK_INT = " + Build.VERSION.SDK_INT);
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    Log.d("kenshin", "Build.VERSION.SDK_INT = " + Build.VERSION.SDK_INT);
                                     notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-                                    //准备intent
-                                    Intent intent = new Intent();
-                                    String action = "com.tamic.myapp.action";
-                                    intent.setAction(action);
-                                    final int NOTIFICATION_ID = 12234;
 
                                     Notification notification = null;
-
                                     String CHANNEL_ID = "my_channel_0";
                                     CharSequence name = "my_channel";
                                     String Description = "This is my channel";
@@ -181,6 +175,7 @@ public class myApp extends Application {
                                             .build();
                                     return  notification;
                                 }
+                                return super.getNotification(context, msg);
                             default:
                                 return super.getNotification(context, msg);
                         }
